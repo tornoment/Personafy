@@ -1,0 +1,115 @@
+# Builds the iPhone version on GitHub's Mac and puts Personafy.ipa into the "ios" branch
+# (one commit, replaced every time — like the Windows installer in "installer").
+# The .ipa is unsigned: Sideloadly signs it with your own Apple ID when installing.
+# If the build fails, its log is attached to the run as "build-log".
+# Runs only when asked: a tag "ios-<anything>" pushed to the repository (e.g. ios-1.5.1),
+# or "Run workflow" on the Actions page.
+name: iPhone build
+
+on:
+  push:
+    tags: ['ios-*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ios-build
+  cancel-in-progress: true
+
+jobs:
+  # a quick check that this repository's Actions start at all (the Mac queue can be slow)
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Actions are running"
+
+  ipa:
+    # macOS arm64 runners keep timing out in the queue ("capacity constraints"), the Intel ones have room
+    runs-on: macos-15-intel
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install Capacitor
+        working-directory: mobile
+        run: |
+          set -o pipefail
+          npm ci 2>&1 | tee -a steps.log
+
+      - name: Web part (player interface + iPhone layer)
+        working-directory: mobile
+        run: |
+          set -o pipefail
+          npm run build:web 2>&1 | tee -a steps.log
+          npx cap sync ios 2>&1 | tee -a steps.log
+
+      - name: Build the app (unsigned)
+        working-directory: mobile
+        run: |
+          set -o pipefail
+          xcodebuild -version
+          xcodebuild \
+            -project ios/App/App.xcodeproj \
+            -scheme App \
+            -configuration Release \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" DEVELOPMENT_TEAM="" \
+            CURRENT_PROJECT_VERSION=${{ github.run_number }} \
+            build 2>&1 | tee build.log | grep -E "error:|warning: .*(deprecated|unavailable)|BUILD (SUCCEEDED|FAILED)|\*\* " || true
+          test -d build/Build/Products/Release-iphoneos/App.app
+
+      - name: Pack Personafy.ipa
+        working-directory: mobile
+        run: |
+          rm -rf out && mkdir -p out/Payload
+          cp -R build/Build/Products/Release-iphoneos/App.app out/Payload/Personafy.app
+          (cd out && zip -qry Personafy.ipa Payload)
+          ls -lh out/Personafy.ipa
+          /usr/libexec/PlistBuddy -c 'Print :UIBackgroundModes' out/Payload/Personafy.app/Info.plist
+
+      - name: Publish to the "ios" branch
+        working-directory: mobile
+        env:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          mkdir pub && cp out/Personafy.ipa pub/
+          cp ios-branch-README.md pub/README.md
+          printf 'Personafy %s для iPhone\nсборка %s от %s\nкоммит %s\n' "$VERSION" "${{ github.run_number }}" "$(date -u '+%Y-%m-%d %H:%M UTC')" "${GITHUB_SHA}" > pub/build.txt
+          cd pub
+          git init -q -b ios
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -qm "Personafy $VERSION для iPhone (сборка ${{ github.run_number }})"
+          git push -fq "https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.git" ios
+          echo "### Готово: Personafy.ipa в ветке ios (сборка ${{ github.run_number }})" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Collect the log of a failed build
+        if: failure()
+        working-directory: mobile
+        run: |
+          mkdir -p logpub
+          if [ -f build.log ]; then
+            grep -nE "error:|fatal|FAILED" build.log | head -200 > logpub/errors.txt || true
+            tail -n 4000 build.log > logpub/build-tail.log
+          else
+            echo "no build.log — the failure happened before xcodebuild" > logpub/errors.txt
+          fi
+          [ -f steps.log ] && tail -n 400 steps.log > logpub/steps.log || true
+          printf 'run %s, commit %s\n' "${{ github.run_number }}" "${GITHUB_SHA}" > logpub/run.txt
+
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: build-log
+          path: mobile/logpub
+          retention-days: 30

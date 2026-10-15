@@ -1,0 +1,74 @@
+apply plugin: 'com.android.application'
+
+// The version is the phone app's (mobile/package.json); the build number grows with every GitHub build,
+// so a new .apk installs over the old one. Every release build is signed with the same key, kept right here
+// in the repository (mobile/android/personafy.keystore — chosen so that no secrets need setting up; it only
+// lets Android accept the next build as an update of the installed app). Another key: the PERSONAFY_KEYSTORE…
+// environment variables.
+def mobilePkg = new groovy.json.JsonSlurper().parse(file('../../package.json'))
+def keystorePath = System.getenv('PERSONAFY_KEYSTORE') ?: rootProject.file('personafy.keystore').path
+
+android {
+    namespace = "com.tornoment.personafy"
+    compileSdk = rootProject.ext.compileSdkVersion
+    defaultConfig {
+        applicationId "com.tornoment.personafy"
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode((System.getenv('PERSONAFY_BUILD') ?: '1') as int)
+        versionName mobilePkg.version
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        aaptOptions {
+             // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
+             // Default: https://android.googlesource.com/platform/frameworks/base/+/282e181b58cf72b6ca770dc7ca5f91f135444502/tools/aapt/AaptAssets.cpp#61
+            ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
+        }
+    }
+    signingConfigs {
+        release {
+            if (file(keystorePath).exists()) {
+                storeFile file(keystorePath)
+                storeType 'pkcs12'
+                storePassword System.getenv('PERSONAFY_KEYSTORE_PASSWORD') ?: 'personafy-public'
+                keyAlias System.getenv('PERSONAFY_KEY_ALIAS') ?: 'personafy'
+                keyPassword System.getenv('PERSONAFY_KEY_PASSWORD') ?: (System.getenv('PERSONAFY_KEYSTORE_PASSWORD') ?: 'personafy-public')
+            }
+        }
+    }
+    buildTypes {
+        release {
+            if (file(keystorePath).exists()) signingConfig signingConfigs.release
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+repositories {
+    flatDir{
+        dirs '../capacitor-cordova-android-plugins/src/main/libs', 'libs'
+    }
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation "androidx.appcompat:appcompat:$androidxAppCompatVersion"
+    implementation "androidx.coordinatorlayout:coordinatorlayout:$androidxCoordinatorLayoutVersion"
+    implementation "androidx.core:core-splashscreen:$coreSplashScreenVersion"
+    implementation project(':capacitor-android')
+    testImplementation "junit:junit:$junitVersion"
+    androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
+    implementation project(':capacitor-cordova-android-plugins')
+}
+
+apply from: 'capacitor.build.gradle'
+
+try {
+    def servicesJSON = file('google-services.json')
+    if (servicesJSON.text) {
+        apply plugin: 'com.google.gms.google-services'
+    }
+} catch(Exception e) {
+    logger.info("google-services.json not found, google-services plugin not applied. Push Notifications won't work")
+}

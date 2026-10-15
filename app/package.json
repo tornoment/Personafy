@@ -1,0 +1,59 @@
+{
+  "name": "phantom-player",
+  "productName": "Personafy",
+  "version": "1.5.0",
+  "description": "Personafy — музыкальный плеер",
+  "main": "main.js",
+  "author": "Torn",
+  "license": "UNLICENSED",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --win nsis --x64 --publish never"
+  },
+  "devDependencies": {
+    "electron": "33.2.1",
+    "electron-builder": "25.1.8"
+  },
+  "build": {
+    "appId": "com.phantomplayer.app",
+    "productName": "Personafy",
+    "copyright": "Personafy",
+    "artifactName": "Personafy Setup.${ext}",
+    "compression": "maximum",
+    "publish": null,
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "package.json",
+      "src/**/*",
+      "build/icon.png"
+    ],
+    "asar": true,
+    "electronLanguages": ["ru", "en-US"],
+    "win": {
+      "target": [{ "target": "nsis", "arch": ["x64"] }],
+      "icon": "build/icon.ico",
+      "signAndEditExecutable": true
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowElevation": true,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Personafy",
+      "uninstallDisplayName": "Personafy",
+      "installerIcon": "build/icon.ico",
+      "uninstallerIcon": "build/icon.ico",
+      "installerLanguages": ["ru_RU"],
+      "language": "1049",
+      "deleteAppDataOnUninstall": false
+    }
+  }
+}

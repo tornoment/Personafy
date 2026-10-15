@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: file: phantom:; media-src 'self' file: phantom:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<title>Personafy</title>
+<link rel="stylesheet" href="fonts.css">
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="p3r.css">
+<link rel="stylesheet" href="mf.css">
+</head>
+<body class="paused" data-view="home">
+<div id="app">
+  <div id="stage">
+    <div id="view" tabindex="-1"></div>
+    <nav id="nav" aria-label="Разделы"><div class="nav-in"></div></nav>
+  </div>
+  <footer id="mini" aria-label="Плеер"></footer>
+</div>
+
+<button type="button" id="q-dim" class="q-dim" data-act="dim-close" aria-label="Закрыть панель" tabindex="-1"></button>
+<aside id="queue" class="q-panel" aria-label="Очередь воспроизведения"></aside>
+<aside id="settings" class="q-panel s-panel" aria-label="Настройки"></aside>
+
+<div id="wipe" aria-hidden="true">
+  <div class="wipe-body">
+    <div class="w5 r"></div>
+    <div class="w5 s"></div>
+    <div class="w5 k"><div class="w5-dots"></div><div class="w5-bar"></div><div class="w5-word" id="wipe-word"></div></div>
+    <div class="w5 l l1"></div>
+    <div class="w5 l l2"></div>
+  </div>
+  <div class="wipe-p3"><div class="w3 a"></div><div class="w3 b"></div><div class="w3 c"></div></div>
+  <div class="wipe-mf"><div class="wm ink"></div><div class="wm pa"></div><div class="wm pb"></div><div class="wm br"></div><div class="wm-word" id="wipe-mf-word"></div></div>
+</div>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <filter id="p3duo" color-interpolation-filters="sRGB">
+    <feColorMatrix type="matrix" values="0.299 0.587 0.114 0 0  0.299 0.587 0.114 0 0  0.299 0.587 0.114 0 0  0 0 0 1 0"></feColorMatrix>
+    <feComponentTransfer>
+      <feFuncR type="table" tableValues="0.02 0.05 0.11 0.16 0.62 1"></feFuncR>
+      <feFuncG type="table" tableValues="0.04 0.08 0.22 0.55 0.92 1"></feFuncG>
+      <feFuncB type="table" tableValues="0.17 0.42 0.94 1 1 1"></feFuncB>
+    </feComponentTransfer>
+  </filter>
+  <linearGradient id="skyw" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff"></stop><stop offset="1" stop-color="#cfc8ba"></stop></linearGradient>
+  <linearGradient id="skyg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1c1c1c"></stop><stop offset="1" stop-color="#4d4d4d"></stop></linearGradient>
+  <!-- P5 calendar stickers: black backing and white rim grown from the glyphs (square steps, like cut paper) -->
+  <filter id="p5c-stk" filterUnits="userSpaceOnUse" x="-120" y="-120" width="1400" height="900" color-interpolation-filters="sRGB">
+    <feMorphology in="SourceAlpha" operator="dilate" radius="12 10" result="k"></feMorphology>
+    <feMorphology in="SourceAlpha" operator="dilate" radius="17 15" result="w"></feMorphology>
+    <feFlood flood-color="#ffffff"></feFlood><feComposite in2="w" operator="in" result="W"></feComposite>
+    <feFlood flood-color="#000000"></feFlood><feComposite in2="k" operator="in" result="K"></feComposite>
+    <feMerge><feMergeNode in="W"></feMergeNode><feMergeNode in="K"></feMergeNode><feMergeNode in="SourceGraphic"></feMergeNode></feMerge>
+  </filter>
+  <filter id="p5c-wd" filterUnits="userSpaceOnUse" x="-120" y="-120" width="1400" height="900" color-interpolation-filters="sRGB">
+    <feMorphology in="SourceAlpha" operator="dilate" radius="5 4" result="p"></feMorphology>
+    <feMorphology in="SourceAlpha" operator="dilate" radius="13 11" result="k"></feMorphology>
+    <feMorphology in="SourceAlpha" operator="dilate" radius="17 15" result="w"></feMorphology>
+    <feFlood flood-color="#ffffff"></feFlood><feComposite in2="w" operator="in" result="W"></feComposite>
+    <feFlood flood-color="#000000"></feFlood><feComposite in2="k" operator="in" result="K"></feComposite>
+    <feFlood flood-color="#ffffff"></feFlood><feComposite in2="p" operator="in" result="P"></feComposite>
+    <feMerge><feMergeNode in="W"></feMergeNode><feMergeNode in="K"></feMergeNode><feMergeNode in="P"></feMergeNode><feMergeNode in="SourceGraphic"></feMergeNode></feMerge>
+  </filter>
+  <filter id="p5c-tag" filterUnits="userSpaceOnUse" x="-120" y="-120" width="1400" height="900" color-interpolation-filters="sRGB">
+    <feMorphology in="SourceAlpha" operator="dilate" radius="15 11" result="p"></feMorphology>
+    <feFlood flood-color="#ffffff"></feFlood><feComposite in2="p" operator="in" result="P"></feComposite>
+    <feMerge><feMergeNode in="P"></feMergeNode><feMergeNode in="SourceGraphic"></feMergeNode></feMerge>
+  </filter>
+</svg>
+
+<div id="titlebar">
+  <div class="tb-drag" aria-hidden="true"></div>
+  <div class="tb-btns" role="group" aria-label="Окно">
+    <button type="button" class="tb-btn" data-win="min" aria-label="Свернуть" title="Свернуть"><span class="tb-in"><svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><path d="M3 11 H17" class="tb-s"></path></svg></span></button>
+    <button type="button" class="tb-btn" data-win="max" aria-label="Развернуть" title="Развернуть"><span class="tb-in">
+      <svg class="tb-ico-max" viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><rect x="3.5" y="3.5" width="13" height="13" class="tb-s"></rect></svg>
+      <svg class="tb-ico-res" viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><rect x="3" y="6.5" width="10.5" height="10.5" class="tb-s"></rect><path d="M6.5 6.5 V3 H17 V13.5 H13.5" class="tb-s"></path></svg>
+    </span></button>
+    <button type="button" class="tb-btn tb-close" data-win="close" aria-label="Закрыть" title="Закрыть"><span class="tb-in"><svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><path d="M4 4 L16 16 M16 4 L4 16" class="tb-s"></path></svg></span></button>
+  </div>
+</div>
+
+<div id="toasts" role="status" aria-live="polite"></div>
+<audio id="audio" preload="auto" crossorigin="anonymous"></audio>
+<script src="app.js"></script>
+</body>
+</html>

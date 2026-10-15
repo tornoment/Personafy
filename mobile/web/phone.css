@@ -1,0 +1,530 @@
+/* Personafy for iPhone and Android — the narrow-screen layout of all three themes.
+   Loaded after the desktop styles; everything is scoped to html.phone (set by phone-api.js / the build).
+   Selectors start with .phone[data-theme…] so they outrank the themes' own [data-theme=…] rules.
+   The desktop markup carries many inline sizes, hence the !important here and there.
+
+   Screen plan: the page scrolls under the status bar; the player bar sits at the bottom with the
+   section tabs under it (thumb reach); Now Playing is one screen: cover, title, buttons, controls. */
+
+html.phone{
+  --st:max(env(safe-area-inset-top),var(--sat,0px));
+  --sb:max(env(safe-area-inset-bottom),var(--sab,0px));
+  --navh:56px;
+  -webkit-text-size-adjust:100%;
+  -webkit-tap-highlight-color:transparent;
+}
+html.phone body{-webkit-touch-callout:none;overscroll-behavior:none}
+html.phone #titlebar{display:none}
+.phone[data-theme] #app{padding-bottom:calc(var(--navh) + var(--sb))}
+.phone[data-theme] #view{-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain}
+.phone[data-theme] #view::-webkit-scrollbar{display:none}
+.phone[data-theme] .wrap{padding-left:16px;padding-right:16px}
+.phone[data-theme] .page>.wrap,.phone[data-theme] .page>main.wrap{padding-top:calc(var(--st) + 18px)!important}
+.phone[data-theme] .page>main.wrap{padding-bottom:28px!important}
+
+/* status bar: content slides under a soft scrim of the theme's colour */
+.phone[data-theme] #stage::after{content:'';position:absolute;left:0;right:0;top:0;height:calc(var(--st) + 10px);z-index:7;pointer-events:none;background:linear-gradient(rgba(11,11,11,.92) 55%,rgba(11,11,11,0))}
+.phone[data-theme=p3r] #stage::after{background:linear-gradient(rgba(8,40,140,.62) 50%,rgba(8,40,140,0))}
+.phone[data-theme=mf] #stage::after{background:linear-gradient(rgba(14,17,19,.9) 55%,rgba(14,17,19,0))}
+
+/* touch: no focus rings from taps (VoiceOver draws its own), no sticky hover tilts — a press gives the feedback */
+.phone[data-theme] :focus-visible{outline:none!important}
+.phone[data-theme] .row-in:has(.sel-box) .row-more{display:none}
+.phone[data-theme] .hop:hover,.phone[data-theme] .ltr:hover{scale:1;rotate:0deg}
+.phone[data-theme] .hop:active{scale:.86}
+.phone[data-theme] .tab:hover,.phone[data-theme] .rank:hover,.phone[data-theme] .qbtn:hover{translate:0 0}
+.phone[data-theme] .tab:active,.phone[data-theme] .rank:active{scale:.96}
+.phone[data-theme] .card:hover .art,.phone[data-theme] .card .art{scale:1}
+.phone[data-theme] .card:active .art{scale:.95}
+.phone[data-theme] .row:hover{translate:0 0;scale:1}
+.phone[data-theme] .row:active{scale:.985}
+.phone[data-theme] .qbtn:hover{box-shadow:6px 6px 0 #d4141a!important}
+.phone[data-theme] .qbtn.teal:hover{box-shadow:6px 6px 0 #10d6b4!important}
+.phone[data-theme] input.range{pointer-events:none}
+.phone[data-theme] :has(> input.range){touch-action:none}
+.phone[data-theme] .grip{touch-action:none;width:44px;height:48px}
+.phone[data-theme] .search-field input{font-size:17px}
+
+/* ================= section tabs: a bar at the bottom ================= */
+.phone[data-theme] #nav{position:fixed;left:0;right:0;top:auto;bottom:0;z-index:9;height:calc(var(--navh) + var(--sb));padding-bottom:var(--sb);pointer-events:auto;background:#0b0b0b}
+.phone[data-theme] #nav .nav-in{max-width:none;height:var(--navh);margin:0;padding:0 10px;display:flex;flex-wrap:nowrap;align-items:center;justify-content:space-between;gap:6px}
+.phone[data-theme] #nav.nav-hide .tab-nav,.phone[data-theme] #nav.nav-hide .pm-it,.phone[data-theme] #nav.nav-hide .mf-it{opacity:1!important;translate:0 0!important;pointer-events:auto!important}
+
+/* three sections, each a picture (app.js phoneNavHtml) in an even third of the bar; settings live on the home screen */
+.phone[data-theme] #nav .nav-in{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));justify-items:center;gap:0;padding:0 14px}
+.phone[data-theme] .ph-tab{position:relative;display:flex;align-items:center;justify-content:center;width:84px;height:46px;margin:0;padding:0;border:0;background:none;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.phone[data-theme] .ph-tab .ph-in,.phone[data-theme] .ph-tab .tg-in{position:relative;display:block;transition:transform .2s cubic-bezier(.2,.9,.3,1.5)}
+.phone[data-theme] .ph-tab:active .ph-in,.phone[data-theme] .ph-tab:active .tg-in{transform:scale(.86)}
+@keyframes phTabIn{0%{scale:.6;rotate:-14deg}65%{scale:1.15;rotate:4deg}100%{scale:1;rotate:0deg}}
+.phone[data-theme] .ph-tab[aria-current=page] .ph-in,.phone[data-theme] .ph-tab[aria-current=page] .tg-in svg{animation:phTabIn .38s cubic-bezier(.2,.9,.3,1.3) backwards}
+
+/* P5: the skewed black tags, the current one red and tilted, pictures cut from paper */
+.phone[data-theme=p5] #nav{border-top:3px solid #ffffff;box-shadow:0 -6px 0 #d4141a}
+/* no frames: only the pictures; the chosen one stands on a red skewed tag */
+.phone[data-theme=p5] .ph-tab.tab-nav{width:88px;height:46px;padding:0;background:none;border:0;box-shadow:none;transform:none}
+.phone[data-theme=p5] .ph-tab.tab-nav[aria-current=page]{background:#d4141a;transform:skewX(-14deg) rotate(-4deg);box-shadow:none}
+.phone[data-theme=p5] .ph-tab .tg-in svg,.phone[data-theme=p5] .ph-tab .tg-in>span{width:38px!important;height:38px!important}
+
+/* P3R: white pictures with a cyan offset, slanted like the menu words; the chosen one gets the pause menu's cursor —
+   the white wedge with its pink shadow and red tip, twitching like in the game */
+.phone[data-theme=p3r] #nav{background:linear-gradient(180deg,#0b1a78,#050b3a);box-shadow:0 -2px 0 rgba(255,255,255,.9),0 -5px 0 var(--p3-cyan)}
+.phone[data-theme=p3r] .p3n{font-size:22px;transform:rotate(-4deg)}
+.phone[data-theme=p3r] .p3n .ph-in{transform:skewX(-8deg)}
+/* the cursor stays inside the tab bar: it hangs down rather than up, so it never reaches the player above */
+.phone[data-theme=p3r] .p3n .p3c{left:-6%;right:-2%;top:-3%;bottom:-44%;animation:none}
+.phone[data-theme=p3r] .p3n.is-cur .ph-in{transform:skewX(-8deg) scale(1.12)}
+
+/* Metaphor: fine paper lines; the current one dark on a brush stroke of the section's colour */
+.phone[data-theme=mf] #nav{background:linear-gradient(180deg,rgba(18,22,25,.98),#0b0d0e);box-shadow:0 -1px 0 var(--mf-line)}
+.phone[data-theme=mf] .mfn-tab{color:var(--mf-text);filter:drop-shadow(0 1px 0 rgba(0,0,0,.7))}
+.phone[data-theme=mf] .mfn-tab.is-cur{color:#0d1012;filter:none}
+.phone[data-theme=mf] .mfn-tab .mf-br{left:-6%;right:-10%;top:-2%;bottom:-6%}
+
+/* the gear on the home screen (settings left the tab bar) */
+.phone[data-theme] .ph-gear{position:absolute;right:14px;top:calc(var(--st) + 8px);z-index:4;display:flex;align-items:center;justify-content:center;width:46px;height:46px;margin:0;padding:0;border:0;background:none;cursor:pointer}
+.phone[data-theme] .ph-gear .g-rot{transform-box:fill-box;transform-origin:center;transition:rotate .35s cubic-bezier(.2,.9,.3,1.3)}
+.phone[data-theme] .ph-gear:active .g-rot,.phone[data-theme] .ph-gear[aria-expanded=true] .g-rot{rotate:60deg}
+.phone[data-theme=p5] .ph-gear.tab-nav{width:52px;height:42px;padding:0;background:#0b0b0b;border:2px solid #ffffff;transform:skewX(-14deg) rotate(3deg);box-shadow:4px 4px 0 #d4141a}
+.phone[data-theme=p5] .ph-gear.tab-nav:active{background:#d4141a}
+.phone[data-theme=mf] .ph-gear{box-shadow:inset 0 0 0 1px var(--mf-line);background:rgba(11,13,14,.6)}
+
+/* ================= player bar: cover, title, play — skipping is a swipe of the bar (app.js) ================= */
+.phone[data-theme] .mini-bar{touch-action:pan-y;overflow:hidden}
+.phone[data-theme] .mini-in{max-width:none;padding:8px 12px 9px 14px;grid-template-columns:minmax(0,1fr) auto;gap:8px;will-change:transform}
+.phone[data-theme] .mini-vol{display:none}
+.phone[data-theme] .mini-ctl{gap:2px}
+.phone[data-theme] .mini-ctl [data-act=shuffle],.phone[data-theme] .mini-ctl [data-act=repeat],.phone[data-theme] .mini-ctl [data-act=like],
+.phone[data-theme] .mini-ctl [data-act=prev],.phone[data-theme] .mini-ctl [data-act=next]{display:none}
+/* only the progress line stays above the bar, no times */
+.phone[data-theme] #mini .mp-time{display:none}
+.phone[data-theme] #mini .mini-prog{height:14px}
+.phone[data-theme=p5] #mini .mp-knob{height:20px}
+.phone[data-theme=p3r] #mini .m3-prog{height:16px}
+.phone[data-theme=mf] #mini .mf-prog{height:16px}
+.phone[data-theme] .mini-now{gap:12px}
+.phone[data-theme] .mini-art{width:46px;height:46px;padding:3px;box-shadow:4px 4px 0 #d4141a}
+.phone[data-theme] .mini-t{font-size:15px}
+.phone[data-theme] .mini-a{font-size:12px;margin-top:3px}
+.phone[data-theme] .ibtn{width:42px;height:46px}
+.phone[data-theme=p5] .mini-ctl [data-act=toggle-play]{width:54px!important;height:54px!important}
+.phone[data-theme=p5] .mini-ctl [data-act=toggle-play] svg{width:28px;height:28px}
+.phone[data-theme=p5] .mini-ctl .ibtn svg{width:32px;height:32px}
+.phone[data-theme] .mini-prog .tt{height:20px;line-height:20px;min-width:15px;font-size:13px}
+.phone[data-theme] .mini-prog .tt.fp{font-size:17px}
+.phone[data-theme] .mini-prog .tt.fm{font-size:12px}
+.phone[data-theme] .tt.c::after{top:11px}
+.phone[data-theme] .tt.c::before{top:3px}
+.phone[data-theme=p3r] .m3-bar .mini-in{padding:8px 10px 9px 14px}
+.phone[data-theme=p3r] .m3-playbtn{width:52px;height:52px}
+.phone[data-theme=p3r] .m3-playbtn .p3-play{width:46px!important;height:46px!important}
+.phone[data-theme=p3r] .m3-skip{width:40px;height:46px}
+.phone[data-theme=p3r] .m3-skip .p3-play{width:34px!important;height:34px!important;box-shadow:3px 3px 0 var(--p3-cyan)}
+.phone[data-theme=p3r] .mini-art{box-shadow:4px 4px 0 var(--p3-cyan)}
+.phone[data-theme=p3r] .t3{font-size:15px}
+.phone[data-theme=mf] .mf-bar .mini-in{padding:6px 10px 8px 14px}
+.phone[data-theme=mf] .mf-playbtn{width:54px;height:54px}
+.phone[data-theme=mf] .mf-playbtn .mf-play{zoom:.82}
+.phone[data-theme=mf] .mini-art{box-shadow:0 0 0 1.5px var(--mf-text),4px 4px 0 var(--acc)}
+.phone[data-theme=mf] .tm{font-size:14px}
+
+/* ================= page titles ================= */
+/* P5: the cut-out letters, a size down */
+.phone[data-theme=p5] h1.slidel{zoom:.62}
+.phone[data-theme=p5] #view main.wrap h1.slidel{zoom:.52}
+/* P3R: the giant grey word sized to the screen */
+.phone[data-theme=p3r] .p3-title{--fs:min(92px,calc((100vw - 62px) / (var(--len) * .74)))}
+/* home: the title leaves room for the settings gear in the corner */
+.phone[data-theme=p3r] body[data-view=home] .p3-title{--fs:min(80px,calc((100vw - 136px) / (var(--len) * .74)))}
+.phone[data-theme=mf] body[data-view=home] .mf-title{--fs:min(118px,calc((100vw - 86px) / (var(--len) * .72)))}
+.phone[data-theme=p3r] .pt-band{left:-40px;right:-60px}
+/* Metaphor: the huge serif word, still cut by the top edge (under the status bar) */
+.phone[data-theme=mf] .mf-title{--fs:min(118px,calc((100vw - 20px) / (var(--len) * .72)));min-height:0;padding-bottom:6px}
+.phone[data-theme=mf] .page>.wrap,.phone[data-theme=mf] .page>main.wrap{padding-top:calc(var(--st) + 30px)!important}
+.phone[data-theme=mf] .mt-ask{font-size:16px;padding-right:30px}
+
+/* section captions */
+.phone[data-theme] .label-a,.phone[data-theme] .label-b{margin-bottom:26px}
+.phone[data-theme] .label-a>h2,.phone[data-theme] .label-b>h2{font-size:19px;padding:8px 22px}
+.phone[data-theme] .label-b{margin-left:44px}
+.phone[data-theme] .label-a>span{right:-40px}
+.phone[data-theme] .label-b>span{left:-44px}
+.phone[data-theme=p3r] .p3-label{margin-bottom:20px}
+.phone[data-theme=p3r] .p3-label h2{font-size:24px}
+.phone[data-theme=p3r] .pl-tab{height:26px;width:12px;margin-right:12px}
+.phone[data-theme=mf] .mf-label{margin-bottom:18px}
+.phone[data-theme=mf] .mf-label h2{font-size:24px}
+
+/* ================= home ================= */
+.phone[data-theme] #home-recent{margin-top:30px!important}
+.phone[data-theme] #home-top{margin-top:38px!important}
+/* recent tracks: one row that scrolls sideways */
+.phone[data-theme] .home-row{display:flex;gap:20px;overflow-x:auto;overflow-y:hidden;margin:-10px -16px 0;padding:10px 16px 22px;scroll-snap-type:x mandatory;scroll-padding:0 16px;scrollbar-width:none}
+.phone[data-theme] .home-row::-webkit-scrollbar{display:none}
+.phone[data-theme] .home-row .card{flex:0 0 136px;width:136px;scroll-snap-align:start}
+.phone[data-theme] .card-t{margin-top:16px;font-size:15px}
+.phone[data-theme] .card-s{font-size:12px;margin-top:4px}
+.phone[data-theme] .cur-badge{width:38px;height:38px;right:-8px;bottom:-8px;padding-bottom:9px}
+.phone[data-theme] .home-row .c-sh{transform:translate(7px,7px)!important}
+/* most played: full-width plaques */
+.phone[data-theme] #home-top>div:last-child>div{gap:18px!important}
+.phone[data-theme] .rank{flex:1 1 100%}
+.phone[data-theme] .rank>.rise>div{gap:14px!important;padding:12px 16px 12px 14px!important}
+.phone[data-theme] .rank-num{font-size:34px}
+.phone[data-theme] .rk-art{width:54px!important;height:54px!important;padding:3px!important}
+.phone[data-theme] .rk-t{font-size:16px!important}
+.phone[data-theme] .rk-s{font-size:12px!important}
+.phone[data-theme=p3r] .rank-num,.phone[data-theme=mf] .rank-num{font-size:44px!important}
+.phone[data-theme] .hint{font-size:15px;padding:14px 18px}
+
+/* P5 calendar: smaller, at the top right next to the title */
+.phone[data-theme=p5] .p5-date{top:calc(var(--st) + 60px);right:-6px}
+.phone[data-theme=p5] .p5c-z{zoom:.36}
+.phone[data-theme=p5] main.wrap>div:nth-child(2){min-height:118px;align-items:flex-start!important;padding-top:40px}
+
+/* P3R date: back on the phone, on the caption's line */
+.phone[data-theme=p3r] .p3-date{display:flex}
+.phone[data-theme=p3r] .p3-rhead{gap:10px;margin-bottom:22px}
+.phone[data-theme=p3r] .pd-d{font-size:34px}
+.phone[data-theme=p3r] .pd-w{font-size:16px}
+.phone[data-theme=p3r] .pd-moon svg{width:28px;height:28px}
+.phone[data-theme=p3r] .pd-t{font-size:12px;padding:1px 10px}
+.phone[data-theme=p3r] .pd-m b{font-size:22px}
+.phone[data-theme=p3r] .pd-m i{font-size:10px}
+.phone[data-theme=p3r] .p3-rhead .p3-label{margin-bottom:2px;flex:none}
+/* long times of day (После уроков, Поздняя ночь, Раннее утро) used to cover the caption: the caption keeps its width,
+   the date gives way — the moon count drops under the time-of-day tag when the line is too short */
+.phone[data-theme=p3r] .p3-rhead .p3-date{flex:0 1 auto;min-width:0}
+.phone[data-theme=p3r] .pd-row2{flex-wrap:wrap;justify-content:flex-end;row-gap:3px;column-gap:10px}
+
+/* Metaphor field HUD: a band above the recent tracks */
+.phone[data-theme=mf] .mf-hud{position:relative;right:auto;top:auto;flex-direction:row;align-items:flex-end;justify-content:space-between;margin:0 0 20px;gap:10px}
+.phone[data-theme=mf] .mf-date{align-items:flex-start;text-align:left}
+.phone[data-theme=mf] .md-d{font-size:62px}
+.phone[data-theme=mf] .md-m{font-size:24px}
+.phone[data-theme=mf] .md-w{font-size:15px}
+.phone[data-theme=mf] .md-t{font-size:14px}
+.phone[data-theme=mf] .ms-row{min-width:150px;gap:16px}
+.phone[data-theme=mf] .ms-v{font-size:19px}
+.phone[data-theme=mf] .mf-hud~.mf-label{margin-right:0}
+
+/* ================= search ================= */
+.phone[data-theme] .page>.wrap>div:first-child{gap:16px 20px!important}
+.phone[data-theme] .search-field{flex:1 1 100%}
+.phone[data-theme] .search-field>label{padding:11px 18px}
+.phone[data-theme] .search-field label>svg{width:22px;height:22px}
+.phone[data-theme] #search-body>section.wrap{padding-top:34px!important;padding-bottom:28px!important}
+.phone[data-theme] .alb-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:34px 22px}
+.phone[data-theme] .alb-grid .c-t2{margin-top:20px!important;font-size:15px!important;line-height:1.2!important}
+.phone[data-theme] .alb-grid .c-s2{font-size:12px!important}
+.phone[data-theme] .alb-grid .c-tag{font-size:10px!important;padding:4px 8px!important;right:-8px!important;bottom:-10px!important}
+.phone[data-theme] .alb-grid .c-fr{padding:6px!important}
+.phone[data-theme] .alb-grid .c-sh{transform:translate(7px,7px)!important}
+.phone[data-theme] .found-h{font-size:17px!important;margin-bottom:22px!important;padding:6px 16px!important}
+/* album page */
+.phone[data-theme] #search-body>.wrap{padding-top:22px!important}
+.phone[data-theme] [data-act=close-album]{padding:8px 16px!important;font-size:13px!important}
+.phone[data-theme] #search-body>.wrap>div:last-child{gap:22px!important;margin-top:26px!important}
+.phone[data-theme] #search-body>.wrap>div:last-child>.pop{flex:0 0 150px!important}
+.phone[data-theme] #search-body .slide>div:last-child{gap:12px!important;margin-top:18px!important;flex-wrap:nowrap!important}
+.phone[data-theme] #search-body .slide>div:last-child>.btn{padding:10px 14px!important;font-size:13px!important}
+.phone[data-theme] #search-body>.wrap>div:last-child>.slide{flex:1 1 100%!important}
+.phone[data-theme] .alb-title{font-size:26px!important;margin-top:14px!important}
+.phone[data-theme] .alb-meta{font-size:14px!important;margin-top:8px!important}
+.phone[data-theme] .alb-tag{font-size:12px!important;padding:5px 14px!important}
+.phone[data-theme] .btn{font-size:14px!important;padding:11px 18px!important;gap:9px}
+.phone[data-theme] .btn svg{width:18px;height:18px}
+.phone[data-theme] .band-red{padding:58px 0 34px;margin-top:30px!important;min-height:0!important}
+.phone[data-theme] .band-red>.in{padding:0 10px 0 14px}
+.phone[data-theme] .band-red>.bolt{left:-34px;width:60px}
+.phone[data-theme=p3r] .band-red>.in{padding:0 8px 0 10px}
+.phone[data-theme=mf] .band-red>.in{padding:0 8px 0 14px}
+.phone[data-theme=mf] .band-red>.bgdots{display:none}
+
+/* ================= track rows ================= */
+.phone[data-theme] .row-wrap{margin:0 0 12px!important;max-width:none}
+.phone[data-theme] .row-wrap:nth-child(even){margin-left:8px!important}
+.phone[data-theme] .row-in{gap:2px;padding:9px 6px 9px 12px}
+.phone[data-theme] .row-play{gap:10px}
+.phone[data-theme] .row-num,.phone[data-theme] .row-d{display:none}
+.phone[data-theme] .row-art{width:46px;height:46px;padding:3px}
+.phone[data-theme] .row-t{font-size:15px}
+.phone[data-theme] .row-s{font-size:12px;margin-top:3px}
+.phone[data-theme] .row-more{width:36px;height:46px}
+.phone[data-theme] .row-more svg{width:28px;height:28px}
+.phone[data-theme] .like-btn{width:40px;height:46px}
+.phone[data-theme] .like-btn svg{width:34px;height:34px}
+.phone[data-theme] .sel-box{width:38px;height:42px}
+.phone[data-theme] .dl-bar{width:40px}
+.phone[data-theme] .dl-pct{display:none}
+.phone[data-theme] .dl-done,.phone[data-theme] .dl-err{font-size:0;gap:0;padding:4px 6px}
+.phone[data-theme] .dl-done svg{width:13px;height:13px}
+.phone[data-theme] .row>.r-sh{transform:translate(6px,6px)}
+.phone[data-theme=p3r] .row-wrap:nth-child(even){margin-left:0!important}
+.phone[data-theme=p3r] .row-wrap{margin-bottom:2px!important}
+.phone[data-theme=p3r] .row-in{padding:7px 4px 7px 10px}
+.phone[data-theme=p3r] .row-art{width:44px;height:44px;padding:2px}
+.phone[data-theme=p3r] .row-t{font-size:15px}
+.phone[data-theme=p3r] .row-more{width:34px}
+.phone[data-theme=p3r] .like-btn svg{width:28px;height:28px}
+
+/* Metaphor plates, a size smaller: the caption scoop, the bars, the cover */
+.phone[data-theme=mf] .row-wrap{margin:0 0 6px!important}
+.phone[data-theme=mf] .row-wrap:nth-child(even){margin-left:0!important}
+.phone[data-theme=mf] .row-wrap.mf-lk{margin-left:14px!important}
+.phone[data-theme=mf] .mfr{padding:4px 4px 4px 0}
+.phone[data-theme=mf] .mfr .row-in{padding:7px 0 9px 46px;gap:0}
+.phone[data-theme=mf] .mfr-fr{clip-path:polygon(10px 0,100% 0,100% 100%,10px 100%,10px 66%,0 50%,10px 34%)}
+.phone[data-theme=mf] .mfr-pn{left:14px;right:4px;top:4px;bottom:4px;border-radius:9px 26px 26px 9px/9px 46% 46% 9px}
+.phone[data-theme=mf] .mfr-sc{left:14px;bottom:4px;width:96px;height:40%}
+.phone[data-theme=mf] .mfr-cap{left:19px;bottom:6px;max-width:82px;font-size:8.5px;letter-spacing:.04em}
+.phone[data-theme=mf] .mfr-cap b{font-size:17px}
+.phone[data-theme=mf] .mfr .row-t{font-size:16px;gap:6px;padding-bottom:3px}
+.phone[data-theme=mf] .mfr-bars{margin:2px 0 0 48px}
+.phone[data-theme=mf] .mfr-hp{flex:0 1 150px;height:20px}
+.phone[data-theme=mf] .mfr-mp{display:none}
+.phone[data-theme=mf] .mfr-hp i{font-size:13px;padding:0 8px 5px;-webkit-text-stroke:3px #0a1416}
+.phone[data-theme=mf] .mfr-hp::after{height:7px}
+.phone[data-theme=mf] .mfr-lv{margin-left:4px;padding:0 4px 4px 4px}
+.phone[data-theme=mf] .mfr-lv b{font-size:24px;-webkit-text-stroke:4px #0a1416}
+.phone[data-theme=mf] .mfr-lv small{font-size:10px;margin-bottom:3px}
+.phone[data-theme=mf] .mfr-cv{width:40px;height:40px;margin:0 6px 0 2px}
+.phone[data-theme=mf] .mfr .row-more{width:32px;height:40px}
+.phone[data-theme=mf] .mfr .like-btn{width:34px;height:40px}
+.phone[data-theme=mf] .mfr .like-btn svg{width:26px;height:26px}
+.phone[data-theme=mf] .mfr-br{left:-60px}
+
+/* ================= library ================= */
+.phone[data-theme] .page>.wrap>div:first-child>.slide{gap:14px 16px!important}
+.phone[data-theme] #lib-stats{margin-top:26px!important;gap:12px 10px!important}
+.phone[data-theme] .lib-tag{font-size:12px!important;padding:5px 14px!important}
+.phone[data-theme] .lib-count{font-size:13px!important;margin-right:0!important}
+.phone[data-theme] .chip{font-size:11px;padding:6px 11px}
+.phone[data-theme] #lib-offline{margin-left:0!important;font-size:12px!important}
+.phone[data-theme] #sel-panel{margin-bottom:24px!important}
+.phone[data-theme] .sp-bg{padding:16px 18px!important}
+.phone[data-theme] .sp-t{font-size:17px!important}
+.phone[data-theme] .sp-h{font-size:12px!important}
+.phone[data-theme=mf] .chip{font-size:13px;padding:5px 9px}
+
+/* ================= now playing ================= */
+.phone[data-theme] .np-vol{display:none}
+.phone[data-theme] .np-ctl-wrap{margin-top:16px}
+/* the playback buttons: boxes as tight as their pictures, so the row can be shown large across the screen */
+/* the row: play exactly in the middle of the screen, back and forward right beside it, shuffle and repeat at the edges
+   (the like button sits beside the track's tags on the phone — app.js nowLikeSlot) */
+.phone[data-theme] .np-ctl{display:grid;grid-template-columns:minmax(0,1fr) auto auto auto minmax(0,1fr);align-items:center;justify-items:center;column-gap:12px;max-width:none!important;zoom:.9}
+.phone[data-theme] .np-ctl>:first-child{justify-self:start}
+.phone[data-theme] .np-ctl>:last-child{justify-self:end}
+.phone[data-theme] .np-ctl .cbtn{width:64px;height:64px}
+.phone[data-theme] .np-ctl .cbtn.big{width:92px;height:92px}
+/* the like button at the end of the "now playing / in favourites" tags */
+.phone[data-theme] .np-right>div:first-child,.phone[data-theme] .n3-tags,.phone[data-theme] .mfn-tags{flex-wrap:nowrap!important}
+/* the filled heart right there already says "in favourites", so the separate tag is dropped on the phone */
+.phone[data-theme] #np-fav{display:none}
+.phone[data-theme] .np-label,.phone[data-theme] .n3-pill,.phone[data-theme] .mfn-pill,.phone[data-theme] #np-off .dl-done{white-space:nowrap}
+/* the like button sits on the cover's lower right corner, like a sticker (app.js nowLikeSlot) */
+.phone[data-theme] .np-left,.phone[data-theme] .n3-left,.phone[data-theme] .mfn-left{position:relative}
+.phone[data-theme] .np-like-wrap{position:absolute;z-index:4;margin:0}
+.phone[data-theme] #np-art .ly-card{aspect-ratio:1/1}
+.phone[data-theme] .ly-line{font-size:16px;min-height:44px}
+.phone[data-theme] .ly-line.cur{scale:1.18}
+.phone[data-theme] .ly-tag{font-size:10px}
+
+/* P5 */
+.phone[data-theme=p5] .np-main{flex-direction:column;flex-wrap:nowrap;align-items:stretch;gap:12px;padding:calc(var(--st) + 30px) 20px 0}
+.phone[data-theme=p5] .np-left{flex:none;align-self:center;width:calc(min(68vw,290px) - var(--cut,0px));min-width:0}
+.phone[data-theme=p5] .tyh{zoom:.5;top:-40px;left:-60px}
+.phone[data-theme=p5] .np-right{flex:none;gap:10px}
+.phone[data-theme=p5] .np-label{font-size:12px;padding:6px 14px}
+.phone[data-theme=p5] .np-fav{font-size:12px;padding:4px 12px}
+.phone[data-theme=p5] .plaque{margin-right:8px}
+.phone[data-theme=p5] .plaque>.p3{padding:14px 22px 14px 20px}
+.phone[data-theme=p5] .plaque>.p1{transform:translate(9px,9px)}
+.phone[data-theme=p5] .np-title{font-size:25px;-webkit-line-clamp:2}
+.phone[data-theme=p5] .np-sub{font-size:14px;margin-top:8px}
+.phone[data-theme=p5] .np-btns{gap:12px 14px;flex-wrap:nowrap}
+.phone[data-theme=p5] .np-btns .qbtn{flex:none}
+.phone[data-theme=p5] .np-btns .qbtn[data-act=queue-open]{flex:0 1 auto;min-width:0}
+.phone[data-theme=p5] .np-btns .qbtn{padding:8px 14px 8px 10px!important;gap:8px!important}
+.phone[data-theme=p5] .np-btns .qbtn svg{width:22px;height:22px}
+.phone[data-theme=p5] .np-btns .qbtn span{font-size:13px!important}
+/* the grey torn band holds only the playback buttons: the progress bar sits above it, on the page */
+.phone[data-theme=p5] .np-band{margin:30px 0 0;z-index:3}
+/* the note on the progress bar stays clear of the "Текст" / "Далее" buttons: a bit smaller, with room above the bar */
+.phone[data-theme=p5] .np-band [data-b=thumb]{transform:scale(.78);transform-origin:26px 60px}
+.phone[data-theme=p5] .band-in{padding:14px 18px 34px}
+.phone[data-theme=p5] .band-w,.phone[data-theme=p5] .band-g{top:54px;bottom:12px}
+.phone[data-theme=p5] .np-band .np-ctl-wrap{margin-top:44px}
+.phone[data-theme=p5] .band-line{display:none}
+.phone[data-theme=p5] .np-time{min-width:40px;font-size:16px}
+.phone[data-theme=p5] .band-in>div:first-child{gap:10px!important}
+/* the like button sits on the cover's lower right corner, like a sticker */
+.phone[data-theme=p5] .np-left .np-like-wrap{right:-14px;bottom:-16px}
+.phone[data-theme=p5] .np-left .np-like-wrap .cbtn{width:62px;height:58px}
+.phone[data-theme=p5] .np-left .np-like-wrap svg{width:58px!important;height:58px!important}
+
+/* P3R: the pause menu's white side panel with the vertical word doesn't fit a narrow screen — it becomes the band
+   every P3R screen has at the top: the name in giant grey letters on a white diagonal, the number beside it.
+   Below it the cover in the middle, the track as the menu's stacked options, the controls at the bottom. */
+.phone[data-theme=p3r] .n3-side{left:0;right:0;top:calc(var(--st) + 10px);bottom:auto;width:auto;height:92px;background:none;clip-path:none;overflow:visible}
+.phone[data-theme=p3r] .n3-side::before{content:'';position:absolute;left:-30px;right:-30px;top:33px;height:46px;background:#ffffff;clip-path:polygon(0 24%,100% 0,95% 100%,0 100%)}
+.phone[data-theme=p3r] .n3-side-t{left:14px;top:0;bottom:auto;font-size:76px;line-height:.95;color:var(--p3-grey);transform:scaleX(.92);transform-origin:left top;translate:none}
+.phone[data-theme=p3r] .n3-side-num{left:auto;right:18px;top:2px;font-size:28px;line-height:1;color:rgba(255,255,255,.45)}
+.phone[data-theme=p3r] .n3-main{flex-direction:column;flex-wrap:nowrap;align-items:stretch;justify-content:flex-start;gap:4px;padding:calc(var(--st) + 98px) 22px 0 24px}
+.phone[data-theme=p3r] .n3-left{flex:none;align-self:center;width:calc(min(60vw,228px) - var(--cut,0px));min-width:0;margin:0 14px 0 0}
+.phone[data-theme=p3r] .n3-cover-sh,.phone[data-theme=p3r] .n3-ly::before{transform:translate(10px,10px) skewX(-4deg)}
+.phone[data-theme=p3r] .n3-right{flex:none;gap:6px;padding-top:6px}
+.phone[data-theme=p3r] .n3-tags{margin-bottom:2px}
+.phone[data-theme=p3r] .n3-it{font-size:21px;--x:6px}
+.phone[data-theme=p3r] .n3-menu .n3-it:first-child{margin-left:14px}
+.phone[data-theme=p3r] .n3-title{font-size:34px;margin:2px 0 6px 4px}
+.phone[data-theme=p3r] .n3-title .p3c{left:-6%;right:-8%}
+.phone[data-theme=p3r] .n3-act{font-size:21px;margin-left:22px}
+.phone[data-theme=p3r] .n3-pill,.phone[data-theme=p3r] .np-fav{font-size:11px!important;padding:4px 12px!important}
+.phone[data-theme=p3r] .n3-help{width:100%;padding:0 20px 2px 20px}
+/* "ТЕКСТ ПЕСНИ" on the right, right above "ОЧЕРЕДЬ": a column as wide as "ОЧЕРЕДЬ  Далее: …", pushed to the right edge,
+   both buttons starting at its left side; the "Next" rule still runs under the whole width */
+.phone[data-theme=p3r] .n3-help{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,max-content)}
+.phone[data-theme=p3r] .n3-help>*{grid-column:2}
+.phone[data-theme=p3r] .n3-help>.n3-help-l{grid-column:1/-1}
+.phone[data-theme=p3r] .n3-help>.n3-act{justify-self:start;margin:0 0 6px 12px;padding:4px 4px 2px;transform:rotate(-4deg)}
+.phone[data-theme=p3r] .n3-qw{font-size:21px}
+.phone[data-theme=p3r] .n3-nt{font-size:15px}
+.phone[data-theme=p3r] .n3-help-l{margin:2px -20px 4px 30%}
+.phone[data-theme=p3r] .n3-left .np-like-wrap{right:-20px;bottom:-22px}
+.phone[data-theme=p3r] .n3-left .np-like-wrap .cbtn{width:56px;height:52px}
+.phone[data-theme=p3r] .n3-left .np-like-wrap svg{width:48px!important;height:48px!important}
+.phone[data-theme=p3r] .n3-band-in{padding:4px 18px 34px}
+.phone[data-theme=p3r] .np-ctl-wrap{margin-top:6px}
+.phone[data-theme=p3r] .n3-time{min-width:44px;font-size:18px}
+.phone[data-theme=p3r] .n3-prog-row{gap:10px}
+
+/* Metaphor */
+.phone[data-theme=mf] .mfn-num{right:8px;top:calc(var(--st) + 236px)}
+.phone[data-theme=mf] .mfn-num b{font-size:120px}
+.phone[data-theme=mf] .mfn-num i{font-size:11px}
+.phone[data-theme=mf] .mfn-main{flex-direction:column;flex-wrap:nowrap;align-items:stretch;gap:16px;padding:calc(var(--st) + 34px) 22px 0}
+.phone[data-theme=mf] .mfn-left{flex:none;align-self:flex-start;width:calc(min(68vw,270px) - var(--cut,0px));min-width:0;margin-left:8px}
+.phone[data-theme=mf] .mfn-right{flex:none;gap:10px}
+/* the track as a few even lines on one left edge: the "now playing" tag with the heart, the title on the stroke,
+   artist ◆ album under it, then "Текст песни" and "Очередь" side by side (the tag already asks what's playing,
+   so the question line is dropped here) — app.js plaqueInnerMF */
+.phone[data-theme=mf] .mfn-ask{display:none}
+.phone[data-theme=mf] .mfn-sub{display:flex;align-items:center;max-width:100%;margin:0 0 0 6px;font-family:var(--fm);font-style:italic;font-size:17px;line-height:1.2;color:var(--mf-sub);white-space:nowrap;text-shadow:0 1px 0 #000}
+.phone[data-theme=mf] .mfn-sa{flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;color:var(--mf-text)}
+.phone[data-theme=mf] .mfn-sub .mf-dia{flex:none}
+.phone[data-theme=mf] .mfn-sub .mf-dia{width:7px;height:7px;margin:0 12px;box-shadow:inset 0 0 0 1px var(--mf-text)}
+.phone[data-theme=mf] .mfn-sl{flex:0 1000 auto;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.phone[data-theme=mf] .mfn-acts{flex-direction:row;align-items:flex-start;gap:4px 30px;margin-top:6px}
+.phone[data-theme=mf] .mfn-q{flex-wrap:wrap}
+.phone[data-theme=mf] #np-lybtn{flex:none}
+.phone[data-theme=mf] .mfn-acts{flex-wrap:nowrap;max-width:100%}
+.phone[data-theme=mf] .mfn-acts .mfn-q{flex:0 1 auto;min-width:0}
+.phone[data-theme=mf] .mfn-ab{right:-12px}
+.phone[data-theme=mf] .mfn-q .mfn-nt{flex-basis:100%;margin:3px 0 0 27px}
+.phone[data-theme=mf] .mfn-pill,.phone[data-theme=mf] .np-fav{font-size:10px!important}
+.phone[data-theme=mf] .mfn-it{font-size:18px}
+.phone[data-theme=mf] .mfn-title{font-size:32px;margin:8px 0 0}
+.phone[data-theme=mf] .mfn-at{font-size:20px}
+.phone[data-theme=mf] .mfn-nt{font-size:14px;margin-left:10px}
+.phone[data-theme=mf] .mfn-act{padding:4px 14px 4px 10px}
+.phone[data-theme=mf] .mfn-q{margin-left:0}
+.phone[data-theme=mf] .mfn-left .np-like-wrap{right:-16px;bottom:-14px}
+.phone[data-theme=mf] .mfn-left .np-like-wrap .cbtn{width:54px;height:54px}
+.phone[data-theme=mf] .mfn-left .np-like-wrap svg{width:46px!important;height:46px!important}
+/* the lyrics card's source line moves to the left corner, clear of the like on the right one */
+.phone[data-theme=p3r] .ly-src,.phone[data-theme=mf] .ly-src{left:14px;right:auto}
+.phone[data-theme=mf] .mfn-band-in{padding:6px 18px 34px}
+.phone[data-theme=mf] .mfn-time{min-width:40px;font-size:17px}
+.phone[data-theme=mf] .mfn-prog-row{gap:10px}
+
+/* ================= queue & settings: full screen ================= */
+.phone[data-theme] .q-panel,.phone[data-theme] #settings.s-panel,.phone[data-theme] #queue.q-panel{width:100%;box-shadow:none;padding-top:var(--st)}
+.phone[data-theme] .q-body,.phone[data-theme] .s-body{padding-bottom:var(--sb)}
+/* P5 queue */
+.phone[data-theme=p5] #queue.q-panel{background:#0b0b0b}
+.phone[data-theme=p5] #queue>div:first-child{height:206px!important}
+.phone[data-theme=p5] #queue>div:first-child>h2{zoom:.62;left:34px!important;top:150px!important}
+.phone[data-theme=p5] #queue>div:first-child>p{left:28px!important;right:16px!important;top:160px!important}
+.phone[data-theme=p5] #queue>div:first-child>p>span:first-child{font-size:17px!important}
+.phone[data-theme=p5] #queue>div:first-child>p>span:last-child{font-size:12px!important}
+.phone[data-theme=p5] .p5-x{top:8px;right:14px}
+.phone[data-theme=p5] .q-body>div{padding:18px 12px 30px 6px!important}
+.phone[data-theme=p5] .q-body>div>div[aria-hidden]{left:4px!important;width:52px!important}
+.phone[data-theme=p5] #queue .q-row{margin-left:10px!important}
+.phone[data-theme=p5] #queue .q-drow{margin-bottom:14px!important}
+.phone[data-theme=p5] #queue .q-drow:nth-child(odd){margin-left:22px!important}
+.phone[data-theme=p5] #queue .q-row>div>span:first-child,.phone[data-theme=p5] #queue .q-item>span:first-child{width:58px!important;height:50px!important}
+.phone[data-theme=p5] #queue .q-row>div>span:nth-child(2),.phone[data-theme=p5] #queue .q-item>span:nth-child(2){width:26px!important;height:36px!important;margin:0 -10px 0 -8px!important}
+.phone[data-theme=p5] #queue .q-row>div>div,.phone[data-theme=p5] #queue .q-item>div{height:58px!important}
+.phone[data-theme=p5] #queue .q-row>div>div>div,.phone[data-theme=p5] #queue .q-item>div>div{padding:0 8px 0 18px!important}
+.phone[data-theme=p5] #queue .q-row button span:first-child{font-size:15px!important}
+.phone[data-theme=p5] #queue .q-row div>span>span:first-child{font-size:16px!important}
+.phone[data-theme=p5] #queue .q-row>span,.phone[data-theme=p5] #queue .q-row:not(.q-drow)>p{font-size:13px!important}
+.phone[data-theme=p5] #queue .q-row>span[style*="Playfair"]{font-size:20px!important}
+.phone[data-theme=p5] #queue .q-row>span[style*="Rubik Mono"]{font-size:17px!important}
+.phone[data-theme=p5] #queue .q-item>div>span[aria-hidden]:last-child svg{width:34px;height:34px}
+/* P5 settings */
+.phone[data-theme=p5] #settings.s-panel{background:#d4141a}
+.phone[data-theme=p5] .s-head{height:190px}
+.phone[data-theme=p5] .s-head>h2{zoom:.62;left:30px!important;top:110px!important}
+.phone[data-theme=p5] #settings .p5-x{top:12px;bottom:auto;right:14px}
+.phone[data-theme=p5] .s-body>div{padding:34px 18px 30px!important}
+.phone[data-theme=p5] .s5-in{gap:14px;padding:14px 14px}
+.phone[data-theme=p5] .s5-name{font-size:16px}
+.phone[data-theme=p5] .s5-sub{font-size:12px}
+.phone[data-theme] .tp{width:80px;height:54px}
+.phone[data-theme] .tp5 .l1,.phone[data-theme] .tp5 .l2{top:15px;font-size:17px}
+.phone[data-theme] .tp5 .l1{left:16px}
+.phone[data-theme] .tp5 .l2{left:38px}
+.phone[data-theme] .tp3 .w{left:22px;top:14px;width:52px;height:24px}
+.phone[data-theme] .tp3 .t{left:28px;top:16px;font-size:16px}
+.phone[data-theme] .tpm .w{font-size:36px;left:10px}
+/* P3R queue & settings */
+.phone[data-theme=p3r] .q3-head{height:176px}
+.phone[data-theme=p3r] .q3-big{font-size:74px;top:42px}
+.phone[data-theme=p3r] .q3-band{top:78px;height:52px}
+.phone[data-theme=p3r] .q3-src{left:18px;right:18px;bottom:10px}
+.phone[data-theme=p3r] .q3-src-t{font-size:17px}
+.phone[data-theme=p3r] .p3-x{top:8px;right:10px}
+.phone[data-theme=p3r] .q3-list{padding:10px 10px 18px 10px}
+.phone[data-theme=p3r] .q3-cur{padding:10px 12px;gap:10px}
+.phone[data-theme=p3r] .q3-cur .q3-t{font-size:16px}
+.phone[data-theme=p3r] .q3-play{gap:10px;padding:7px 6px}
+.phone[data-theme=p3r] .q3-help{padding:6px 18px 30px 16%}
+.phone[data-theme=p3r] .s3-head{padding:16px 70px 10px 18px}
+.phone[data-theme=p3r] .s3-in{padding:18px 16px 0}
+.phone[data-theme=p3r] .s3-row{gap:12px;padding:10px 12px}
+.phone[data-theme=p3r] .s3-name{font-size:17px}
+.phone[data-theme=p3r] .s3-sub{font-size:12px}
+.phone[data-theme=p3r] .s3-big{font-size:70px}
+.phone[data-theme=p3r] .s3-band{height:72px}
+.phone[data-theme] .n3-keys{display:none}
+/* Metaphor queue & settings */
+.phone[data-theme=mf] .qm-head{padding:22px 130px 12px 22px}
+.phone[data-theme=mf] .qm-src-t{font-size:21px}
+.phone[data-theme=mf] .mf-x,.phone[data-theme=mf] #settings .mf-x{top:20px;right:18px}
+.phone[data-theme=mf] .qm-big{font-size:84px}
+.phone[data-theme=mf] .sm-big{font-size:70px}
+.phone[data-theme=mf] .qm-list{padding:6px 8px 18px 10px}
+.phone[data-theme=mf] .qm-list .q-row{margin-left:0!important}
+.phone[data-theme=mf] .mfq-in{padding:6px 0 8px 46px;gap:4px}
+.phone[data-theme=mf] .mfq .mfr-sc{width:84px}
+.phone[data-theme=mf] .mfq .mfr-cap{max-width:70px}
+.phone[data-theme=mf] .mfq .mfr-bars{margin-left:30px}
+.phone[data-theme=mf] .mfq .mfr-hp{flex:0 1 130px}
+.phone[data-theme=mf] .mfq .mfr-mp{display:flex;width:64px}
+.phone[data-theme=mf] .mfq .grip{width:30px}
+.phone[data-theme=mf] .qm-help{margin:8px 18px 140px 18%}
+.phone[data-theme=mf] .sm-in{padding:12px 16px 120px 18px}
+.phone[data-theme=mf] .sm-row{gap:12px;padding:10px 12px 10px 8px}
+.phone[data-theme=mf] .sm-name{font-size:17px}
+
+/* ================= the rest ================= */
+.phone[data-theme] #toasts{left:14px;right:14px;bottom:calc(var(--navh) + var(--sb) + 92px);align-items:stretch}
+.phone[data-theme] body[data-view=now] #toasts{top:calc(var(--st) + 8px);bottom:auto}
+.phone[data-theme] .toast{max-width:none;font-size:13px;padding:10px 16px}
+.phone[data-theme] .ctx{max-width:calc(100vw - 28px)}
+.phone[data-theme] .ctx-it{padding:13px 18px}
+.phone[data-theme=p5] .w5-wi{transform:rotate(-7deg) scale(.7)}
+.phone[data-theme=p5] .w5-bar{height:84px;top:calc(50% - 42px)}

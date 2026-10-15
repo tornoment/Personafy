@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Personafy</string>
+    <string name="title_activity_main">Personafy</string>
+    <string name="package_name">com.tornoment.personafy</string>
+    <string name="custom_url_scheme">com.tornoment.personafy</string>
+    <string name="playback_channel">Воспроизведение</string>
+    <string name="media_prev">Предыдущий трек</string>
+    <string name="media_play">Играть</string>
+    <string name="media_pause">Пауза</string>
+    <string name="media_next">Следующий трек</string>
+</resources>
