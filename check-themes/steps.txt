@@ -1,0 +1,15 @@
+[18:35:13 +31s] PASS  debug .apk installs
+[18:35:29 +47s] debug in front: true mCurrentFocus=Window{cc31897 u0 com.google.android.apps.nexuslauncher/com.google.android.apps.nexuslauncher.NexusLauncherActivity}
+[18:35:49 +67s] PASS  player interface is up
+[18:35:49 +67s] PASS  page knows it is on Android  {"cls":"phone android","theme":"p5","back":"function","ms":"function","platform":"android","st":"max(0px,0px)","sat":"0px","w":412,"h":842,"ua":"Mozilla/5.0 (Linux; Android 14; sdk_gphone64_x86_64 Build/UE1A.230829.050; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/113.0.5672.136 Mobile Safari/537.36"}
+[18:35:50 +68s] PASS  catalog of tracks  {"tracks":201}
+[18:36:06 +84s] PASS  music plays from Google Drive  {"opened":true,"tapped":true,"t":3.999637,"d":277.86449,"paused":false,"src":"https://localhost/_capacitor_file_/data/user/0/com.tornoment.personafy/cache/stream/1OSygKSsUJGVViYcdlX9otpvaktpsZI5p.mp3","err":null,"view":"search","title":"Wake Up, Get Up, Get Out There"}
+[18:36:06 +84s] PASS  track is served from the app's cache  "https://localhost/_capacitor_file_/data/user/0/com.tornoment.personafy/cache/stream/1OSygKSsUJGVViYcdlX9otpvaktpsZI5p.mp3"
+[18:36:06 +84s] PASS  volume levelling (Web Audio) is running  {"level":true,"contexts":"running"}
+[18:36:06 +84s] PASS  sound goes out of the phone  {"started":true,"players":["state:started"]}
+[18:36:12 +90s] theme p5
+[18:36:32 +110s] theme mf
+[18:36:47 +125s] theme p3r
+[18:39:16 +274s] FAIL  theme tour: p3r  "no page in the web view"
+[18:40:40 +358s] FAIL  check script ran to the end  "Error: no page in the web view\n    at connectPage (file:///home/runner/work/Personafy/Personafy/mobile/scripts/android-check.mjs:100:20)\n    at async connect (file:///home/runner/work/Personafy/Personafy/mobile/scripts/android-check.mjs:139:9)\n    at async run (file:///home/runner/work/Personafy/Personafy/mobile/scripts/android-check.mjs:148:7)\n    at async Object.js (file:///home/runner/work/Personafy/Personafy/mobile/scripts/android-check.mjs:154:15)\n    at async main (file:///home/runner/work/Personafy/Personafy/mobile/scripts/android-check.mjs:386:15)\n    at async file:///home/runner/work/Personafy/Personafy/mobile/scripts/android-check.mjs:395:3"
+[18:40:42 +360s] PASS  no script errors on the page  []

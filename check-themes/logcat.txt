@@ -1,0 +1,604 @@
+10-15 18:34:12.318 I/lowmemorykiller(  133): Using psi monitors for memory pressure detection
+10-15 18:34:12.319 I/lowmemorykiller(  133): Process polling is supported
+10-15 18:34:12.320 I/lowmemorykiller(  133): Process reaper initialized with 2 threads in the pool
+10-15 18:34:18.805 D/nativeloader(  337): InitDefaultPublicLibraries for_preload=0: libandroid.so:libaaudio.so:libamidi.so:libbinder_ndk.so:libc.so:libcamera2ndk.so:libclang_rt.hwasan-aarch64-android.so:libdl.so:libEGL.so:libGLESv1_CM.so:libGLESv2.so:libGLESv3.so:libjnigraphics.so:liblog.so:libmediandk.so:libm.so:libnativewindow.so:libOpenMAXAL.so:libOpenSLES.so:libRS.so:libstdc++.so:libsync.so:libvulkan.so:libwebviewchromium_plat_support.so:libz.so
+10-15 18:34:19.820 I/SystemConfig(  522): Reading permissions from /system/etc/permissions/android.software.webview.xml
+10-15 18:34:19.920 D/OomAdjuster(  522): Not killing cached processes
+10-15 18:34:20.222 I/PackageManager(  522): /product/overlay/GoogleWebViewOverlay.apk changed; collecting certs
+10-15 18:34:20.726 I/PackageManager(  522): /product/app/WebViewGoogle-Stub changed; collecting certs
+10-15 18:34:20.731 I/PackageManager(  522): getCompressedFiles[/product/app/WebViewGoogle-Stub]: [/product/app/WebViewGoogle/WebViewGoogle.apk.gz]
+10-15 18:34:20.870 W/PackageManager(  522): Failed to parse /product/app/WebViewGoogle: Missing base APK in /product/app/WebViewGoogle
+10-15 18:34:24.872 I/PackageManager(  522): Uncompressing system stub; pkg: com.google.android.webview
+10-15 18:34:24.872 I/PackageManager(  522): getCompressedFiles[/product/app/WebViewGoogle-Stub]: [/product/app/WebViewGoogle/WebViewGoogle.apk.gz]
+10-15 18:34:24.872 I/PackageManager(  522): getCompressedFiles[/product/app/WebViewGoogle-Stub]: [/product/app/WebViewGoogle/WebViewGoogle.apk.gz]
+10-15 18:34:24.873 I/PackageManager(  522): Decompress file; src: /product/app/WebViewGoogle/WebViewGoogle.apk.gz, dst: /data/app/~~rR896qjhJiRnYo39Tp2_TQ==/com.google.android.webview-0fALnkmZPERfqBHnUVaCTA==/WebViewGoogle.apk
+10-15 18:34:26.888 I/PackageManager(  522): /data/app/~~rR896qjhJiRnYo39Tp2_TQ==/com.google.android.webview-0fALnkmZPERfqBHnUVaCTA== changed; collecting certs
+10-15 18:34:27.222 I/PackageManager(  522): Update system package com.google.android.webview code path from /product/app/WebViewGoogle-Stub to /data/app/~~rR896qjhJiRnYo39Tp2_TQ==/com.google.android.webview-0fALnkmZPERfqBHnUVaCTA==; Retain data and using new
+10-15 18:34:27.318 D/OomAdjuster(  522): Not killing cached processes
+10-15 18:34:27.318 I/lowmemorykiller(  133): lmkd data connection established
+10-15 18:34:27.577 D/SystemServerTiming(  522): StartWebViewUpdateService
+10-15 18:34:27.577 I/SystemServiceManager(  522): Starting com.android.server.webkit.WebViewUpdateService
+10-15 18:34:27.577 V/SystemServerTiming(  522): StartWebViewUpdateService took to complete: 1ms
+10-15 18:34:27.672 D/SystemServerTiming(  522): OnBootPhase_200_com.android.server.webkit.WebViewUpdateService
+10-15 18:34:27.673 V/SystemServerTiming(  522): OnBootPhase_200_com.android.server.webkit.WebViewUpdateService took to complete: 0ms
+10-15 18:34:31.330 W/ziparchive(  644): Unable to open '/data/app/~~rR896qjhJiRnYo39Tp2_TQ==/com.google.android.webview-0fALnkmZPERfqBHnUVaCTA==/WebViewGoogle.dm': No such file or directory
+10-15 18:34:31.330 W/ziparchive(  644): Unable to open '/data/app/~~rR896qjhJiRnYo39Tp2_TQ==/com.google.android.webview-0fALnkmZPERfqBHnUVaCTA==/WebViewGoogle.dm': No such file or directory
+10-15 18:34:31.336 I/artd    (  644): Running dex2oat: /apex/com.android.art/bin/art_exec --drop-capabilities --keep-fds=7:8:9:10:11 -- /apex/com.android.art/bin/dex2oat64 --zip-fd=7 --zip-location=/data/app/~~rR896qjhJiRnYo39Tp2_TQ==/com.google.android.webview-0fALnkmZPERfqBHnUVaCTA==/WebViewGoogle.apk --oat-fd=8 --oat-location=/data/app/~~rR896qjhJiRnYo39Tp2_TQ==/com.google.android.webview-0fALnkmZPERfqBHnUVaCTA==/oat/x86_64/WebViewGoogle.odex --output-vdex-fd=9 --swap-fd=10 --class-loader-context-fds=11 --class-loader-context=PCL[]{PCL[/data/app/~~1yn6wsLXFZ2B0diObX38Rg==/com.google.android.trichromelibrary_567263637-fiEw0QFhU0jUcrWPthKdwQ==/TrichromeLibrary.apk]} --classpath-dir=/data/app/~~rR896qjhJiRnYo39Tp2_TQ==/com.google.android.webview-0fALnkmZPERfqBHnUVaCTA== --instruction-set=x86_64 --instruction-set-features=default --instruction-set-variant=x86_64 --compiler-filter=verify --compilation-reason=first-boot --compact-dex-level=none --max-image-block-size=524288 --resolve-startup-const-strings=true --generate-mini-debug-info --runtime-arg -Xtarget-sdk-version:34 --runtime-arg -Xhidden-api-policy:enabled --runtime-arg -Xms64m --runtime-arg -Xmx512m --comments=app-version-name:113.0.5672.136,app-version-code:567263637,art-version:340818082
+10-15 18:34:31.336 I/artd    (  644): Opened FDs: 7:/data/app/~~rR896qjhJiRnYo39Tp2_TQ==/com.google.android.webview-0fALnkmZPERfqBHnUVaCTA==/WebViewGoogle.apk 8:/data/app/~~rR896qjhJiRnYo39Tp2_TQ==/com.google.android.webview-0fALnkmZPERfqBHnUVaCTA==/oat/x86_64/WebViewGoogle.odex.kxy26B.tmp 9:/data/app/~~rR896qjhJiRnYo39Tp2_TQ==/com.google.android.webview-0fALnkmZPERfqBHnUVaCTA==/oat/x86_64/WebViewGoogle.vdex.Z6KLyR.tmp 10:/data/app/~~rR896qjhJiRnYo39Tp2_TQ==/com.google.android.webview-0fALnkmZPERfqBHnUVaCTA==/oat/x86_64/WebViewGoogle.odex.swap.duuSr7.tmp 11:/data/app/~~1yn6wsLXFZ2B0diObX38Rg==/com.google.android.trichromelibrary_567263637-fiEw0QFhU0jUcrWPthKdwQ==/TrichromeLibrary.apk 
+10-15 18:34:31.357 W/dex2oat64(  676): /apex/com.android.art/bin/dex2oat64 --zip-fd=7 --zip-location=/data/app/~~rR896qjhJiRnYo39Tp2_TQ==/com.google.android.webview-0fALnkmZPERfqBHnUVaCTA==/WebViewGoogle.apk --oat-fd=8 --oat-location=/data/app/~~rR896qjhJiRnYo39Tp2_TQ==/com.google.android.webview-0fALnkmZPERfqBHnUVaCTA==/oat/x86_64/WebViewGoogle.odex --output-vdex-fd=9 --swap-fd=10 --class-loader-context-fds=11 --class-loader-context=PCL[]{PCL[/data/app/~~1yn6wsLXFZ2B0diObX38Rg==/com.google.android.trichromelibrary_567263637-fiEw0QFhU0jUcrWPthKdwQ==/TrichromeLibrary.apk]} --classpath-dir=/data/app/~~rR896qjhJiRnYo39Tp2_TQ==/com.google.android.webview-0fALnkmZPERfqBHnUVaCTA== --instruction-set=x86_64 --instruction-set-features=default --instruction-set-variant=x86_64 --compiler-filter=verify --compilation-reason=first-boot --compact-dex-level=none --max-image-block-size=524288 --resolve-startup-const-strings=true --generate-mini-debug-info --runtime-arg -Xtarget-sdk-version:34 --runtime-arg -Xhidden-api-policy:enabled --runtime-arg -Xms64m --runtime-arg -Xmx512m --comments=app-version-name:113.0.5672.136,app-version-code:567263637,art-version:340818082
+10-15 18:34:31.357 I/dex2oat64(  676): /apex/com.android.art/bin/dex2oat64 --output-vdex-fd=9 --class-loader-context-fds=11 --class-loader-context=PCL[]{PCL[/data/app/~~1yn6wsLXFZ2B0diObX38Rg==/com.google.android.trichromelibrary_567263637-fiEw0QFhU0jUcrWPthKdwQ==/TrichromeLibrary.apk]} --classpath-dir=/data/app/~~rR896qjhJiRnYo39Tp2_TQ==/com.google.android.webview-0fALnkmZPERfqBHnUVaCTA== --compiler-filter=verify --compilation-reason=first-boot --compact-dex-level=none --max-image-block-size=524288 --resolve-startup-const-strings=true --generate-mini-debug-info --comments=app-version-name:113.0.5672.136,app-version-code:567263637,art-version:340818082
+10-15 18:34:31.706 I/ArtService(  522): Dexopt result: [packageName = com.google.android.webview] DexContainerFileDexoptResult{dexContainerFile=/data/app/~~rR896qjhJiRnYo39Tp2_TQ==/com.google.android.webview-0fALnkmZPERfqBHnUVaCTA==/WebViewGoogle.apk, primaryAbi=true, abi=x86_64, actualCompilerFilter=verify, status=PERFORMED, dex2oatWallTimeMillis=378, dex2oatCpuTimeMillis=370, sizeBytes=195716, sizeBeforeBytes=0}
+10-15 18:34:36.392 D/SystemServerTiming(  522): OnBootPhase_480_com.android.server.webkit.WebViewUpdateService
+10-15 18:34:36.392 V/SystemServerTiming(  522): OnBootPhase_480_com.android.server.webkit.WebViewUpdateService took to complete: 0ms
+10-15 18:34:36.432 D/SystemServerTiming(  522): OnBootPhase_500_com.android.server.webkit.WebViewUpdateService
+10-15 18:34:36.432 V/SystemServerTiming(  522): OnBootPhase_500_com.android.server.webkit.WebViewUpdateService took to complete: 0ms
+10-15 18:34:36.608 D/SystemServerTiming(  522): OnBootPhase_520_com.android.server.webkit.WebViewUpdateService
+10-15 18:34:36.608 V/SystemServerTiming(  522): OnBootPhase_520_com.android.server.webkit.WebViewUpdateService took to complete: 0ms
+10-15 18:34:36.634 D/SystemServerTimingAsync(  522): InitThreadPoolExec:Update app-ops uidState in case package com.google.android.webview changed
+10-15 18:34:36.634 D/SystemServerInitThreadPool(  522): Started executing Update app-ops uidState in case package com.google.android.webview changed
+10-15 18:34:36.634 D/SystemServerInitThreadPool(  522): Finished executing Update app-ops uidState in case package com.google.android.webview changed
+10-15 18:34:36.634 V/SystemServerTimingAsync(  522): InitThreadPoolExec:Update app-ops uidState in case package com.google.android.webview changed took to complete: 0ms
+10-15 18:34:36.642 D/SystemServerTimingAsync(  522): InitThreadPoolExec:Update app-ops uidState in case package com.google.android.overlay.googlewebview changed
+10-15 18:34:36.642 D/SystemServerInitThreadPool(  522): Started executing Update app-ops uidState in case package com.google.android.overlay.googlewebview changed
+10-15 18:34:36.642 D/SystemServerInitThreadPool(  522): Finished executing Update app-ops uidState in case package com.google.android.overlay.googlewebview changed
+10-15 18:34:36.642 V/SystemServerTimingAsync(  522): InitThreadPoolExec:Update app-ops uidState in case package com.google.android.overlay.googlewebview changed took to complete: 0ms
+10-15 18:34:36.656 D/SystemServerTiming(  522): OnBootPhase_550_com.android.server.webkit.WebViewUpdateService
+10-15 18:34:36.656 V/SystemServerTiming(  522): OnBootPhase_550_com.android.server.webkit.WebViewUpdateService took to complete: 0ms
+10-15 18:34:37.046 D/NavigationModeController(  846):     /product/overlay/GoogleWebViewOverlay.apk
+10-15 18:34:37.254 D/SystemServerTimingAsync(  522): InitThreadPoolExec:WebViewFactoryPreparation
+10-15 18:34:37.254 D/SystemServerInitThreadPool(  522): Started executing WebViewFactoryPreparation
+10-15 18:34:37.254 I/SystemServer(  522): WebViewFactoryPreparation
+10-15 18:34:37.254 D/SystemServerTimingAsync(  522): WebViewFactoryPreparation
+10-15 18:34:37.256 E/AppOps  (  522): 	at android.webkit.WebViewLibraryLoader.createRelroFile(WebViewLibraryLoader.java:126)
+10-15 18:34:37.256 E/AppOps  (  522): 	at android.webkit.WebViewLibraryLoader.createRelros(WebViewLibraryLoader.java:170)
+10-15 18:34:37.256 E/AppOps  (  522): 	at android.webkit.WebViewLibraryLoader.prepareNativeLibraries(WebViewLibraryLoader.java:152)
+10-15 18:34:37.256 E/AppOps  (  522): 	at android.webkit.WebViewFactory.onWebViewProviderChanged(WebViewFactory.java:555)
+10-15 18:34:37.256 E/AppOps  (  522): 	at com.android.server.webkit.SystemImpl.onWebViewProviderChanged(SystemImpl.java:174)
+10-15 18:34:37.256 E/AppOps  (  522): 	at com.android.server.webkit.WebViewUpdateServiceImpl.onWebViewProviderChanged(WebViewUpdateServiceImpl.java:351)
+10-15 18:34:37.256 E/AppOps  (  522): 	at com.android.server.webkit.WebViewUpdateServiceImpl.prepareWebViewInSystemServer(WebViewUpdateServiceImpl.java:182)
+10-15 18:34:37.256 E/AppOps  (  522): 	at com.android.server.webkit.WebViewUpdateService.prepareWebViewInSystemServer(WebViewUpdateService.java:129)
+10-15 18:34:37.259 V/SystemServerTimingAsync(  522): WebViewFactoryPreparation took to complete: 5ms
+10-15 18:34:37.259 D/SystemServerInitThreadPool(  522): Finished executing WebViewFactoryPreparation
+10-15 18:34:37.259 V/SystemServerTimingAsync(  522): InitThreadPoolExec:WebViewFactoryPreparation took to complete: 5ms
+10-15 18:34:37.264 I/ActivityManager(  522): Start proc 967:WebViewLoader-x86_64/1037 [android.webkit.WebViewLibraryLoader$RelroFileCreator] for 
+10-15 18:34:37.286 I/WebViewLoader-x(  967): Using CollectorTypeCC GC.
+10-15 18:34:37.287 W/WebViewLoader-x(  967): Unexpected CPU variant for x86: x86_64.
+10-15 18:34:37.287 W/WebViewLoader-x(  967): Known variants: atom, sandybridge, silvermont, goldmont, goldmont-plus, tremont, kabylake, default
+10-15 18:34:37.291 E/WebViewLoader-x(  967): Not starting debugger since process cannot load the jdwp agent.
+10-15 18:34:37.296 V/WebViewLibraryLoader(  967): RelroFileCreator (64bit = true), package: com.google.android.webview library: libmonochrome_64.so
+10-15 18:34:37.297 W/WebViewLoader-x(  967): Entry not found
+10-15 18:34:37.300 D/nativeloader(  967): Configuring clns-6 for other apk /data/app/~~1yn6wsLXFZ2B0diObX38Rg==/com.google.android.trichromelibrary_567263637-fiEw0QFhU0jUcrWPthKdwQ==/TrichromeLibrary.apk. target_sdk_version=34, uses_libraries=ALL, library_path=/data/app/~~rR896qjhJiRnYo39Tp2_TQ==/com.google.android.webview-0fALnkmZPERfqBHnUVaCTA==/lib/x86_64:/data/app/~~rR896qjhJiRnYo39Tp2_TQ==/com.google.android.webview-0fALnkmZPERfqBHnUVaCTA==/WebViewGoogle.apk!/lib/x86_64:/data/app/~~1yn6wsLXFZ2B0diObX38Rg==/com.google.android.trichromelibrary_567263637-fiEw0QFhU0jUcrWPthKdwQ==/TrichromeLibrary.apk!/lib/x86_64, permitted_path=/data:/mnt/expand
+10-15 18:34:37.306 D/nativeloader(  967): Configuring clns-7 for other apk /data/app/~~rR896qjhJiRnYo39Tp2_TQ==/com.google.android.webview-0fALnkmZPERfqBHnUVaCTA==/WebViewGoogle.apk. target_sdk_version=34, uses_libraries=, library_path=/data/app/~~rR896qjhJiRnYo39Tp2_TQ==/com.google.android.webview-0fALnkmZPERfqBHnUVaCTA==/lib/x86_64:/data/app/~~rR896qjhJiRnYo39Tp2_TQ==/com.google.android.webview-0fALnkmZPERfqBHnUVaCTA==/WebViewGoogle.apk!/lib/x86_64:/data/app/~~1yn6wsLXFZ2B0diObX38Rg==/com.google.android.trichromelibrary_567263637-fiEw0QFhU0jUcrWPthKdwQ==/TrichromeLibrary.apk!/lib/x86_64, permitted_path=/data:/mnt/expand
+10-15 18:34:37.358 D/Zygote  (  337): mbuffer starts with 14, nice name is webview_zygote, mEnd = 404, mNext = 165, mLinesLeft = 6, mFd = 6
+10-15 18:34:37.377 I/WebViewLoader-x(  967): System.exit called, status: 0
+10-15 18:34:37.377 I/AndroidRuntime(  967): VM exiting with result code 0, cleanup skipped.
+10-15 18:34:37.378 D/SystemServerTiming(  522): OnBootPhase_600_com.android.server.webkit.WebViewUpdateService
+10-15 18:34:37.378 V/SystemServerTiming(  522): OnBootPhase_600_com.android.server.webkit.WebViewUpdateService took to complete: 0ms
+10-15 18:34:37.382 I/ActivityManager(  522): Process WebViewLoader-x86_64 (pid 967) has died: psvc PER 
+10-15 18:34:37.383 D/OomAdjuster(  522): Not killing cached processes
+10-15 18:34:37.402 I/webview_zygote(  988): Using CollectorTypeCC GC.
+10-15 18:34:37.405 I/WebViewZygoteInit(  988): Starting WebViewZygoteInit
+10-15 18:34:37.421 I/WebViewZygoteInit(  988): Beginning application preload for com.google.android.webview
+10-15 18:34:37.422 W/webview_zygote(  988): Entry not found
+10-15 18:34:37.423 D/nativeloader(  988): Configuring clns-6 for other apk /data/app/~~1yn6wsLXFZ2B0diObX38Rg==/com.google.android.trichromelibrary_567263637-fiEw0QFhU0jUcrWPthKdwQ==/TrichromeLibrary.apk. target_sdk_version=34, uses_libraries=ALL, library_path=/data/app/~~rR896qjhJiRnYo39Tp2_TQ==/com.google.android.webview-0fALnkmZPERfqBHnUVaCTA==/lib/x86_64:/data/app/~~rR896qjhJiRnYo39Tp2_TQ==/com.google.android.webview-0fALnkmZPERfqBHnUVaCTA==/WebViewGoogle.apk!/lib/x86_64:/data/app/~~1yn6wsLXFZ2B0diObX38Rg==/com.google.android.trichromelibrary_567263637-fiEw0QFhU0jUcrWPthKdwQ==/TrichromeLibrary.apk!/lib/x86_64, permitted_path=/data:/mnt/expand
+10-15 18:34:37.424 D/nativeloader(  988): Configuring clns-7 for other apk /data/app/~~rR896qjhJiRnYo39Tp2_TQ==/com.google.android.webview-0fALnkmZPERfqBHnUVaCTA==/WebViewGoogle.apk. target_sdk_version=34, uses_libraries=, library_path=/data/app/~~rR896qjhJiRnYo39Tp2_TQ==/com.google.android.webview-0fALnkmZPERfqBHnUVaCTA==/lib/x86_64:/data/app/~~rR896qjhJiRnYo39Tp2_TQ==/com.google.android.webview-0fALnkmZPERfqBHnUVaCTA==/WebViewGoogle.apk!/lib/x86_64:/data/app/~~1yn6wsLXFZ2B0diObX38Rg==/com.google.android.trichromelibrary_567263637-fiEw0QFhU0jUcrWPthKdwQ==/TrichromeLibrary.apk!/lib/x86_64, permitted_path=/data:/mnt/expand
+10-15 18:34:37.441 I/WebViewZygoteInit(  988): Application preload done
+10-15 18:34:37.516 D/SystemServerTimingAsync(  522): ssm.onStartUser-0_com.android.server.webkit.WebViewUpdateService
+10-15 18:34:37.516 V/SystemServerTimingAsync(  522): ssm.onStartUser-0_com.android.server.webkit.WebViewUpdateService took to complete: 0ms
+10-15 18:34:37.692 V/StorageManagerService(  522): Package com.google.android.overlay.googlewebview does not have legacy storage
+10-15 18:34:37.693 V/StorageManagerService(  522): Package com.google.android.webview does not have legacy storage
+10-15 18:34:41.089 D/NavigationModeController(  846):     /product/overlay/GoogleWebViewOverlay.apk
+10-15 18:34:41.313 D/ActivityManagerTiming(  522): OnBootPhase_1000_com.android.server.webkit.WebViewUpdateService
+10-15 18:34:41.313 V/ActivityManagerTiming(  522): OnBootPhase_1000_com.android.server.webkit.WebViewUpdateService took to complete: 0ms
+10-15 18:34:41.395 D/NavigationModeController(  846):     /product/overlay/GoogleWebViewOverlay.apk
+10-15 18:34:41.924 D/SystemServerTimingAsync(  522): ssm.onUnlockingUser-0_com.android.server.webkit.WebViewUpdateService
+10-15 18:34:41.925 V/SystemServerTimingAsync(  522): ssm.onUnlockingUser-0_com.android.server.webkit.WebViewUpdateService took to complete: 0ms
+10-15 18:34:42.492 D/OomAdjuster(  522): Not killing cached processes
+10-15 18:34:46.671 W/chromium( 1839): [1015/183446.671448:WARNING:dns_config_service_android.cc(81)] Failed to read DnsConfig.
+10-15 18:34:47.521 D/OomAdjuster(  522): Not killing cached processes
+10-15 18:34:47.796 W/TimedProcessReaper( 1564): Scheduling killing of process to refresh configuration
+10-15 18:34:47.987 I/ActivityManager(  522): Start proc 2571:com.android.chrome/u0a149 for service {com.android.chrome/org.chromium.chrome.browser.customtabs.CustomTabsConnectionService}
+10-15 18:34:48.497 W/TimedProcessReaper( 1564): Scheduling killing of process to refresh configuration
+10-15 18:34:48.509 W/TimedProcessReaper( 1697): Scheduling killing of process to refresh configuration
+10-15 18:34:48.535 W/TimedProcessReaper( 1697): Scheduling killing of process to refresh configuration
+10-15 18:34:48.601 W/TimedProcessReaper( 1697): Scheduling killing of process to refresh configuration
+10-15 18:34:49.040 D/NavigationModeController(  846):     /product/overlay/GoogleWebViewOverlay.apk
+10-15 18:34:49.066 W/TimedProcessReaper( 1834): Scheduling killing of process to refresh configuration
+10-15 18:34:49.097 W/TimedProcessReaper( 1834): Scheduling killing of process to refresh configuration
+10-15 18:34:49.098 W/TimedProcessReaper( 1834): Scheduling killing of process to refresh configuration
+10-15 18:34:49.107 W/TimedProcessReaper( 1834): Scheduling killing of process to refresh configuration
+10-15 18:34:49.121 W/TimedProcessReaper( 1834): Scheduling killing of process to refresh configuration
+10-15 18:34:49.166 W/TimedProcessReaper( 1834): Scheduling killing of process to refresh configuration
+10-15 18:34:49.279 I/WindowManager(  522): ANR in ActivityRecord{efedc75 u0 com.google.android.apps.nexuslauncher/.NexusLauncherActivity t7}.  Reason: Input dispatching timed out (Application does not have a focused window)
+10-15 18:34:49.640 W/TimedProcessReaper( 1834): Scheduling killing of process to refresh configuration
+10-15 18:34:49.672 W/TimedProcessReaper( 1834): Scheduling killing of process to refresh configuration
+10-15 18:34:49.690 W/TimedProcessReaper( 1834): Scheduling killing of process to refresh configuration
+10-15 18:34:49.706 W/TimedProcessReaper( 1834): Scheduling killing of process to refresh configuration
+10-15 18:34:49.732 W/TimedProcessReaper( 1834): Scheduling killing of process to refresh configuration
+10-15 18:34:49.743 W/TimedProcessReaper( 1834): Scheduling killing of process to refresh configuration
+10-15 18:34:49.744 W/TimedProcessReaper( 1834): Scheduling killing of process to refresh configuration
+10-15 18:34:49.769 W/TimedProcessReaper( 1834): Scheduling killing of process to refresh configuration
+10-15 18:34:49.784 W/TimedProcessReaper( 1697): Scheduling killing of process to refresh configuration
+10-15 18:34:49.782 W/TimedProcessReaper( 1834): Scheduling killing of process to refresh configuration
+10-15 18:34:49.866 W/TimedProcessReaper( 1834): Scheduling killing of process to refresh configuration
+10-15 18:34:49.881 W/TimedProcessReaper( 1834): Scheduling killing of process to refresh configuration
+10-15 18:34:49.881 W/TimedProcessReaper( 1834): Scheduling killing of process to refresh configuration
+10-15 18:34:50.212 I/WebViewFactory( 1834): Loading com.google.android.webview version 113.0.5672.136 (code 567263637)
+10-15 18:34:50.240 D/nativeloader( 1834): Configuring clns-8 for other apk /data/app/~~1yn6wsLXFZ2B0diObX38Rg==/com.google.android.trichromelibrary_567263637-fiEw0QFhU0jUcrWPthKdwQ==/TrichromeLibrary.apk. target_sdk_version=34, uses_libraries=ALL, library_path=/data/app/~~rR896qjhJiRnYo39Tp2_TQ==/com.google.android.webview-0fALnkmZPERfqBHnUVaCTA==/lib/x86_64:/data/app/~~rR896qjhJiRnYo39Tp2_TQ==/com.google.android.webview-0fALnkmZPERfqBHnUVaCTA==/WebViewGoogle.apk!/lib/x86_64:/data/app/~~1yn6wsLXFZ2B0diObX38Rg==/com.google.android.trichromelibrary_567263637-fiEw0QFhU0jUcrWPthKdwQ==/TrichromeLibrary.apk!/lib/x86_64, permitted_path=/data:/mnt/expand
+10-15 18:34:50.242 D/nativeloader( 1834): Configuring clns-9 for other apk /data/app/~~rR896qjhJiRnYo39Tp2_TQ==/com.google.android.webview-0fALnkmZPERfqBHnUVaCTA==/WebViewGoogle.apk. target_sdk_version=34, uses_libraries=, library_path=/data/app/~~rR896qjhJiRnYo39Tp2_TQ==/com.google.android.webview-0fALnkmZPERfqBHnUVaCTA==/lib/x86_64:/data/app/~~rR896qjhJiRnYo39Tp2_TQ==/com.google.android.webview-0fALnkmZPERfqBHnUVaCTA==/WebViewGoogle.apk!/lib/x86_64:/data/app/~~1yn6wsLXFZ2B0diObX38Rg==/com.google.android.trichromelibrary_567263637-fiEw0QFhU0jUcrWPthKdwQ==/TrichromeLibrary.apk!/lib/x86_64, permitted_path=/data:/mnt/expand
+10-15 18:34:50.325 I/cr_VariationsUtils( 1834): Failed reading seed file "/data/user/0/com.google.android.googlequicksearchbox/app_webview/variations_seed_new"
+10-15 18:34:50.326 I/cr_VariationsUtils( 1834): Failed reading seed file "/data/user/0/com.google.android.googlequicksearchbox/app_webview/variations_seed"
+10-15 18:34:50.350 I/ActivityManager(  522): Start proc 2871:com.google.android.webview:webview_service/u0a134 for service {com.google.android.webview/org.chromium.android_webview.services.VariationsSeedServer}
+10-15 18:34:50.379 D/AppWidgetServiceImpl(  522): Provider info from ComponentInfo{com.android.chrome/org.chromium.chrome.browser.quickactionsearchwidget.QuickActionSearchWidgetProvider$QuickActionSearchWidgetProviderSearch} won't be persisted.
+10-15 18:34:50.379 D/AppWidgetServiceImpl(  522): Provider info from ComponentInfo{com.android.chrome/org.chromium.chrome.browser.quickactionsearchwidget.QuickActionSearchWidgetProvider$QuickActionSearchWidgetProviderDino} won't be persisted.
+10-15 18:34:50.379 D/AppWidgetServiceImpl(  522): Provider info from ComponentInfo{com.android.chrome/org.chromium.chrome.browser.searchwidget.SearchWidgetProvider} won't be persisted.
+10-15 18:34:50.383 I/webview_service( 2871): Using CollectorTypeCC GC.
+10-15 18:34:50.383 W/webview_service( 2871): Unexpected CPU variant for x86: x86_64.
+10-15 18:34:50.383 W/webview_service( 2871): Known variants: atom, sandybridge, silvermont, goldmont, goldmont-plus, tremont, kabylake, default
+10-15 18:34:50.475 E/webview_service( 2871): Not starting debugger since process cannot load the jdwp agent.
+10-15 18:34:51.194 W/TimedProcessReaper( 1697): Scheduling killing of process to refresh configuration
+10-15 18:34:51.424 D/NavigationModeController(  846):     /product/overlay/GoogleWebViewOverlay.apk
+10-15 18:34:51.479 W/TimedProcessReaper( 1834): Scheduling killing of process to refresh configuration
+10-15 18:34:51.705 W/TimedProcessReaper( 1834): Scheduling killing of process to refresh configuration
+10-15 18:34:51.722 W/webview_service( 2871): Entry not found
+10-15 18:34:51.723 D/nativeloader( 2871): Configuring clns-6 for other apk /data/app/~~1yn6wsLXFZ2B0diObX38Rg==/com.google.android.trichromelibrary_567263637-fiEw0QFhU0jUcrWPthKdwQ==/TrichromeLibrary.apk. target_sdk_version=34, uses_libraries=ALL, library_path=/data/app/~~rR896qjhJiRnYo39Tp2_TQ==/com.google.android.webview-0fALnkmZPERfqBHnUVaCTA==/lib/x86_64:/data/app/~~rR896qjhJiRnYo39Tp2_TQ==/com.google.android.webview-0fALnkmZPERfqBHnUVaCTA==/WebViewGoogle.apk!/lib/x86_64:/data/app/~~1yn6wsLXFZ2B0diObX38Rg==/com.google.android.trichromelibrary_567263637-fiEw0QFhU0jUcrWPthKdwQ==/TrichromeLibrary.apk!/lib/x86_64, permitted_path=/data:/mnt/expand:/data/user/0/com.google.android.webview
+10-15 18:34:51.726 D/nativeloader( 2871): Configuring clns-7 for other apk /data/app/~~rR896qjhJiRnYo39Tp2_TQ==/com.google.android.webview-0fALnkmZPERfqBHnUVaCTA==/WebViewGoogle.apk. target_sdk_version=34, uses_libraries=, library_path=/data/app/~~rR896qjhJiRnYo39Tp2_TQ==/com.google.android.webview-0fALnkmZPERfqBHnUVaCTA==/lib/x86_64:/data/app/~~rR896qjhJiRnYo39Tp2_TQ==/com.google.android.webview-0fALnkmZPERfqBHnUVaCTA==/WebViewGoogle.apk!/lib/x86_64:/data/app/~~1yn6wsLXFZ2B0diObX38Rg==/com.google.android.trichromelibrary_567263637-fiEw0QFhU0jUcrWPthKdwQ==/TrichromeLibrary.apk!/lib/x86_64, permitted_path=/data:/mnt/expand:/data/user/0/com.google.android.webview
+10-15 18:34:51.791 V/GraphicsEnvironment( 2871): ANGLE GameManagerService for com.google.android.webview: false
+10-15 18:34:51.791 V/GraphicsEnvironment( 2871): com.google.android.webview is not listed in per-application setting
+10-15 18:34:51.797 I/cr_WebViewApkApp( 2871): Launched version=113.0.5672.136 minSdkVersion=29 isBundle=false processName=com.google.android.webview:webview_service
+10-15 18:34:51.922 W/TimedProcessReaper( 1834): Scheduling killing of process to refresh configuration
+10-15 18:34:51.957 W/TimedProcessReaper( 1834): Scheduling killing of process to refresh configuration
+10-15 18:34:52.672 D/OomAdjuster(  522): Not killing cached processes
+10-15 18:34:54.696 E/A       ( 1834): 	at org.chromium.net.impl.ab.run(PG:1)
+10-15 18:34:54.696 E/A       ( 1834): Caused by: org.chromium.net.impl.ce: Exception in CronetUrlRequest: net::ERR_NAME_NOT_RESOLVED, ErrorCode=1, InternalErrorCode=-105, Retryable=false
+10-15 18:34:54.696 E/A       ( 1834): 	at org.chromium.net.impl.CronetUrlRequest.onError(PG:4)
+10-15 18:34:55.098 W/TimedProcessReaper( 1834): Scheduling killing of process to refresh configuration
+10-15 18:34:55.139 W/A       ( 1834): 	at org.chromium.net.impl.CronetUrlRequest.onError(:com.google.android.gms.dynamite_cronetdynamite@231818047@23.18.18 (190800-0):5)
+10-15 18:34:55.201 W/A       ( 1834): 	at org.chromium.net.impl.CronetUrlRequest.onError(:com.google.android.gms.dynamite_cronetdynamite@231818047@23.18.18 (190800-0):5)
+10-15 18:34:55.201 W/A       ( 1834): 	at org.chromium.net.impl.CronetUrlRequest.onError(:com.google.android.gms.dynamite_cronetdynamite@231818047@23.18.18 (190800-0):5)
+10-15 18:34:55.292 W/TimedProcessReaper( 1834): Scheduling killing of process to refresh configuration
+10-15 18:34:55.313 W/A       ( 1834): 	at org.chromium.net.impl.CronetUrlRequest.onError(:com.google.android.gms.dynamite_cronetdynamite@231818047@23.18.18 (190800-0):5)
+10-15 18:34:55.313 W/A       ( 1834): 	at org.chromium.net.impl.CronetUrlRequest.onError(:com.google.android.gms.dynamite_cronetdynamite@231818047@23.18.18 (190800-0):5)
+10-15 18:34:55.467 W/TimedProcessReaper( 1834): Scheduling killing of process to refresh configuration
+10-15 18:34:55.468 W/TimedProcessReaper( 1834): Scheduling killing of process to refresh configuration
+10-15 18:34:55.481 W/TimedProcessReaper( 1834): Scheduling killing of process to refresh configuration
+10-15 18:34:55.531 D/SystemServerTimingAsync(  522): ssm.onUnlockedUser-0_com.android.server.webkit.WebViewUpdateService
+10-15 18:34:55.531 V/SystemServerTimingAsync(  522): ssm.onUnlockedUser-0_com.android.server.webkit.WebViewUpdateService took to complete: 0ms
+10-15 18:34:55.856 W/TimedProcessReaper( 1834): Scheduling killing of process to refresh configuration
+10-15 18:34:55.856 W/TimedProcessReaper( 1834): Scheduling killing of process to refresh configuration
+10-15 18:34:56.062 W/JobServiceContext(  522): Sending onNetworkChanged for a job that isn't started. JobStatus{1b3c0cb #u0a134/83 com.google.android.webview/org.chromium.android_webview.services.AwVariationsSeedFetcher u=0 s=10134 NET CHARGING READY}
+10-15 18:34:56.474 W/TimedProcessReaper( 1834): Scheduling killing of process to refresh configuration
+10-15 18:34:56.631 W/TimedProcessReaper( 1834): Scheduling killing of process to refresh configuration
+10-15 18:34:56.637 W/TimedProcessReaper( 1834): Scheduling killing of process to refresh configuration
+10-15 18:34:56.639 W/TimedProcessReaper( 1834): Scheduling killing of process to refresh configuration
+10-15 18:34:57.223 W/TimedProcessReaper( 1564): Scheduling killing of process to refresh configuration
+10-15 18:34:57.433 W/TimedProcessReaper( 1834): Scheduling killing of process to refresh configuration
+10-15 18:34:57.434 W/TimedProcessReaper( 1834): Scheduling killing of process to refresh configuration
+10-15 18:34:57.484 W/TimedProcessReaper( 1834): Scheduling killing of process to refresh configuration
+10-15 18:34:57.646 W/TimedProcessReaper( 1834): Scheduling killing of process to refresh configuration
+10-15 18:34:57.856 D/OomAdjuster(  522): Not killing cached processes
+10-15 18:34:58.023 W/TimedProcessReaper( 1834): Scheduling killing of process to refresh configuration
+10-15 18:34:58.415 W/TimedProcessReaper( 1834): Scheduling killing of process to refresh configuration
+10-15 18:34:58.461 E/ActivityManager(  522): ANR in com.google.android.apps.nexuslauncher (com.google.android.apps.nexuslauncher/.NexusLauncherActivity)
+10-15 18:34:58.782 W/TimedProcessReaper( 1834): Scheduling killing of process to refresh configuration
+10-15 18:34:58.805 W/TimedProcessReaper( 1834): Scheduling killing of process to refresh configuration
+10-15 18:34:59.351 W/TimedProcessReaper( 1834): Scheduling killing of process to refresh configuration
+10-15 18:34:59.470 W/id.gms.unstable( 3266): Verification of boolean org.chromium.net.AndroidNetworkLibrary.haveOnlyLoopbackAddresses() took 216.183ms (296.04 bytecodes/s) (2736B approximate peak alloc)
+10-15 18:34:59.932 W/TimedProcessReaper( 2990): Scheduling killing of process to refresh configuration
+10-15 18:34:59.958 W/TimedProcessReaper( 2990): Scheduling killing of process to refresh configuration
+10-15 18:35:00.264 W/TimedProcessReaper( 1564): Scheduling killing of process to refresh configuration
+10-15 18:35:00.288 W/TimedProcessReaper( 2990): Scheduling killing of process to refresh configuration
+10-15 18:35:00.330 W/TimedProcessReaper( 2990): Scheduling killing of process to refresh configuration
+10-15 18:35:00.357 W/TimedProcessReaper( 2990): Scheduling killing of process to refresh configuration
+10-15 18:35:00.357 W/TimedProcessReaper( 2990): Scheduling killing of process to refresh configuration
+10-15 18:35:00.358 W/TimedProcessReaper( 2990): Scheduling killing of process to refresh configuration
+10-15 18:35:00.358 W/TimedProcessReaper( 2990): Scheduling killing of process to refresh configuration
+10-15 18:35:00.879 W/TimedProcessReaper( 1564): Scheduling killing of process to refresh configuration
+10-15 18:35:00.927 D/SystemServerTimingAsync(  522): ssm.onCompletedEventUser-0_{|Unlocked|}_com.android.server.webkit.WebViewUpdateService
+10-15 18:35:00.927 V/SystemServerTimingAsync(  522): ssm.onCompletedEventUser-0_{|Unlocked|}_com.android.server.webkit.WebViewUpdateService took to complete: 0ms
+10-15 18:35:01.394 W/TimedProcessReaper( 2990): Scheduling killing of process to refresh configuration
+10-15 18:35:01.476 I/ActivityManager(  522): Killing 2561:com.google.android.gm/u0a142 (adj 0): change com.google.android.gm
+10-15 18:35:01.541 I/ActivityManager(  522): Killing 3716:com.android.intentresolver/u0a91 (adj 0): change com.android.intentresolver
+10-15 18:35:01.776 I/ActivityManager(  522): Killing 3796:com.android.nfc/1027 (adj 905): change com.android.nfc
+10-15 18:35:02.878 D/OomAdjuster(  522): Not killing cached processes
+10-15 18:35:03.492 I/ActivityManager(  522): Killing 3959:com.google.android.settings.intelligence/u0a118 (adj 0): change com.google.android.settings.intelligence
+10-15 18:35:05.658 D/PrefCtrlListHelper( 1055): Could not find Context-only controller for pref: com.android.settings.deviceinfo.legal.WebViewLicensePreferenceController
+10-15 18:35:06.327 D/ActivityManager(  522): freezing 2871 com.google.android.webview:webview_service
+10-15 18:35:07.926 D/OomAdjuster(  522): Not killing cached processes
+10-15 18:35:13.091 D/OomAdjuster(  522): Not killing cached processes
+10-15 18:35:13.122 V/BackupManagerService(  522): [UserID:0] restoreAtInstall pkg=com.tornoment.personafy token=1 restoreSet=0
+10-15 18:35:13.169 D/CarrierSvcBindHelper( 1054): onPackageAdded: com.tornoment.personafy
+10-15 18:35:13.179 I/SafetyLabelChangedBroadcastReceiver(  851): received broadcast packageName: com.tornoment.personafy, current user: UserHandle{0}, packageChangeEvent: NEW_INSTALL, intent user: UserHandle{0}
+10-15 18:35:13.185 D/ImsResolver( 1054): maybeAddedImsService, packageName: com.tornoment.personafy
+10-15 18:35:13.251 I/SdkSandboxManager(  522): No SDKs used. Skipping SDK data reconcilation for CallingInfo{mUid=10192, mPackageName='com.tornoment.personafy, mAppProcessToken='null'}
+10-15 18:35:13.338 D/CarrierSvcBindHelper( 1054): onPackageModified: com.tornoment.personafy
+10-15 18:35:13.368 D/ImsResolver( 1054): maybeAddedImsService, packageName: com.tornoment.personafy
+10-15 18:35:13.574 I/AiAiEcho( 1653): AppFetcherImplV2 updateApps package:[com.tornoment.personafy], userId:[0], reason:[package is added.].
+10-15 18:35:13.749 I/FontLog ( 1411): Package com.tornoment.personafy has no metadata [CONTEXT service_id=132 ]
+10-15 18:35:13.835 I/BlockstoreStorage( 1492): Clearing Blockstore Data for package com.tornoment.personafy [CONTEXT service_id=258 ]
+10-15 18:35:14.000 I/AiAiEcho( 1653): AppFetcherImpl onPackageChanged com.tornoment.personafy.
+10-15 18:35:14.004 I/AiAiEcho( 1653): AppIndexer Package:[com.tornoment.personafy] UserProfile:[0] Enabled:[true].
+10-15 18:35:14.004 I/AiAiEcho( 1653): AppFetcherImplV2 updateApps package:[com.tornoment.personafy], userId:[0], reason:[package is updated.].
+10-15 18:35:18.227 D/OomAdjuster(  522): Not killing cached processes
+10-15 18:35:22.051 W/TimedProcessReaper( 1834): Scheduling killing of process to refresh configuration
+10-15 18:35:22.052 W/TimedProcessReaper( 1834): Scheduling killing of process to refresh configuration
+10-15 18:35:22.700 I/AppsFilter(  522): interaction: PackageSetting{f7a2615 com.tornoment.personafy/10192} -> PackageSetting{7dacd2a com.google.android.youtube/10139} BLOCKED
+10-15 18:35:22.700 I/AppsFilter(  522): interaction: PackageSetting{f7a2615 com.tornoment.personafy/10192} -> PackageSetting{b28571b com.google.android.apps.messaging/10129} BLOCKED
+10-15 18:35:22.700 I/AppsFilter(  522): interaction: PackageSetting{f7a2615 com.tornoment.personafy/10192} -> PackageSetting{6ad46b3 com.google.android.apps.maps/10152} BLOCKED
+10-15 18:35:22.700 I/AppsFilter(  522): interaction: PackageSetting{f7a2615 com.tornoment.personafy/10192} -> PackageSetting{49980b8 com.google.android.contacts/10155} BLOCKED
+10-15 18:35:22.841 W/TimedProcessReaper( 4283): Scheduling killing of process to refresh configuration
+10-15 18:35:22.859 W/TimedProcessReaper( 4283): Scheduling killing of process to refresh configuration
+10-15 18:35:22.859 W/TimedProcessReaper( 4283): Scheduling killing of process to refresh configuration
+10-15 18:35:22.865 W/TimedProcessReaper( 4283): Scheduling killing of process to refresh configuration
+10-15 18:35:22.912 W/TimedProcessReaper( 4283): Scheduling killing of process to refresh configuration
+10-15 18:35:23.261 D/OomAdjuster(  522): Not killing cached processes
+10-15 18:35:23.336 W/TimedProcessReaper( 1834): Scheduling killing of process to refresh configuration
+10-15 18:35:23.341 W/TimedProcessReaper( 1834): Scheduling killing of process to refresh configuration
+10-15 18:35:23.414 W/TimedProcessReaper( 1564): Scheduling killing of process to refresh configuration
+10-15 18:35:23.421 W/TimedProcessReaper( 4752): Scheduling killing of process to refresh configuration
+10-15 18:35:23.431 W/TimedProcessReaper( 4752): Scheduling killing of process to refresh configuration
+10-15 18:35:24.783 I/cr_CronetUrlRequestContext( 4283): destroyNativeStreamLocked org.chromium.net.impl.CronetBidirectionalStream@714f92
+10-15 18:35:24.909 W/TimedProcessReaper( 4283): Scheduling killing of process to refresh configuration
+10-15 18:35:24.980 W/TimedProcessReaper( 1834): Scheduling killing of process to refresh configuration
+10-15 18:35:24.984 W/TimedProcessReaper( 1564): Scheduling killing of process to refresh configuration
+10-15 18:35:25.079 W/TimedProcessReaper( 1697): Scheduling killing of process to refresh configuration
+10-15 18:35:25.127 W/TimedProcessReaper( 2990): Scheduling killing of process to refresh configuration
+10-15 18:35:25.902 W/TimedProcessReaper( 2990): Scheduling killing of process to refresh configuration
+10-15 18:35:26.441 W/TimedProcessReaper( 4283): Scheduling killing of process to refresh configuration
+10-15 18:35:26.607 W/TimedProcessReaper( 2990): Scheduling killing of process to refresh configuration
+10-15 18:35:26.943 W/TimedProcessReaper( 2990): Scheduling killing of process to refresh configuration
+10-15 18:35:27.253 W/TimedProcessReaper( 1564): Scheduling killing of process to refresh configuration
+10-15 18:35:27.329 W/TimedProcessReaper( 1564): Scheduling killing of process to refresh configuration
+10-15 18:35:27.483 W/TimedProcessReaper( 1834): Scheduling killing of process to refresh configuration
+10-15 18:35:27.495 W/TimedProcessReaper( 1834): Scheduling killing of process to refresh configuration
+10-15 18:35:27.777 W/TimedProcessReaper( 1834): Scheduling killing of process to refresh configuration
+10-15 18:35:27.938 I/ActivityManager(  522): Start proc 4998:com.google.android.webview/u0a134 for broadcast {com.google.android.webview/com.google.android.libraries.phenotype.client.stable.PhenotypeUpdateBackgroundBroadcastReceiver}
+10-15 18:35:27.943 I/android.webview( 4998): Using CollectorTypeCC GC.
+10-15 18:35:27.943 W/android.webview( 4998): Unexpected CPU variant for x86: x86_64.
+10-15 18:35:27.943 W/android.webview( 4998): Known variants: atom, sandybridge, silvermont, goldmont, goldmont-plus, tremont, kabylake, default
+10-15 18:35:27.945 E/android.webview( 4998): Not starting debugger since process cannot load the jdwp agent.
+10-15 18:35:27.989 W/android.webview( 4998): Entry not found
+10-15 18:35:27.999 D/nativeloader( 4998): Configuring clns-6 for other apk /data/app/~~1yn6wsLXFZ2B0diObX38Rg==/com.google.android.trichromelibrary_567263637-fiEw0QFhU0jUcrWPthKdwQ==/TrichromeLibrary.apk. target_sdk_version=34, uses_libraries=ALL, library_path=/data/app/~~rR896qjhJiRnYo39Tp2_TQ==/com.google.android.webview-0fALnkmZPERfqBHnUVaCTA==/lib/x86_64:/data/app/~~rR896qjhJiRnYo39Tp2_TQ==/com.google.android.webview-0fALnkmZPERfqBHnUVaCTA==/WebViewGoogle.apk!/lib/x86_64:/data/app/~~1yn6wsLXFZ2B0diObX38Rg==/com.google.android.trichromelibrary_567263637-fiEw0QFhU0jUcrWPthKdwQ==/TrichromeLibrary.apk!/lib/x86_64, permitted_path=/data:/mnt/expand:/data/user/0/com.google.android.webview
+10-15 18:35:28.003 D/nativeloader( 4998): Configuring clns-7 for other apk /data/app/~~rR896qjhJiRnYo39Tp2_TQ==/com.google.android.webview-0fALnkmZPERfqBHnUVaCTA==/WebViewGoogle.apk. target_sdk_version=34, uses_libraries=, library_path=/data/app/~~rR896qjhJiRnYo39Tp2_TQ==/com.google.android.webview-0fALnkmZPERfqBHnUVaCTA==/lib/x86_64:/data/app/~~rR896qjhJiRnYo39Tp2_TQ==/com.google.android.webview-0fALnkmZPERfqBHnUVaCTA==/WebViewGoogle.apk!/lib/x86_64:/data/app/~~1yn6wsLXFZ2B0diObX38Rg==/com.google.android.trichromelibrary_567263637-fiEw0QFhU0jUcrWPthKdwQ==/TrichromeLibrary.apk!/lib/x86_64, permitted_path=/data:/mnt/expand:/data/user/0/com.google.android.webview
+10-15 18:35:28.014 V/GraphicsEnvironment( 4998): ANGLE GameManagerService for com.google.android.webview: false
+10-15 18:35:28.014 V/GraphicsEnvironment( 4998): com.google.android.webview is not listed in per-application setting
+10-15 18:35:28.017 I/cr_WebViewApkApp( 4998): Launched version=113.0.5672.136 minSdkVersion=29 isBundle=false processName=com.google.android.webview
+10-15 18:35:28.264 D/OomAdjuster(  522): Not killing cached processes
+10-15 18:35:28.386 I/ActivityTaskManager(  522): START u0 {flg=0x10000000 cmp=com.tornoment.personafy/.MainActivity} with LAUNCH_SINGLE_TASK from uid 2000 (BAL_ALLOW_PERMISSION) result code=0
+10-15 18:35:28.386 V/WindowManagerShell(  846): Transition requested: android.os.BinderProxy@dd657bc TransitionRequestInfo { type = OPEN, triggerTask = TaskInfo{userId=0 taskId=8 displayId=0 isRunning=true baseIntent=Intent { flg=0x10000000 cmp=com.tornoment.personafy/.MainActivity } baseActivity=ComponentInfo{com.tornoment.personafy/com.tornoment.personafy.MainActivity} topActivity=ComponentInfo{com.tornoment.personafy/com.tornoment.personafy.MainActivity} origActivity=null realActivity=ComponentInfo{com.tornoment.personafy/com.tornoment.personafy.MainActivity} numActivities=1 lastActiveTime=81687 supportsMultiWindow=true resizeMode=1 isResizeable=true minWidth=-1 minHeight=-1 defaultMinSize=220 token=WCT{android.window.IWindowContainerToken$Stub$Proxy@a66d345} topActivityType=1 pictureInPictureParams=null shouldDockBigOverlays=false launchIntoPipHostTaskId=-1 lastParentTaskIdBeforePip=-1 displayCutoutSafeInsets=Rect(0, 128 - 0, 0) topActivityInfo=ActivityInfo{e852a9a com.tornoment.personafy.MainActivity} launchCookies=[] positionInParent=Point(0, 0) parentTaskId=-1 isFocused=false isVisible=false isVisibleRequested=false isSleeping=false topActivityInSizeCompat=false topActivityEligibleForLetterboxEducation= false topActivityLetterboxed= false isFromDoubleTap= false topActivityLetterboxVerticalPosition= -1 topActivityLetterboxHorizontalPosition= -1 topActivityLetterboxWidth=-1 topActivityLetterboxHeight=-1 locusId=null displayAreaFeatureId=1 cameraCompatControlState=hidden}, remoteTransition = null, displayChange = null }
+10-15 18:35:28.443 I/ActivityManager(  522): Start proc 5027:com.tornoment.personafy/u0a192 for next-top-activity {com.tornoment.personafy/com.tornoment.personafy.MainActivity}
+10-15 18:35:28.444 I/oment.personafy( 5027): Late-enabling -Xcheck:jni
+10-15 18:35:28.478 I/oment.personafy( 5027): Using CollectorTypeCC GC.
+10-15 18:35:28.483 W/oment.personafy( 5027): Unexpected CPU variant for x86: x86_64.
+10-15 18:35:28.483 W/oment.personafy( 5027): Known variants: atom, sandybridge, silvermont, goldmont, goldmont-plus, tremont, kabylake, default
+10-15 18:35:28.570 D/CoreBackPreview(  522): Window{3226f3b u0 Splash Screen com.tornoment.personafy}: Setting back callback OnBackInvokedCallbackInfo{mCallback=android.window.IOnBackInvokedCallback$Stub$Proxy@7db2096, mPriority=0, mIsAnimationCallback=false}
+10-15 18:35:28.979 V/WindowManager(  522): Sent Transition #8 createdAt=10-15 18:35:28.370 via request=TransitionRequestInfo { type = OPEN, triggerTask = TaskInfo{userId=0 taskId=8 displayId=0 isRunning=true baseIntent=Intent { flg=0x10000000 cmp=com.tornoment.personafy/.MainActivity } baseActivity=ComponentInfo{com.tornoment.personafy/com.tornoment.personafy.MainActivity} topActivity=ComponentInfo{com.tornoment.personafy/com.tornoment.personafy.MainActivity} origActivity=null realActivity=ComponentInfo{com.tornoment.personafy/com.tornoment.personafy.MainActivity} numActivities=1 lastActiveTime=81687 supportsMultiWindow=true resizeMode=1 isResizeable=true minWidth=-1 minHeight=-1 defaultMinSize=220 token=WCT{RemoteToken{c0e72de Task{487b78f #8 type=standard A=10192:com.tornoment.personafy}}} topActivityType=1 pictureInPictureParams=null shouldDockBigOverlays=false launchIntoPipHostTaskId=-1 lastParentTaskIdBeforePip=-1 displayCutoutSafeInsets=Rect(0, 128 - 0, 0) topActivityInfo=ActivityInfo{edabcbf com.tornoment.personafy.MainActivity} launchCookies=[] positionInParent=Point(0, 0) parentTaskId=-1 isFocused=false isVisible=false isVisibleRequested=false isSleeping=false topActivityInSizeCompat=false topActivityEligibleForLetterboxEducation= false topActivityLetterboxed= false isFromDoubleTap= false topActivityLetterboxVerticalPosition= -1 topActivityLetterboxHorizontalPosition= -1 topActivityLetterboxWidth=-1 topActivityLetterboxHeight=-1 locusId=null displayAreaFeatureId=1 cameraCompatControlState=hidden}, remoteTransition = null, displayChange = null }
+10-15 18:35:28.979 V/WindowManager(  522):     info={id=8 t=OPEN f=0x0 trk=0 r=[0@Point(0, 0)] c=[{WCT{RemoteToken{c0e72de Task{487b78f #8 type=standard A=10192:com.tornoment.personafy}}} m=OPEN f=NONE leash=Surface(name=Task=8)/@0xed4ad63 sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) d=0},{WCT{RemoteToken{ffc66d5 Task{7e748f7 #1 type=home}}} m=TO_BACK f=SHOW_WALLPAPER leash=Surface(name=Task=1)/@0x32b3629 sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) d=0}]}
+10-15 18:35:29.009 W/ziparchive( 5027): Unable to open '/data/app/~~2cR7Y1280wveRe5aO23Apw==/com.tornoment.personafy-y3JMvtfb2vblUnIUpFHhJQ==/base.dm': No such file or directory
+10-15 18:35:29.009 W/ziparchive( 5027): Unable to open '/data/app/~~2cR7Y1280wveRe5aO23Apw==/com.tornoment.personafy-y3JMvtfb2vblUnIUpFHhJQ==/base.dm': No such file or directory
+10-15 18:35:29.283 D/nativeloader( 5027): Configuring clns-6 for other apk /data/app/~~2cR7Y1280wveRe5aO23Apw==/com.tornoment.personafy-y3JMvtfb2vblUnIUpFHhJQ==/base.apk. target_sdk_version=36, uses_libraries=, library_path=/data/app/~~2cR7Y1280wveRe5aO23Apw==/com.tornoment.personafy-y3JMvtfb2vblUnIUpFHhJQ==/lib/x86_64, permitted_path=/data:/mnt/expand:/data/user/0/com.tornoment.personafy
+10-15 18:35:29.306 V/GraphicsEnvironment( 5027): ANGLE GameManagerService for com.tornoment.personafy: false
+10-15 18:35:29.306 V/GraphicsEnvironment( 5027): com.tornoment.personafy is not listed in per-application setting
+10-15 18:35:29.319 W/TimedProcessReaper( 1564): Scheduling killing of process to refresh configuration
+10-15 18:35:29.435 W/oment.personafy( 5027): Accessing hidden method Landroid/view/ViewGroup;->makeOptionalFitsSystemWindows()V (unsupported, reflection, allowed)
+10-15 18:35:29.443 I/WebViewFactory( 5027): Loading com.google.android.webview version 113.0.5672.136 (code 567263637)
+10-15 18:35:29.455 W/oment.personafy( 5027): Entry not found
+10-15 18:35:29.457 D/nativeloader( 5027): Configuring clns-7 for other apk /data/app/~~1yn6wsLXFZ2B0diObX38Rg==/com.google.android.trichromelibrary_567263637-fiEw0QFhU0jUcrWPthKdwQ==/TrichromeLibrary.apk. target_sdk_version=34, uses_libraries=ALL, library_path=/data/app/~~rR896qjhJiRnYo39Tp2_TQ==/com.google.android.webview-0fALnkmZPERfqBHnUVaCTA==/lib/x86_64:/data/app/~~rR896qjhJiRnYo39Tp2_TQ==/com.google.android.webview-0fALnkmZPERfqBHnUVaCTA==/WebViewGoogle.apk!/lib/x86_64:/data/app/~~1yn6wsLXFZ2B0diObX38Rg==/com.google.android.trichromelibrary_567263637-fiEw0QFhU0jUcrWPthKdwQ==/TrichromeLibrary.apk!/lib/x86_64, permitted_path=/data:/mnt/expand
+10-15 18:35:29.461 D/nativeloader( 5027): Configuring clns-8 for other apk /data/app/~~rR896qjhJiRnYo39Tp2_TQ==/com.google.android.webview-0fALnkmZPERfqBHnUVaCTA==/WebViewGoogle.apk. target_sdk_version=34, uses_libraries=, library_path=/data/app/~~rR896qjhJiRnYo39Tp2_TQ==/com.google.android.webview-0fALnkmZPERfqBHnUVaCTA==/lib/x86_64:/data/app/~~rR896qjhJiRnYo39Tp2_TQ==/com.google.android.webview-0fALnkmZPERfqBHnUVaCTA==/WebViewGoogle.apk!/lib/x86_64:/data/app/~~1yn6wsLXFZ2B0diObX38Rg==/com.google.android.trichromelibrary_567263637-fiEw0QFhU0jUcrWPthKdwQ==/TrichromeLibrary.apk!/lib/x86_64, permitted_path=/data:/mnt/expand
+10-15 18:35:29.462 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{4df5839 com.android.cts.priv.ctsshim/10171} BLOCKED
+10-15 18:35:29.462 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{7dacd2a com.google.android.youtube/10139} BLOCKED
+10-15 18:35:29.462 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{5101e7e com.android.internal.display.cutout.emulation.corner/10025} BLOCKED
+10-15 18:35:29.462 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{49b8fdf com.android.internal.display.cutout.emulation.double/10048} BLOCKED
+10-15 18:35:29.462 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{18c642c com.google.android.googlequicksearchbox/10132} BLOCKED
+10-15 18:35:29.462 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{5543ef5 com.google.android.onetimeinitializer/10125} BLOCKED
+10-15 18:35:29.462 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{68ba48a com.google.android.ext.shared/10100} BLOCKED
+10-15 18:35:29.462 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{2534afb com.android.internal.systemui.navbar.gestural_wide_back/10007} BLOCKED
+10-15 18:35:29.462 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{7719718 com.android.virtualmachine.res/10177} BLOCKED
+10-15 18:35:29.462 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{bf6d571 com.google.android.federatedcompute/10175} BLOCKED
+10-15 18:35:29.462 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{3877f56 com.android.managedprovisioning.auto_generated_rro_product__/10024} BLOCKED
+10-15 18:35:29.462 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{c019bd7 com.android.carrierconfig.auto_generated_rro_vendor__/10078} BLOCKED
+10-15 18:35:29.462 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{9750cc4 com.android.systemui.emulation.pixel_3_xl/10034} BLOCKED
+10-15 18:35:29.462 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{45257ad com.android.systemui.emulation.pixel_4_xl/10059} BLOCKED
+10-15 18:35:29.462 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{a943ae2 com.android.systemui.emulation.pixel_fold/10009} BLOCKED
+10-15 18:35:29.462 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{7da1e73 com.android.simappdialog.auto_generated_rro_product__/10030} BLOCKED
+10-15 18:35:29.462 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{d183130 com.android.htmlviewer/10115} BLOCKED
+10-15 18:35:29.468 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{d69c1a9 com.google.android.health.connect.backuprestore/10179} BLOCKED
+10-15 18:35:29.468 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{1ae2ecf com.android.systemui.auto_generated_rro_product__/10031} BLOCKED
+10-15 18:35:29.468 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{c87305c com.google.android.apps.messaging/10129} BLOCKED
+10-15 18:35:29.468 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{973cf65 com.google.android.soundpicker/10137} BLOCKED
+10-15 18:35:29.469 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{d56fce1 com.google.android.marvin.talkbackoverlay/10077} BLOCKED
+10-15 18:35:29.469 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{61c6a06 com.google.android.configupdater/10130} BLOCKED
+10-15 18:35:29.469 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{90b28c7 com.android.internal.emulation.pixel_3a_xl/10044} BLOCKED
+10-15 18:35:29.469 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{1172ef4 com.android.internal.emulation.pixel_6_pro/10018} BLOCKED
+10-15 18:35:29.469 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{be5861d com.android.internal.emulation.pixel_7_pro/10004} BLOCKED
+10-15 18:35:29.470 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{78a63 com.android.internal.emulation.pixel_8_pro/10058} BLOCKED
+10-15 18:35:29.471 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{af24660 com.android.internal.emulation.pixel_3a/10053} BLOCKED
+10-15 18:35:29.471 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{850b3de com.android.internal.emulation.pixel_4a/10011} BLOCKED
+10-15 18:35:29.471 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{cde69bf com.android.internal.emulation.pixel_6a/10023} BLOCKED
+10-15 18:35:29.472 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{7a5688c com.android.internal.emulation.pixel_7a/10033} BLOCKED
+10-15 18:35:29.472 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{f905bd5 com.google.android.overlay.googlewebview/10049} BLOCKED
+10-15 18:35:29.473 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{8302fea com.google.android.hotspot2.osulogin/10191} BLOCKED
+10-15 18:35:29.473 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{419e2db com.android.simappdialog/10111} BLOCKED
+10-15 18:35:29.473 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{2868178 com.android.internal.display.cutout.emulation.hole/10073} BLOCKED
+10-15 18:35:29.473 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{987e051 com.android.internal.display.cutout.emulation.tall/10065} BLOCKED
+10-15 18:35:29.473 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{4d960b6 com.android.internal.systemui.navbar.threebutton/10068} BLOCKED
+10-15 18:35:29.473 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{ec9d1b7 com.android.camera2/10147} BLOCKED
+10-15 18:35:29.473 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{45e3d24 com.android.systemui.auto_generated_rro_vendor__/10076} BLOCKED
+10-15 18:35:29.473 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{99308d com.google.android.deskclock/10153} BLOCKED
+10-15 18:35:29.473 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{812d242 com.android.internal.systemui.navbar.twobutton/10020} BLOCKED
+10-15 18:35:29.474 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{d1fd253 com.google.android.as/10126} BLOCKED
+10-15 18:35:29.474 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{7d40790 com.google.android.gm/10142} BLOCKED
+10-15 18:35:29.474 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{8f54889 com.android.internal.systemui.navbar.gestural_extra_wide_back/10045} BLOCKED
+10-15 18:35:29.474 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{f7fd08e com.android.systemui.emulation.pixel_3/10015} BLOCKED
+10-15 18:35:29.477 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{6cb40af com.android.systemui.emulation.pixel_4/10037} BLOCKED
+10-15 18:35:29.477 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{89a0cbc com.android.systemui.emulation.pixel_5/10071} BLOCKED
+10-15 18:35:29.477 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{ee0e445 com.android.systemui.emulation.pixel_6/10074} BLOCKED
+10-15 18:35:29.479 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{2ffd223 com.android.systemui.emulation.pixel_7/10072} BLOCKED
+10-15 18:35:29.479 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{3055320 com.android.systemui.emulation.pixel_8/10070} BLOCKED
+10-15 18:35:29.479 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{35854d9 com.android.nfc.auto_generated_rro_product__/10027} BLOCKED
+10-15 18:35:29.479 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{f4c6e9e com.android.printspooler/10103} BLOCKED
+10-15 18:35:29.479 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{9736d7f com.android.emergency.auto_generated_rro_product__/10041} BLOCKED
+10-15 18:35:29.479 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{bc814c com.google.android.connectivity.resources.goldfish.overlay/10079} BLOCKED
+10-15 18:35:29.479 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{c706595 com.android.dreams.basic/10104} BLOCKED
+10-15 18:35:29.479 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{10cd6aa com.google.android.networkstack.tethering.emulator/10022} BLOCKED
+10-15 18:35:29.480 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{d5b629b com.android.providers.settings.auto_generated_rro_product__/10002} BLOCKED
+10-15 18:35:29.480 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{6d66638 com.google.android.as.oss/10122} BLOCKED
+10-15 18:35:29.480 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{3bec611 com.android.traceur.auto_generated_rro_product__/10005} BLOCKED
+10-15 18:35:29.480 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{ab9b376 com.google.android.devicelockcontroller/10182} BLOCKED
+10-15 18:35:29.480 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{9038d77 com.google.android.dialer/10128} BLOCKED
+10-15 18:35:29.480 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{ca7ade4 com.android.internal.emulation.pixel_3/10046} BLOCKED
+10-15 18:35:29.481 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{cb8b24d com.android.internal.emulation.pixel_4/10060} BLOCKED
+10-15 18:35:29.481 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{5859102 com.android.internal.emulation.pixel_5/10012} BLOCKED
+10-15 18:35:29.481 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{5998a13 com.android.internal.emulation.pixel_6/10038} BLOCKED
+10-15 18:35:29.482 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{823c450 com.android.internal.emulation.pixel_7/10067} BLOCKED
+10-15 18:35:29.482 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{2eb2649 com.android.internal.emulation.pixel_8/10039} BLOCKED
+10-15 18:35:29.482 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{93fbb4e com.google.android.captiveportallogin/10113} BLOCKED
+10-15 18:35:29.482 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{788b46f com.android.musicfx/10088} BLOCKED
+10-15 18:35:29.483 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{908d57c com.google.android.apps.docs/10154} BLOCKED
+10-15 18:35:29.483 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{6ad46b3 com.google.android.apps.maps/10152} BLOCKED
+10-15 18:35:29.483 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{9603e5a com.google.android.modulemetadata/10146} BLOCKED
+10-15 18:35:29.483 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{496288b com.google.android.markup/10135} BLOCKED
+10-15 18:35:29.483 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{acbcd68 com.android.providers.settings.auto_generated_rro_vendor__/10080} BLOCKED
+10-15 18:35:29.484 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{7cc5581 com.google.android.rkpdapp/10186} BLOCKED
+10-15 18:35:29.484 W/oment.personafy( 5027): Accessing hidden method Landroid/os/Trace;->isTagEnabled(J)Z (unsupported, reflection, allowed)
+10-15 18:35:29.484 W/oment.personafy( 5027): Accessing hidden method Landroid/os/Trace;->traceBegin(JLjava/lang/String;)V (unsupported, reflection, allowed)
+10-15 18:35:29.484 W/oment.personafy( 5027): Accessing hidden method Landroid/os/Trace;->traceEnd(J)V (unsupported, reflection, allowed)
+10-15 18:35:29.484 W/oment.personafy( 5027): Accessing hidden method Landroid/os/Trace;->asyncTraceBegin(JLjava/lang/String;I)V (unsupported, reflection, allowed)
+10-15 18:35:29.484 W/oment.personafy( 5027): Accessing hidden method Landroid/os/Trace;->asyncTraceEnd(JLjava/lang/String;I)V (unsupported, reflection, allowed)
+10-15 18:35:29.485 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{6d3e626 com.google.android.contacts/10155} BLOCKED
+10-15 18:35:29.485 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{fbcc267 com.android.server.telecom.auto_generated_rro_product__/10032} BLOCKED
+10-15 18:35:29.485 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{9445814 com.google.android.overlay.googleconfig/10055} BLOCKED
+10-15 18:35:29.485 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{867c8bd com.android.chrome/10149} BLOCKED
+10-15 18:35:29.486 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{2883eb2 com.android.bips.auto_generated_rro_product__/10035} BLOCKED
+10-15 18:35:29.486 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{6c91e03 com.google.android.apps.customization.pixel/10145} BLOCKED
+10-15 18:35:29.486 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{418e180 com.google.android.tag/10082} BLOCKED
+10-15 18:35:29.487 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{c4d33b9 com.google.android.overlay.permissioncontroller/10003} BLOCKED
+10-15 18:35:29.487 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{cb793fe com.google.android.partnersetup/10124} BLOCKED
+10-15 18:35:29.487 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{db5975f com.google.android.apps.wallpaper.nexus/10144} BLOCKED
+10-15 18:35:29.488 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{cea95ac com.google.android.apps.nexuslauncher/10169} BLOCKED
+10-15 18:35:29.488 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{8845275 com.google.android.nearby.halfsheet/10185} BLOCKED
+10-15 18:35:29.488 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{cf4f20a com.android.theme.font.notoserifsource/10066} BLOCKED
+10-15 18:35:29.488 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{3c64a7b com.google.android.safetycenter.resources/10180} BLOCKED
+10-15 18:35:29.488 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{c416098 com.android.internal.display.cutout.emulation.waterfall/10040} BLOCKED
+10-15 18:35:29.488 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{d4a0f1 com.android.internal.systemui.navbar.transparent/10029} BLOCKED
+10-15 18:35:29.488 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{ef824d6 com.google.android.connectivity.resources/10184} BLOCKED
+10-15 18:35:29.488 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{e651357 com.android.providers.contacts.auto_generated_rro_product__/10019} BLOCKED
+10-15 18:35:29.488 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{937ee44 com.google.android.feedback/10162} BLOCKED
+10-15 18:35:29.488 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{4015b2d com.google.android.printservice.recommendation/10110} BLOCKED
+10-15 18:35:29.491 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{5bd8df3 com.google.android.apps.photos/10140} BLOCKED
+10-15 18:35:29.491 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{406c017 com.google.android.calendar/10141} BLOCKED
+10-15 18:35:29.491 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{fe7aab0 com.google.android.documentsui/10098} BLOCKED
+10-15 18:35:29.492 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{fc57d29 com.android.systemui.emulation.pixel_3a_xl/10021} BLOCKED
+10-15 18:35:29.500 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{f19164f com.android.systemui.emulation.pixel_6_pro/10063} BLOCKED
+10-15 18:35:29.501 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{294c1dc com.android.systemui.emulation.pixel_7_pro/10054} BLOCKED
+10-15 18:35:29.501 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{88fc2e5 com.android.systemui.emulation.pixel_8_pro/10001} BLOCKED
+10-15 18:35:29.501 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{fac86b com.google.mainline.telemetry/10151} BLOCKED
+10-15 18:35:29.502 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{19a1fc8 com.android.carrierconfig.auto_generated_rro_product__/10064} BLOCKED
+10-15 18:35:29.503 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{fea861 com.android.providers.partnerbookmarks/10101} BLOCKED
+10-15 18:35:29.503 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{fc16f86 com.android.wallpaper.livepicker/10090} BLOCKED
+10-15 18:35:29.503 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{cfb8047 com.android.providers.telephony.auto_generated_rro_product__/10062} BLOCKED
+10-15 18:35:29.503 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{6157074 com.android.phone.auto_generated_rro_vendor__/10081} BLOCKED
+10-15 18:35:29.504 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{d1c699d com.google.mainline.adservices/10136} BLOCKED
+10-15 18:35:29.504 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{9b4fe12 com.android.imsserviceentitlement/10117} BLOCKED
+10-15 18:35:29.504 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{b65d9e3 com.google.android.healthconnect.controller/10178} BLOCKED
+10-15 18:35:29.504 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{b531fe0 com.android.internal.emulation.pixel_2_xl/10016} BLOCKED
+10-15 18:35:29.504 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{d5b0299 com.android.internal.emulation.pixel_3_xl/10056} BLOCKED
+10-15 18:35:29.504 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{5e0e95e com.android.internal.emulation.pixel_4_xl/10047} BLOCKED
+10-15 18:35:29.504 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{492313f com.android.internal.emulation.pixel_fold/10006} BLOCKED
+10-15 18:35:29.504 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{2fa5a0c com.android.bookmarkprovider/10114} BLOCKED
+10-15 18:35:29.504 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{d502f55 com.google.android.overlay.pixelconfigcommon/10014} BLOCKED
+10-15 18:35:29.504 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{a4e3d6a com.android.systemui.accessibility.accessibilitymenu.auto_generated_rro_product__/10050} BLOCKED
+10-15 18:35:29.504 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{402a25b com.android.systemui.emulation.pixel_3a/10013} BLOCKED
+10-15 18:35:29.504 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{ff90af8 com.android.systemui.emulation.pixel_4a/10000} BLOCKED
+10-15 18:35:29.504 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{2316bd1 com.android.systemui.emulation.pixel_6a/10042} BLOCKED
+10-15 18:35:29.504 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{28ac636 com.android.systemui.emulation.pixel_7a/10017} BLOCKED
+10-15 18:35:29.504 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{13f0937 com.google.android.settings.intelligence/10118} BLOCKED
+10-15 18:35:29.504 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{af70df6 com.google.android.projection.gearhead/10123} BLOCKED
+10-15 18:35:29.504 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{42fdea4 com.google.android.uwb.resources/10173} BLOCKED
+10-15 18:35:29.504 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{3b615f7 com.android.cts.ctsshim/10172} BLOCKED
+10-15 18:35:29.504 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{50ff40d com.google.android.wifi.resources/10189} BLOCKED
+10-15 18:35:29.504 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{3350fc2 com.google.android.wifi.dialog/10190} BLOCKED
+10-15 18:35:29.504 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{a7101d3 com.google.android.apps.wallpaper/10161} BLOCKED
+10-15 18:35:29.504 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{cde4110 com.google.android.odad/10121} BLOCKED
+10-15 18:35:29.505 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{4d4c409 com.android.settings.auto_generated_rro_product__/10028} BLOCKED
+10-15 18:35:29.505 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{a48660e com.android.internal.systemui.navbar.gestural/10051} BLOCKED
+10-15 18:35:29.505 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{cbfe82f com.google.android.apps.youtube.music/10156} BLOCKED
+10-15 18:35:29.505 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{9ce5e3c com.android.bluetoothmidiservice/10106} BLOCKED
+10-15 18:35:29.505 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{bfc97c5 com.android.storagemanager.auto_generated_rro_product__/10026} BLOCKED
+10-15 18:35:29.505 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{828d51a com.google.android.cellbroadcastreceiver/10170} BLOCKED
+10-15 18:35:29.505 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{66cd84b com.android.phone.auto_generated_rro_product__/10061} BLOCKED
+10-15 18:35:29.505 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{b412228 android.auto_generated_rro_product__/10069} BLOCKED
+10-15 18:35:29.505 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{613eb41 com.android.internal.systemui.navbar.gestural_narrow_back/10052} BLOCKED
+10-15 18:35:29.505 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{d6f28e6 com.google.android.inputmethod.latin/10143} BLOCKED
+10-15 18:35:29.506 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{eaeae27 android.auto_generated_rro_vendor__/10075} BLOCKED
+10-15 18:35:29.506 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{29a38d4 com.google.android.apps.restore/10120} BLOCKED
+10-15 18:35:29.535 I/cr_VariationsUtils( 5027): Failed reading seed file "/data/user/0/com.tornoment.personafy/app_webview/variations_seed_new"
+10-15 18:35:29.535 I/cr_VariationsUtils( 5027): Failed reading seed file "/data/user/0/com.tornoment.personafy/app_webview/variations_seed"
+10-15 18:35:29.550 D/ActivityManager(  522): sync unfroze 2871 com.google.android.webview:webview_service for 6
+10-15 18:35:29.613 W/TimedProcessReaper( 4795): Scheduling killing of process to refresh configuration
+10-15 18:35:29.704 I/ActivityManager(  522): Start proc 5080:com.google.android.webview:sandboxed_process0:org.chromium.content.app.SandboxedProcessService0:0/u0ai9000 for  {com.tornoment.personafy/org.chromium.content.app.SandboxedProcessService0:0}
+10-15 18:35:29.719 W/TimedProcessReaper( 4283): Scheduling killing of process to refresh configuration
+10-15 18:35:29.794 I/cr_WebViewApkApp( 5080): Launched version=113.0.5672.136 minSdkVersion=29 isBundle=false processName=com.google.android.webview:sandboxed_process0:org.chromium.content.app.SandboxedProcessService0:0
+10-15 18:35:30.024 I/ActivityManager(  522): Start proc 5110:com.google.android.webview:webview_apk/u0a134 for service {com.google.android.webview/org.chromium.android_webview.nonembedded.AwComponentUpdateService}
+10-15 18:35:30.040 D/ConnectivityService(  522): requestNetwork for uid/pid:10192/5027 activeRequest: null callbackRequest: 123 [NetworkRequest [ REQUEST id=124, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 10192 RequestorUid: 10192 RequestorPkg: com.tornoment.personafy UnderlyingNetworks: Null] ]] callback flags: 0 order: 2147483647
+10-15 18:35:30.041 D/WifiNetworkFactory(  522): got request NetworkRequest [ REQUEST id=124, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 10192 RequestorUid: 10192 RequestorPkg: com.tornoment.personafy UnderlyingNetworks: Null] ]
+10-15 18:35:30.046 D/UntrustedWifiNetworkFactory(  522): got request NetworkRequest [ REQUEST id=124, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 10192 RequestorUid: 10192 RequestorPkg: com.tornoment.personafy UnderlyingNetworks: Null] ]
+10-15 18:35:30.046 D/OemPaidWifiNetworkFactory(  522): got request NetworkRequest [ REQUEST id=124, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 10192 RequestorUid: 10192 RequestorPkg: com.tornoment.personafy UnderlyingNetworks: Null] ]
+10-15 18:35:30.046 D/MultiInternetWifiNetworkFactory(  522): got request NetworkRequest [ REQUEST id=124, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 10192 RequestorUid: 10192 RequestorPkg: com.tornoment.personafy UnderlyingNetworks: Null] ]
+10-15 18:35:30.113 I/iew:webview_apk( 5110): Using CollectorTypeCC GC.
+10-15 18:35:30.114 W/iew:webview_apk( 5110): Unexpected CPU variant for x86: x86_64.
+10-15 18:35:30.114 W/iew:webview_apk( 5110): Known variants: atom, sandybridge, silvermont, goldmont, goldmont-plus, tremont, kabylake, default
+10-15 18:35:30.130 D/Capacitor( 5027): Starting BridgeActivity
+10-15 18:35:30.157 E/iew:webview_apk( 5110): Not starting debugger since process cannot load the jdwp agent.
+10-15 18:35:30.246 W/iew:webview_apk( 5110): Entry not found
+10-15 18:35:30.247 D/nativeloader( 5110): Configuring clns-6 for other apk /data/app/~~1yn6wsLXFZ2B0diObX38Rg==/com.google.android.trichromelibrary_567263637-fiEw0QFhU0jUcrWPthKdwQ==/TrichromeLibrary.apk. target_sdk_version=34, uses_libraries=ALL, library_path=/data/app/~~rR896qjhJiRnYo39Tp2_TQ==/com.google.android.webview-0fALnkmZPERfqBHnUVaCTA==/lib/x86_64:/data/app/~~rR896qjhJiRnYo39Tp2_TQ==/com.google.android.webview-0fALnkmZPERfqBHnUVaCTA==/WebViewGoogle.apk!/lib/x86_64:/data/app/~~1yn6wsLXFZ2B0diObX38Rg==/com.google.android.trichromelibrary_567263637-fiEw0QFhU0jUcrWPthKdwQ==/TrichromeLibrary.apk!/lib/x86_64, permitted_path=/data:/mnt/expand:/data/user/0/com.google.android.webview
+10-15 18:35:30.262 D/nativeloader( 5110): Configuring clns-7 for other apk /data/app/~~rR896qjhJiRnYo39Tp2_TQ==/com.google.android.webview-0fALnkmZPERfqBHnUVaCTA==/WebViewGoogle.apk. target_sdk_version=34, uses_libraries=, library_path=/data/app/~~rR896qjhJiRnYo39Tp2_TQ==/com.google.android.webview-0fALnkmZPERfqBHnUVaCTA==/lib/x86_64:/data/app/~~rR896qjhJiRnYo39Tp2_TQ==/com.google.android.webview-0fALnkmZPERfqBHnUVaCTA==/WebViewGoogle.apk!/lib/x86_64:/data/app/~~1yn6wsLXFZ2B0diObX38Rg==/com.google.android.trichromelibrary_567263637-fiEw0QFhU0jUcrWPthKdwQ==/TrichromeLibrary.apk!/lib/x86_64, permitted_path=/data:/mnt/expand:/data/user/0/com.google.android.webview
+10-15 18:35:30.407 V/GraphicsEnvironment( 5110): ANGLE GameManagerService for com.google.android.webview: false
+10-15 18:35:30.407 V/GraphicsEnvironment( 5110): com.google.android.webview is not listed in per-application setting
+10-15 18:35:30.426 I/cr_WebViewApkApp( 5110): Launched version=113.0.5672.136 minSdkVersion=29 isBundle=false processName=com.google.android.webview:webview_apk
+10-15 18:35:30.501 D/CoreBackPreview(  522): Window{2fa836c u0 com.tornoment.personafy/com.tornoment.personafy.MainActivity}: Setting back callback OnBackInvokedCallbackInfo{mCallback=android.window.IOnBackInvokedCallback$Stub$Proxy@6d9d9c9, mPriority=0, mIsAnimationCallback=false}
+10-15 18:35:30.516 W/TimedProcessReaper( 4283): Scheduling killing of process to refresh configuration
+10-15 18:35:30.633 W/TimedProcessReaper( 1834): Scheduling killing of process to refresh configuration
+10-15 18:35:30.768 W/ziparchive(  522): Unable to open '/data/app/~~2cR7Y1280wveRe5aO23Apw==/com.tornoment.personafy-y3JMvtfb2vblUnIUpFHhJQ==/base.dm': No such file or directory
+10-15 18:35:30.822 I/ActivityTaskManager(  522): Displayed com.tornoment.personafy/.MainActivity for user 0: +2s426ms
+10-15 18:35:30.920 W/InputManager-JNI(  522): Input channel object '3226f3b Splash Screen com.tornoment.personafy (client)' was disposed without first being removed with the input manager!
+10-15 18:35:31.259 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{d2e5120 com.google.android.settings.intelligence/10118} BLOCKED
+10-15 18:35:31.279 I/ActivityManager(  522): Killing 4061:com.google.android.settings.intelligence/u0a118 (adj 0): change com.google.android.settings.intelligence
+10-15 18:35:31.291 W/cr_AWNetworkFetcherTask( 5110): 	at org.chromium.android_webview.nonembedded.NetworkFetcherTask.download(chromium-TrichromeWebViewGoogle6432.apk-stable-567263637:48)
+10-15 18:35:31.335 D/PrefCtrlListHelper( 1055): Could not find Context-only controller for pref: com.android.settings.deviceinfo.legal.WebViewLicensePreferenceController
+10-15 18:35:31.503 W/TimedProcessReaper( 4283): Scheduling killing of process to refresh configuration
+10-15 18:35:31.505 W/TimedProcessReaper( 4283): Scheduling killing of process to refresh configuration
+10-15 18:35:31.522 W/TimedProcessReaper( 1834): Scheduling killing of process to refresh configuration
+10-15 18:35:31.776 W/oment.personafy( 5027): Long monitor contention with owner ThreadPoolForeg (5078) at java.lang.Object libcore.content.type.MimeMap$MemoizingSupplier.get()(MimeMap.java:475) waiters=0 in java.lang.Object libcore.content.type.MimeMap$MemoizingSupplier.get() for 830ms
+10-15 18:35:31.777 W/oment.personafy( 5027): Long monitor contention with owner ThreadPoolForeg (5078) at java.lang.Object libcore.content.type.MimeMap$MemoizingSupplier.get()(MimeMap.java:475) waiters=1 in java.lang.Object libcore.content.type.MimeMap$MemoizingSupplier.get() for 831ms
+10-15 18:35:31.779 W/oment.personafy( 5027): Long monitor contention with owner ThreadPoolForeg (5078) at java.lang.Object libcore.content.type.MimeMap$MemoizingSupplier.get()(MimeMap.java:475) waiters=2 in java.lang.Object libcore.content.type.MimeMap$MemoizingSupplier.get() for 745ms
+10-15 18:35:31.780 W/oment.personafy( 5027): Long monitor contention with owner ThreadPoolForeg (5078) at java.lang.Object libcore.content.type.MimeMap$MemoizingSupplier.get()(MimeMap.java:475) waiters=3 in java.lang.Object libcore.content.type.MimeMap$MemoizingSupplier.get() for 537ms
+10-15 18:35:31.792 W/TimedProcessReaper( 1834): Scheduling killing of process to refresh configuration
+10-15 18:35:32.078 W/TimedProcessReaper( 4283): Scheduling killing of process to refresh configuration
+10-15 18:35:32.503 D/PrefCtrlListHelper( 1055): Could not find Context-only controller for pref: com.android.settings.deviceinfo.legal.WebViewLicensePreferenceController
+10-15 18:35:32.945 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{18c642c com.google.android.googlequicksearchbox/10132} BLOCKED
+10-15 18:35:32.945 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{c87305c com.google.android.apps.messaging/10129} BLOCKED
+10-15 18:35:32.952 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{7d40790 com.google.android.gm/10142} BLOCKED
+10-15 18:35:32.953 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{6d3e626 com.google.android.contacts/10155} BLOCKED
+10-15 18:35:33.274 D/OomAdjuster(  522): Not killing cached processes
+10-15 18:35:34.406 W/TimedProcessReaper( 1834): Scheduling killing of process to refresh configuration
+10-15 18:35:35.083 W/TimedProcessReaper( 1834): Scheduling killing of process to refresh configuration
+10-15 18:35:35.291 W/TimedProcessReaper( 4752): Scheduling killing of process to refresh configuration
+10-15 18:35:35.563 W/TimedProcessReaper( 1834): Scheduling killing of process to refresh configuration
+10-15 18:35:35.948 W/TimedProcessReaper( 1834): Scheduling killing of process to refresh configuration
+10-15 18:35:36.250 W/TimedProcessReaper( 1834): Scheduling killing of process to refresh configuration
+10-15 18:35:37.275 W/TimedProcessReaper( 1834): Scheduling killing of process to refresh configuration
+10-15 18:35:37.291 W/TimedProcessReaper( 1834): Scheduling killing of process to refresh configuration
+10-15 18:35:37.396 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{3b672b3 com.google.android.as/10126} BLOCKED
+10-15 18:35:37.867 W/TimedProcessReaper( 2990): Scheduling killing of process to refresh configuration
+10-15 18:35:37.868 W/TimedProcessReaper( 2990): Scheduling killing of process to refresh configuration
+10-15 18:35:37.874 W/TimedProcessReaper( 2990): Scheduling killing of process to refresh configuration
+10-15 18:35:38.098 D/ActivityManager(  522): freezing 4998 com.google.android.webview
+10-15 18:35:38.438 D/OomAdjuster(  522): Not killing cached processes
+10-15 18:35:38.795 W/TimedProcessReaper( 1834): Scheduling killing of process to refresh configuration
+10-15 18:35:39.146 W/TimedProcessReaper( 2990): Scheduling killing of process to refresh configuration
+10-15 18:35:39.323 W/TimedProcessReaper( 1834): Scheduling killing of process to refresh configuration
+10-15 18:35:39.589 W/TimedProcessReaper( 2990): Scheduling killing of process to refresh configuration
+10-15 18:35:40.172 W/TimedProcessReaper( 1834): Scheduling killing of process to refresh configuration
+10-15 18:35:40.311 W/TimedProcessReaper( 1834): Scheduling killing of process to refresh configuration
+10-15 18:35:40.442 D/ProfileInstaller( 5027): Installing profile for com.tornoment.personafy
+10-15 18:35:40.490 W/TimedProcessReaper( 1564): Scheduling killing of process to refresh configuration
+10-15 18:35:40.540 W/TimedProcessReaper( 1834): Scheduling killing of process to refresh configuration
+10-15 18:35:40.916 W/TimedProcessReaper( 1564): Scheduling killing of process to refresh configuration
+10-15 18:35:41.303 W/TimedProcessReaper( 1834): Scheduling killing of process to refresh configuration
+10-15 18:35:41.391 W/TimedProcessReaper( 1564): Scheduling killing of process to refresh configuration
+10-15 18:35:41.559 W/TimedProcessReaper( 1834): Scheduling killing of process to refresh configuration
+10-15 18:35:41.632 D/ActivityManager(  522): freezing 5110 com.google.android.webview:webview_apk
+10-15 18:35:41.634 W/TimedProcessReaper( 1834): Scheduling killing of process to refresh configuration
+10-15 18:35:41.644 D/ActivityManager(  522): freezing 2871 com.google.android.webview:webview_service
+10-15 18:35:41.703 W/TimedProcessReaper( 4283): Scheduling killing of process to refresh configuration
+10-15 18:35:41.805 W/TimedProcessReaper( 4283): Scheduling killing of process to refresh configuration
+10-15 18:35:42.234 W/TimedProcessReaper( 1834): Scheduling killing of process to refresh configuration
+10-15 18:35:42.913 W/TimedProcessReaper( 4283): Scheduling killing of process to refresh configuration
+10-15 18:35:42.914 W/TimedProcessReaper( 1697): Scheduling killing of process to refresh configuration
+10-15 18:35:42.914 W/TimedProcessReaper( 1697): Scheduling killing of process to refresh configuration
+10-15 18:35:42.916 W/TimedProcessReaper( 4752): Scheduling killing of process to refresh configuration
+10-15 18:35:43.049 W/TimedProcessReaper( 1834): Scheduling killing of process to refresh configuration
+10-15 18:35:43.448 D/OomAdjuster(  522): Not killing cached processes
+10-15 18:35:43.614 W/TimedProcessReaper( 4283): Scheduling killing of process to refresh configuration
+10-15 18:35:44.691 W/TimedProcessReaper( 2990): Scheduling killing of process to refresh configuration
+10-15 18:35:44.695 W/TimedProcessReaper( 4283): Scheduling killing of process to refresh configuration
+10-15 18:35:44.697 W/TimedProcessReaper( 1834): Scheduling killing of process to refresh configuration
+10-15 18:35:44.907 W/TimedProcessReaper( 4283): Scheduling killing of process to refresh configuration
+10-15 18:35:45.962 W/TimedProcessReaper( 2990): Scheduling killing of process to refresh configuration
+10-15 18:35:46.058 W/TimedProcessReaper( 1834): Scheduling killing of process to refresh configuration
+10-15 18:35:46.612 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{70a685f com.google.android.contacts/10155} BLOCKED
+10-15 18:35:46.669 W/TimedProcessReaper( 2990): Scheduling killing of process to refresh configuration
+10-15 18:35:46.703 W/TimedProcessReaper( 2990): Scheduling killing of process to refresh configuration
+10-15 18:35:48.483 D/OomAdjuster(  522): Not killing cached processes
+10-15 18:35:48.706 W/TimedProcessReaper( 1834): Scheduling killing of process to refresh configuration
+10-15 18:35:50.019 I/lowmemorykiller(  133): lmkd data connection established
+10-15 18:35:50.074 I/lowmemorykiller(  133): Using psi monitors for memory pressure detection
+10-15 18:35:50.074 I/lowmemorykiller(  133): Properties reinitilized
+10-15 18:35:50.075 I/lowmemorykiller( 5432): lmkd updated properties successfully
+10-15 18:35:50.075 I/lowmemorykiller(  133): lmkd data connection dropped
+10-15 18:35:50.075 I/lowmemorykiller(  133): closing lmkd data connection
+10-15 18:35:50.597 I/oment.personafy( 5027): Background young concurrent copying GC freed 37082(2171KB) AllocSpace objects, 16(1128KB) LOS objects, 26% free, 6252KB/8527KB, paused 63us,32us total 226.332ms
+10-15 18:35:52.014 I/oment.personafy( 5027): Background concurrent copying GC freed 23451(1381KB) AllocSpace objects, 44(1680KB) LOS objects, 49% free, 5942KB/11MB, paused 2.710ms,300us total 466.853ms
+10-15 18:35:53.486 D/OomAdjuster(  522): Not killing cached processes
+10-15 18:35:54.568 I/oment.personafy( 5027): Background young concurrent copying GC freed 26276(1388KB) AllocSpace objects, 44(3144KB) LOS objects, 39% free, 7244KB/11MB, paused 82us,21us total 323.310ms
+10-15 18:35:56.509 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{c67edd8 com.google.android.contacts/10155} BLOCKED
+10-15 18:35:58.488 D/OomAdjuster(  522): Not killing cached processes
+10-15 18:35:59.711 I/ActivityManager(  522): Background started FGS: Allowed [callingPackage: com.tornoment.personafy; callingUid: 10192; uidState: TOP ; uidBFSL: [BFSL]; intent: Intent { cmp=com.tornoment.personafy/.PlaybackService }; code:PROC_STATE_TOP; tempAllowListReason:<null>; targetSdkVersion:36; callerTargetSdkVersion:36; startForegroundCount:0; bindFromPackage:null: isBindService:false]
+10-15 18:35:59.746 I/MediaSessionStack(  522): addSession to bottom of stack | record: com.tornoment.personafy/Personafy (userId=0)
+10-15 18:35:59.805 I/MediaSessionStack(  522): onPlaybackStateChanged - Pushing session to top | record: com.tornoment.personafy/Personafy (userId=0)
+10-15 18:35:59.819 D/MediaPlayerList( 1030): onActiveSessionsChanged: controller: com.tornoment.personafy
+10-15 18:35:59.842 I/MediaPlayerList( 1030): Adding wrapped media player: com.tornoment.personafy at key: 2
+10-15 18:35:59.847 D/MediaPlayerList( 1030): onActiveSessionsChanged: controller: com.tornoment.personafy
+10-15 18:35:59.849 I/MediaPlayerList( 1030): Adding wrapped media player: com.tornoment.personafy at key: 2
+10-15 18:36:00.242 D/MediaResumeListener(  846): Checking for service component for com.tornoment.personafy
+10-15 18:36:01.434 D/oment.personafy( 5027): PlayerBase::PlayerBase()
+10-15 18:36:01.469 D/MediaSessionService(  522): Media button session is changed to com.tornoment.personafy/Personafy (userId=0)
+10-15 18:36:01.474 I/MediaPlayerList( 1030): onMediaKeyEventSessionChanged: token=com.tornoment.personafy
+10-15 18:36:01.487 D/MediaPlayerList( 1030): setActivePlayer(): setting player to com.tornoment.personafy
+10-15 18:36:01.590 I/MediaPlayerList( 1030): onMediaKeyEventSessionChanged: token=com.tornoment.personafy
+10-15 18:36:01.592 D/MediaPlayerList( 1030): setActivePlayer(): setting player to com.tornoment.personafy
+10-15 18:36:01.593 I/MediaSessionService(  522): tempAllowlistTargetPkgIfPossible callingPackage:com.google.android.bluetooth targetPackage:com.tornoment.personafy reason:MediaSessionRecord:android.support.v4.media.session.command.GET_EXTRA_BINDER [WIU] [FGS]
+10-15 18:36:01.601 D/MediaPlayerList( 1030): onActiveSessionsChanged: controller: com.tornoment.personafy
+10-15 18:36:01.610 D/MediaPlayerList( 1030): onActiveSessionsChanged: controller: com.tornoment.personafy
+10-15 18:36:01.710 I/oment.personafy( 5027): Background young concurrent copying GC freed 18113(1271KB) AllocSpace objects, 52(3792KB) LOS objects, 34% free, 7131KB/10MB, paused 11.300ms,32us total 202.035ms
+10-15 18:36:01.905 I/MediaFocusControl(  522): requestAudioFocus() from uid/pid 10192/5027 AA=USAGE_MEDIA/CONTENT_TYPE_UNKNOWN clientId=android.media.AudioManager@21dc1e3org.chromium.content.browser.AudioFocusDelegate@50e7e0 callingPack=com.tornoment.personafy req=1 flags=0x0 sdk=36
+10-15 18:36:02.137 V/AudioMediaPlayerWrapper( 1030): trySendMediaUpdate(): Metadata has been updated for com.tornoment.personafy
+10-15 18:36:02.153 V/AudioMediaPlayerWrapper( 1030): trySendMediaUpdate(): Metadata has been updated for com.tornoment.personafy
+10-15 18:36:02.167 V/AudioMediaPlayerWrapper( 1030): onPlaybackStateChanged(): com.tornoment.personafy : PlaybackState {state=PLAYING(3), position=93, buffered position=0, speed=1.0, updated=115381, actions=823, custom actions=[], active item id=-1, error=null}
+10-15 18:36:02.167 W/AudioMediaPlayerWrapper( 1030): onPlaybackStateChanged(): com.tornoment.personafy tried to update with no new data
+10-15 18:36:02.167 V/AudioMediaPlayerWrapper( 1030): onPlaybackStateChanged(): com.tornoment.personafy : PlaybackState {state=PLAYING(3), position=93, buffered position=0, speed=1.0, updated=115381, actions=823, custom actions=[], active item id=-1, error=null}
+10-15 18:36:02.168 W/AudioMediaPlayerWrapper( 1030): onPlaybackStateChanged(): com.tornoment.personafy tried to update with no new data
+10-15 18:36:03.493 D/OomAdjuster(  522): Not killing cached processes
+10-15 18:36:04.934 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{ab884b9 com.google.android.googlequicksearchbox/10132} BLOCKED
+10-15 18:36:07.863 W/TimedProcessReaper( 1564): Scheduling killing of process to refresh configuration
+10-15 18:36:07.925 W/TimedProcessReaper( 1564): Scheduling killing of process to refresh configuration
+10-15 18:36:07.976 W/TimedProcessReaper( 4283): Scheduling killing of process to refresh configuration
+10-15 18:36:07.987 W/TimedProcessReaper( 4283): Scheduling killing of process to refresh configuration
+10-15 18:36:08.120 W/TimedProcessReaper( 4283): Scheduling killing of process to refresh configuration
+10-15 18:36:08.131 W/TimedProcessReaper( 4283): Scheduling killing of process to refresh configuration
+10-15 18:36:08.299 W/TimedProcessReaper( 1834): Scheduling killing of process to refresh configuration
+10-15 18:36:08.381 W/TimedProcessReaper( 1834): Scheduling killing of process to refresh configuration
+10-15 18:36:08.513 D/OomAdjuster(  522): Not killing cached processes
+10-15 18:36:08.624 W/TimedProcessReaper( 1834): Scheduling killing of process to refresh configuration
+10-15 18:36:08.909 I/oment.personafy( 5027): Background young concurrent copying GC freed 14922(1351KB) AllocSpace objects, 63(4092KB) LOS objects, 39% free, 6894KB/11MB, paused 13.380ms,62us total 151.308ms
+10-15 18:36:09.710 I/ActivityTaskManager(  522): START u0 {flg=0x10000000 cmp=com.tornoment.personafy/.MainActivity} with LAUNCH_SINGLE_TASK from uid 2000 (BAL_ALLOW_PERMISSION) result code=3
+10-15 18:36:09.711 D/WindowManagerShell(  846): onActivityRestartAttempt: ComponentInfo{com.tornoment.personafy/com.tornoment.personafy.MainActivity}
+10-15 18:36:09.835 W/TimedProcessReaper( 2990): Scheduling killing of process to refresh configuration
+10-15 18:36:09.908 W/TimedProcessReaper( 2990): Scheduling killing of process to refresh configuration
+10-15 18:36:09.920 W/TimedProcessReaper( 2990): Scheduling killing of process to refresh configuration
+10-15 18:36:13.529 D/OomAdjuster(  522): Not killing cached processes
+10-15 18:36:14.751 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{f3b3dd5 com.google.android.contacts/10155} BLOCKED
+10-15 18:36:16.081 I/oment.personafy( 5027): Background young concurrent copying GC freed 12296(1338KB) AllocSpace objects, 50(3076KB) LOS objects, 47% free, 5079KB/9747KB, paused 13.527ms,23us total 207.243ms
+10-15 18:36:18.587 D/OomAdjuster(  522): Not killing cached processes
+10-15 18:36:20.649 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{61eb946 com.google.android.contacts/10155} BLOCKED
+10-15 18:36:23.354 W/GoogleCertificatesImpl( 5628): Source stamp verification failed, package: com.google.android.webview status: CANNOT_VERIFY
+10-15 18:36:23.811 D/OomAdjuster(  522): Not killing cached processes
+10-15 18:36:25.858 I/oment.personafy( 5027): Background concurrent copying GC freed 13466(1281KB) AllocSpace objects, 59(3532KB) LOS objects, 49% free, 7414KB/14MB, paused 52us,40us total 700.378ms
+10-15 18:36:28.893 D/OomAdjuster(  522): Not killing cached processes
+10-15 18:36:30.596 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{70d8366 com.google.android.contacts/10155} BLOCKED
+10-15 18:36:33.916 D/OomAdjuster(  522): Not killing cached processes
+10-15 18:36:38.917 D/OomAdjuster(  522): Not killing cached processes
+10-15 18:36:41.680 I/AppsFilter(  522): interaction: PackageSetting{dc2c800 com.tornoment.personafy/10192} -> PackageSetting{4c53516 com.google.android.contacts/10155} BLOCKED
+10-15 18:36:44.091 D/OomAdjuster(  522): Not killing cached processes
+10-15 18:36:49.746 D/OomAdjuster(  522): Not killing cached processes
