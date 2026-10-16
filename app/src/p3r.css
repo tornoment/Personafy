@@ -264,6 +264,9 @@
 .n3-keys .k{display:inline-flex;align-items:center;justify-content:center;min-width:24px;height:24px;margin-left:10px;padding:0 9px;border-radius:12px;background:#ffffff;color:var(--p3-navy);font-weight:800;font-style:normal;font-size:11px;letter-spacing:.02em}
 .n3-band{position:relative;z-index:3;margin:0;background:linear-gradient(180deg,rgba(4,10,50,0),rgba(4,10,50,.6) 38%,rgba(4,10,50,.88))}
 .n3-band-in{position:relative;max-width:1080px;margin:0 auto;padding:22px 40px clamp(22px,3.6vh,40px)}
+/* in narrow windows the band would start on the white "ИГРАЕТ" strip (about a tenth of the width down there), and the
+   white elapsed time would vanish on it: start the band past the strip */
+.n3-band-in{padding-left:max(40px,calc(10vw + 16px - max(0px,(100vw - 1080px) / 2)))}
 .n3-prog-row{display:flex;align-items:center;gap:18px}
 .n3-time{min-width:66px;font-weight:300;font-style:italic;font-size:26px;line-height:1;color:#ffffff}
 .n3-time.r{text-align:right}

@@ -279,7 +279,8 @@ body[data-view=now] #mini{display:none}
 .np-time{min-width:56px;font-weight:900;font-size:22px;color:#ffffff;text-shadow:2px 2px 0 #0b0b0b}
 .np-ctl-wrap{position:relative;margin-top:30px}
 .np-vol{position:absolute;right:0;top:50%;translate:0 -50%}
-@media (max-width:1120px){.np-ctl{max-width:550px!important}}
+/* six buttons (5 × 72px + 104px) need 554px with the usual gaps: tighter gaps keep them in one row */
+@media (max-width:1120px){.np-ctl{max-width:550px!important;column-gap:12px!important}}
 .np-ctl{position:relative;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px 18px;max-width:600px;margin-left:auto;margin-right:auto}
 .cbtn{width:72px;height:72px;background:none;border:0;padding:0;cursor:pointer;display:flex;align-items:center;justify-content:center}
 .cbtn.big{width:104px;height:104px}
@@ -293,7 +294,7 @@ body[data-view=now] #mini{display:none}
 .ly-line:hover{color:#ffffff}
 .ly-fade-t{position:absolute;left:0;right:0;top:0;height:90px;background:linear-gradient(#0b0b0b 25%,rgba(11,11,11,0));pointer-events:none}
 .ly-fade-b{position:absolute;left:0;right:0;bottom:0;height:90px;background:linear-gradient(rgba(11,11,11,0),#0b0b0b 75%);pointer-events:none}
-.ly-plain{position:absolute;inset:44px 0 0;overflow-y:auto;background:#0b0b0b;padding:12px 26px 40px;text-align:center}
+.ly-plain{position:absolute;inset:44px 0 26px;overflow-y:auto;background:#0b0b0b;padding:12px 26px 40px;text-align:center}
 .ly-plain p{margin:0;min-height:12px;font-weight:700;font-size:17px;line-height:1.55;color:#e8e8e8;-webkit-user-select:text;user-select:text}
 .ly-plain::-webkit-scrollbar{width:8px}
 .ly-plain::-webkit-scrollbar-thumb{background:#d4141a}

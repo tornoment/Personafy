@@ -6,7 +6,7 @@ const fsp = fs.promises;
 const { Readable } = require('stream');
 
 const APP_NAME = 'Personafy';
-const UA = 'Personafy/1.5 (personal music player)';
+const UA = 'Personafy/1.6 (personal music player)';
 const DRIVE_BASE = process.env.PHANTOM_DRIVE_BASE || 'https://drive.usercontent.google.com';
 const STREAM = (id) => DRIVE_BASE + '/download?id=' + encodeURIComponent(id) + '&export=download';
 const BROWSER_UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36';
@@ -124,15 +124,53 @@ function confirmUrl(html) {
   return trusted ? url : null;
 }
 
-async function driveFetch(fileId, extraHeaders) {
+/* Drive now and then accepts a request and never answers it; without a deadline the track would load forever.
+   The deadline covers only the wait for the answer to start, never the music that follows.
+   `signal` stops the request for good, body included: a download merely left unread (reader.cancel()) keeps
+   receiving, and a few of those fill the one connection to Drive until every later request hangs. */
+const DRIVE_ANSWER_MS = 20000;
+async function fetchAnswer(url, headers, signal) {
+  const ac = new AbortController();
+  const t = setTimeout(() => ac.abort(new Error('Google Диск не отвечает')), DRIVE_ANSWER_MS);
+  if (signal) {
+    if (signal.aborted) ac.abort(signal.reason);
+    else signal.addEventListener('abort', () => ac.abort(signal.reason), { once: true });
+  }
+  try {
+    return await net.fetch(url, { headers, signal: ac.signal });
+  } finally {
+    clearTimeout(t);
+  }
+}
+
+async function driveFetch(fileId, extraHeaders, signal) {
   const headers = Object.assign({ 'User-Agent': BROWSER_UA }, extraHeaders || {});
-  let res = await net.fetch(STREAM(fileId), { headers });
+  let res = await fetchAnswer(STREAM(fileId), headers, signal);
   const type = res.headers.get('content-type') || '';
   if (res.ok && /text\/html/i.test(type)) {
     const next = confirmUrl(await res.text());
-    if (next) res = await net.fetch(next, { headers });
+    if (next) res = await fetchAnswer(next, headers, signal);
   }
   return res;
+}
+
+/* passes a Drive body on; when whoever reads it gives up (the player seeks or skips), the request itself is stopped */
+function abortableBody(body, ac) {
+  const reader = body.getReader();
+  return new ReadableStream({
+    async pull(c) {
+      try {
+        const { done, value } = await reader.read();
+        if (done) c.close();
+        else c.enqueue(value);
+      } catch (e) {
+        c.error(e);
+      }
+    },
+    cancel() {
+      ac.abort();
+    }
+  });
 }
 
 const FILE_ID_RE = /^[A-Za-z0-9_-]{10,200}$/;
@@ -188,16 +226,19 @@ async function handlePhantom(req) {
   const extra = {};
   const range = req.headers.get('range');
   if (range) extra.Range = range;
+  const ac = new AbortController();
+  if (req.signal) req.signal.addEventListener('abort', () => ac.abort(), { once: true });
   let res;
   try {
-    res = await driveFetch(id, extra);
+    res = await driveFetch(id, extra, ac.signal);
   } catch (e) {
-    return new Response('network error', { status: 502 });
+    /* never kept: once the network is back the same address must be fetched again */
+    return new Response('network error', { status: 502, headers: { 'cache-control': 'no-store' } });
   }
   const type = res.headers.get('content-type') || '';
   if (!res.ok || /text\/html/i.test(type)) {
-    try { await res.body?.cancel(); } catch (e) { /* ignore */ }
-    return new Response('drive error ' + res.status, { status: res.ok ? 502 : res.status });
+    ac.abort();
+    return new Response('drive error ' + res.status, { status: res.ok ? 502 : res.status, headers: { 'cache-control': 'no-store' } });
   }
   const out = new Headers();
   for (const k of ['content-type', 'content-length', 'content-range', 'accept-ranges', 'last-modified', 'etag']) {
@@ -206,13 +247,24 @@ async function handlePhantom(req) {
   }
   if (!out.has('accept-ranges')) out.set('accept-ranges', 'bytes');
   out.set('access-control-allow-origin', '*');
-  return new Response(res.body, { status: res.status, headers: out });
+  return new Response(abortableBody(res.body, ac), { status: res.status, headers: out });
 }
 
 function parseName(name) {
+  /* "1-05 Title" / "2.05 Title": disc and track, so the discs of one album don't share numbers (disc 2 → 205) */
+  const d = name.match(/^\s*([1-9])[-.](\d{2})\s*[-.]?\s*(.*?)\.(mp3|m4a|flac|ogg|wav|opus)$/i);
+  if (d) return { n: parseInt(d[1], 10) * 100 + parseInt(d[2], 10), title: d[3].trim() || name };
   const m = name.match(/^\s*(\d+)\s*[-.]?\s*(.*?)\.(mp3|m4a|flac|ogg|wav|opus)$/i);
   if (!m) return null;
   return { n: parseInt(m[1], 10), title: m[2].trim() || name };
+}
+
+/* an album's id comes from its folder name in Latin letters; a name with almost none of them (Cyrillic, Japanese)
+   or a name already taken falls back to the Drive folder id, so two albums never share ids, likes or downloads */
+function albumKey(folder, used) {
+  const key = folder.name.toLowerCase().replace(/[^a-z0-9_-]+/g, '-');
+  if (key.replace(/[^a-z0-9]/g, '').length >= 2 && !used.has(key)) return key;
+  return 'f-' + folder.id.replace(/[^A-Za-z0-9_-]/g, '').slice(0, 24);
 }
 
 async function refreshCatalog() {
@@ -232,8 +284,10 @@ async function refreshCatalog() {
   const albums = [];
   const tracks = [];
   const listings = await Promise.all(folders.map((f) => listFolder(f.id)));
+  const usedKeys = new Set();
   folders.forEach((f, fi) => {
-    const key = f.name.toLowerCase().replace(/[^a-z0-9_-]+/g, '-');
+    const key = albumKey(f, usedKeys);
+    usedKeys.add(key);
     const files = listings[fi];
     const known = albumMeta.get(key);
     const coverEntry = files.find((x) => /^cover\.(jpe?g|png|webp)$/i.test(x.name));
@@ -246,8 +300,13 @@ async function refreshCatalog() {
     album.tracks = [];
     const audio = files.filter((x) => !x.folder && parseName(x.name));
     audio.sort((a, b) => parseName(a.name).n - parseName(b.name).n);
+    /* two files with the same number would share an id and a downloaded file: a repeat gets the next free number */
+    const usedN = new Set();
+    let maxN = audio.reduce((mx, x) => Math.max(mx, parseName(x.name).n), 0);
     for (const x of audio) {
       const p = parseName(x.name);
+      if (usedN.has(p.n)) p.n = ++maxN;
+      usedN.add(p.n);
       const id = key + '-' + p.n;
       const meta = metaById.get(id);
       tracks.push(Object.assign({}, meta || { id, album: key, n: p.n, title: p.title, artist: album.artist, sec: 0 }, { file: x.id, name: x.name, auto: !bundledTracks.has(id) }));
@@ -327,10 +386,12 @@ function mp3Seconds(buf, audioBytes) {
 }
 /* reads at most `want` bytes of a byte range, never the whole file */
 async function readRange(fileId, start, want) {
-  const res = await driveFetch(fileId, { Range: 'bytes=' + start + '-' + (start + want - 1) });
+  /* Drive may ignore the range and send the whole file: the request is stopped once enough has arrived */
+  const ac = new AbortController();
+  const res = await driveFetch(fileId, { Range: 'bytes=' + start + '-' + (start + want - 1) }, ac.signal);
   const type = res.headers.get('content-type') || '';
   if (!(res.status === 206 || res.status === 200) || /text\/html/i.test(type)) {
-    try { await res.body?.cancel(); } catch (e) { /* ignore */ }
+    ac.abort();
     throw new Error('drive ' + res.status);
   }
   const cr = res.headers.get('content-range') || '';
@@ -344,7 +405,7 @@ async function readRange(fileId, start, want) {
     parts.push(Buffer.from(value));
     got += value.length;
   }
-  try { await reader.cancel(); } catch (e) { /* ignore */ }
+  ac.abort();
   return { buf: Buffer.concat(parts).subarray(0, want), total };
 }
 async function probeTrack(t) {

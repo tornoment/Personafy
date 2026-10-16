@@ -420,8 +420,9 @@
       if (CAT.albums.length) playList(CAT.albums[0].tracks, 0);
       return;
     }
-    if (P.loadedId !== curId() || !audio.src) {
-      loadTrack(true, P.pendingSeek || 0);
+    /* after a failed or stalled load the element will not play again by itself: ask for the track anew */
+    if (P.loadedId !== curId() || !audio.src || audio.error || P.stalled) {
+      loadTrack(true, P.pendingSeek || (P.stalled ? currentPos() : 0));
       return;
     }
     if (audio.paused) audio.play().catch(playFail);
@@ -451,6 +452,10 @@
     const t = curTrack();
     if (!t) return;
     const seq = ++loadSeq;
+    /* the same track asked for again after it failed or stalled: the failed answer must not be reused */
+    const again = P.loadedId === t.id && (!!audio.error || !!P.stalled || !!P.stallRetried);
+    if (P.loadedId !== t.id) P.stallRetried = false;
+    P.stalled = false;
     P.counted = false;
     P.recentAdded = false;
     P.pendingSeek = startAt > 0 ? startAt : null;
@@ -470,12 +475,14 @@
       }
     } catch (e) { /* fall back to streaming */ }
     if (seq !== loadSeq) return;
+    if (again && /^phantom:/.test(url)) url += (url.includes('?') ? '&' : '?') + 'retry=' + Date.now();
     P.offline = offline;
     if (!offline && !navigator.onLine) toast('Нет интернета, а этот трек не скачан. Скачать треки можно в «Библиотеке».');
     doc.body.classList.add('buffering');
     applyLevel(true);
     audio.src = url;
     if (autoplay) {
+      watchStall();
       audio.play().catch(playFail);
     } else {
       doc.body.classList.remove('buffering');
@@ -535,7 +542,37 @@
     if ('mediaSession' in navigator) navigator.mediaSession.playbackState = 'paused';
     saveNow();
   });
-  audio.addEventListener('waiting', () => doc.body.classList.add('buffering'));
+  audio.addEventListener('waiting', () => {
+    doc.body.classList.add('buffering');
+    watchStall();
+  });
+
+  /* a stream that stops arriving (Drive went quiet, the network dropped) would show "loading" forever:
+     after a while the track is asked for again from the same spot, once; then the player stops and says why */
+  const STALL_MS = 15000;
+  let stallT = null;
+  function watchStall() {
+    clearTimeout(stallT);
+    stallT = setTimeout(onStall, STALL_MS);
+  }
+  const stopStallWatch = () => { clearTimeout(stallT); stallT = null; };
+  function onStall() {
+    stallT = null;
+    if (audio.paused || !doc.body.classList.contains('buffering')) return;
+    if (!P.stallRetried) {
+      P.stallRetried = true;
+      loadTrack(true, currentPos());
+      return;
+    }
+    P.stalled = true;
+    audio.pause();
+    doc.body.classList.remove('buffering');
+    toast(navigator.onLine
+      ? 'Трек не догружается — Google Диск не отвечает. Нажмите «Играть», чтобы попробовать ещё раз.'
+      : 'Нет интернета — трек не догружается. Скачанные треки играют и без сети.', { key: 'stall' });
+  }
+  /* a pause needs no clearing: a paused player is left alone when the watch runs out */
+  ['playing', 'error', 'ended'].forEach((n) => audio.addEventListener(n, stopStallWatch));
   audio.addEventListener('canplay', () => doc.body.classList.remove('buffering'));
   audio.addEventListener('seeked', () => {
     updateTimes();
@@ -547,6 +584,8 @@
     const t = curTrack();
     doc.body.classList.remove('buffering');
     doc.body.classList.add('paused');
+    /* the stall watch already stopped the player and said why: the late failure of that request changes nothing */
+    if (P.stalled) return;
     P.errors++;
     const offlineNow = !navigator.onLine;
     if (offlineNow) {
@@ -2359,7 +2398,18 @@
     const art = $('.n3-menu .n3-it');
     if (!tags || !art) return;
     tags.style.marginBottom = '';
+    const col = $('.n3-right');
+    if (col) col.style.marginTop = '';
     const root = $('#view');
+    /* narrow desktop windows: the pause menu in the top right corner can sit over the pills and the artist line —
+       the column steps down below it (in CSS pixels of the column, which fitNow may have zoomed) */
+    const menu = !PHONE && $('#nav .pm');
+    if (menu && col) {
+      const m = menu.getBoundingClientRect();
+      const hit = [tags, art].map((e) => e.getBoundingClientRect()).find((b) => b.right > m.left && b.left < m.right && b.top < m.bottom);
+      const z = parseFloat(($('.n3-main') || col).style.zoom) || 1;
+      if (hit) col.style.marginTop = Math.ceil((m.bottom - hit.top + 10) / z) + 'px';
+    }
     const pills = $$('.n3-pill, .np-fav, .dl-done', tags).map((c) => layoutBox(c, root)).filter((b) => b && b.w > 0);
     const tb = layoutBox(tags, root);
     const ab = layoutBox(art, root);
@@ -2373,14 +2423,36 @@
   }
   window.addEventListener('resize', () => { fitN3Tags(); fitNow(); });
 
+  /* the desktop window at its smallest: when long names make "now playing" taller than the window, the upper part
+     (cover, title, buttons) shrinks as a whole just enough for the controls band to stay on screen without scrolling */
+  const NOW_MIN_ZOOM = 0.7;
+  function fitNowDesktop(v, np) {
+    const main = $('.np-main, .n3-main, .mfn-main', np);
+    if (!main) return;
+    main.style.zoom = '';
+    let k = 1;
+    for (let i = 0; i < 4 && k > NOW_MIN_ZOOM; i++) {
+      const over = v.scrollHeight - v.clientHeight;
+      if (over <= 1) break;
+      const h = main.getBoundingClientRect().height;
+      if (!(h > over)) break;
+      k = Math.max(NOW_MIN_ZOOM, (k * (h - over - 2)) / h);
+      main.style.zoom = k.toFixed(3);
+    }
+  }
+
   /* the phone: "now playing" always fits the screen, whatever the names — when the title, the album or the next
      track take more room, the cover gives up exactly that much (phone.css: --cut), so the buttons stay put above the tabs */
   function fitNow() {
-    if (!PHONE || S.view !== 'now') return;
+    if (S.view !== 'now') return;
     const v = $('#view');
     const np = $('.np', v);
     const band = np && $('.np-band', np);
     if (!band) return;
+    if (!PHONE) {
+      fitNowDesktop(v, np);
+      return;
+    }
     let cut = 0;
     np.style.setProperty('--cut', '0px');
     for (let i = 0; i < 3 && cut < 140; i++) {
@@ -2408,6 +2480,7 @@
     if (off) off.innerHTML = t && S.downloads.has(t.id) ? '<span class="dl-done" style="font-size:12px">' + DL_ICON('#0b0b0b', 14) + 'БЕЗ ИНТЕРНЕТА</span>' : '';
     fitN3Tags();
     fitNow();
+    if (isP3() && !PHONE) fitN3Tags();
   }
   function viewNow() {
     const t = curTrack();
@@ -2922,10 +2995,11 @@
     const mw = $('#wipe-mf-word');
     if (mw) mw.innerHTML = view && MF_WIPE[view] && isMF() ? mfWord(MF_WIPE[view], 0.02) : '';
   }
-  function go(view) {
+  /* queued: a section asked for during the last wipe — a panel opened since then stays open over it */
+  function go(view, queued) {
     closeTrackMenu();
-    if (S.qOpen) closeQueue(true);
-    if (S.sOpen) closeSettings(true);
+    if (S.qOpen && !queued) closeQueue(true);
+    if (S.sOpen && !queued) closeSettings(true);
     if (view === S.view && !navBusy) {
       if (view === 'search' && (S.openAlbum || S.query)) {
         S.openAlbum = null;
@@ -2968,7 +3042,7 @@
         if (navQueued && navQueued !== S.view) {
           const v = navQueued;
           navQueued = null;
-          go(v);
+          go(v, true);
         }
         navQueued = null;
       }, 460);
@@ -3542,6 +3616,14 @@
     scrollIdle = setTimeout(() => v.classList.remove('is-scrolling'), 160);
   }, { passive: true });
 
+  /* a button clicked with the mouse keeps the focus, and Space would press it again instead of pausing:
+     after a mouse click (detail > 0; keyboard presses report 0) the focus is let go */
+  doc.addEventListener('click', (e) => {
+    if (!e.detail) return;
+    const b = e.target.closest && e.target.closest('button');
+    if (b && b === doc.activeElement) b.blur();
+  });
+
   doc.addEventListener('keydown', (e) => {
     const tg = e.target;
     const tag = tg && tg.tagName;
@@ -3929,6 +4011,21 @@
     }
     if (api.version) api.version().then((v) => { appVersion = String(v || ''); if (S.sOpen) renderSettings(); }).catch(() => {});
     setTimeout(refreshCatalog, 1200);
+    setTimeout(prewarm, 4000);
+  }
+
+  /* the first switch to another theme stuttered while its fonts and paint textures were fetched and decoded:
+     they are loaded quietly a few seconds after start, so the switch itself has nothing left to wait for */
+  function prewarm() {
+    const idle = window.requestIdleCallback || ((fn) => setTimeout(fn, 1));
+    idle(() => {
+      if (doc.fonts) doc.fonts.forEach((f) => { if (f.status === 'unloaded') f.load().catch(() => {}); });
+      ['swathe1', 'swathe2', 'splat', 'scratch', 'grain', 'brush1', 'brush2', 'brush3'].forEach((n) => {
+        const img = new Image();
+        img.src = 'mf/' + n + '.webp';
+        if (img.decode) img.decode().catch(() => {});
+      });
+    });
   }
 
   window.__phantom = { LV, S, P, TR, AL, go, playList, toggleLike, next, prev, seek, setVolume, renderQueue, openQueue, openSettings, closeSettings, setTheme };
