@@ -511,6 +511,10 @@ async function prefetchCovers(cat) {
 /* ---------- offline downloads ---------- */
 
 const offlinePath = (t) => path.join(offlineDir(), t.album, t.n + '.mp3');
+/* a track sent by the window becomes part of file paths (downloads, lyrics): only plain ids may pass */
+const SAFE_ID_RE = /^[A-Za-z0-9_-]{1,120}$/;
+const trackOk = (t) => !!t && SAFE_ID_RE.test(String(t.album)) && /^\d{1,5}$/.test(String(t.n)) &&
+  SAFE_ID_RE.test(String(t.id)) && (!t.file || FILE_ID_RE.test(String(t.file)));
 const downloading = new Map();
 
 async function listDownloads() {
@@ -889,6 +893,7 @@ app.whenReady().then(() => {
     }
   });
   ipcMain.handle('media:url', async (_e, t) => {
+    if (!trackOk(t)) return { url: null, offline: false };
     const p = offlinePath(t);
     try {
       await fsp.access(p);
@@ -912,12 +917,16 @@ app.whenReady().then(() => {
   });
   ipcMain.handle('dl:list', () => listDownloads());
   ipcMain.handle('dl:start', (_e, list) => {
-    enqueueDownloads(list);
+    enqueueDownloads((Array.isArray(list) ? list : []).filter(trackOk));
     return true;
   });
   ipcMain.handle('dl:remove', async (_e, list) => {
     let failed = 0;
-    for (const t of list) {
+    for (const t of Array.isArray(list) ? list : []) {
+      if (!trackOk(t)) {
+        failed++;
+        continue;
+      }
       try {
         await fsp.rm(offlinePath(t), { force: true });
       } catch (e) {
@@ -928,6 +937,7 @@ app.whenReady().then(() => {
   });
   ipcMain.handle('weather:get', () => getWeather());
   ipcMain.handle('lyrics:get', async (_e, t) => {
+    if (!trackOk(t)) return { found: false, error: 'bad track' };
     try {
       return await getLyrics(t);
     } catch (e) {

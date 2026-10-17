@@ -329,6 +329,14 @@ html.phone #titlebar{display:none}
 .phone[data-theme] .ly-line{font-size:16px;min-height:44px}
 .phone[data-theme] .ly-line.cur{scale:1.18}
 .phone[data-theme] .ly-tag{font-size:10px}
+/* the messages in the lyrics card ("НЕТ СЕТИ" and the like): the big word and the text are smaller on the
+   phone and keep clear of the sticker above and the source line below */
+.phone[data-theme=p5] .ly-msg{gap:8px;padding:40px 16px 30px}
+.phone[data-theme=p5] .ly-msg>p[aria-hidden]{zoom:.7}
+.phone[data-theme=p5] .ly-msg p.t{font-size:14px}
+.phone[data-theme=p3r] .ly-msg{gap:6px;padding:46px 16px 32px}
+.phone[data-theme=p3r] .ly-msg .ly3-big{zoom:.62}
+.phone[data-theme=p3r] .ly-msg p.t{font-size:14px}
 
 /* P5 */
 .phone[data-theme=p5] .np-main{flex-direction:column;flex-wrap:nowrap;align-items:stretch;gap:12px;padding:calc(var(--st) + 30px) 20px 0}
@@ -362,6 +370,22 @@ html.phone #titlebar{display:none}
 .phone[data-theme=p5] .np-left .np-like-wrap{right:-14px;bottom:-16px}
 .phone[data-theme=p5] .np-left .np-like-wrap .cbtn{width:62px;height:58px}
 .phone[data-theme=p5] .np-left .np-like-wrap svg{width:58px!important;height:58px!important}
+/* small phones (360 wide, ~600 tall, or larger system text): the six playback buttons are made to fit the width,
+   the cover / lyrics card never shrinks below a readable size, and the room it needs comes from the header instead */
+.phone[data-theme=p5] .np-left{width:max(190px,calc(min(68vw,290px) - var(--cut,0px)))}
+@media (max-width:380px){
+  .phone[data-theme=p5] .np-ctl{zoom:.78;column-gap:6px}
+}
+@media (max-height:760px){
+  .phone[data-theme=p5] .np-main{padding-top:calc(var(--st) + 14px);gap:8px}
+  .phone[data-theme=p5] .np-left{width:clamp(140px,calc(100vh - 470px),min(68vw,290px))}
+  .phone[data-theme=p5] .np-title{-webkit-line-clamp:1}
+  .phone[data-theme=p5] .np-label{display:none}
+  .phone[data-theme=p5] .np-band{margin-top:6px}
+  .phone[data-theme=p5] .band-in{padding:8px 18px 14px}
+  .phone[data-theme=p5] .band-w,.phone[data-theme=p5] .band-g{top:44px;bottom:6px}
+  .phone[data-theme=p5] .np-band .np-ctl-wrap{margin-top:30px}
+}
 
 /* P3R: the pause menu's white side panel with the vertical word doesn't fit a narrow screen — it becomes the band
    every P3R screen has at the top: the name in giant grey letters on a white diagonal, the number beside it.
@@ -398,6 +422,16 @@ html.phone #titlebar{display:none}
 .phone[data-theme=p3r] .np-ctl-wrap{margin-top:6px}
 .phone[data-theme=p3r] .n3-time{min-width:44px;font-size:18px}
 .phone[data-theme=p3r] .n3-prog-row{gap:10px}
+/* short screens: a lower header band and no "now playing" pill, so the playback buttons stay above the tabs */
+@media (max-height:680px){
+  .phone[data-theme=p3r] .n3-side{height:74px}
+  .phone[data-theme=p3r] .n3-side::before{top:24px;height:38px}
+  .phone[data-theme=p3r] .n3-side-t{font-size:60px}
+  .phone[data-theme=p3r] .n3-side-num{font-size:22px}
+  .phone[data-theme=p3r] .n3-main{padding-top:calc(var(--st) + 78px)}
+  .phone[data-theme=p3r] .n3-tags{display:none}
+  .phone[data-theme=p3r] .n3-band-in{padding-bottom:18px}
+}
 
 /* Metaphor */
 .phone[data-theme=mf] .mfn-num{right:8px;top:calc(var(--st) + 236px)}
@@ -433,7 +467,12 @@ html.phone #titlebar{display:none}
 .phone[data-theme=mf] .mfn-left .np-like-wrap .cbtn{width:54px;height:54px}
 .phone[data-theme=mf] .mfn-left .np-like-wrap svg{width:46px!important;height:46px!important}
 /* the lyrics card's source line moves to the left corner, clear of the like on the right one */
-.phone[data-theme=p3r] .ly-src,.phone[data-theme=mf] .ly-src{left:14px;right:auto}
+.phone[data-theme] .ly-src{left:14px;right:auto}
+/* on a small card (short screens, large system text) only the site's name is left, on one line, clear of the like */
+@media (max-height:760px){
+  .phone[data-theme] .ly-src{left:8px;bottom:6px;font-size:0;white-space:nowrap}
+  .phone[data-theme] .ly-src::after{content:'lrclib.net';font-size:10px}
+}
 .phone[data-theme=mf] .mfn-band-in{padding:6px 18px 34px}
 .phone[data-theme=mf] .mfn-time{min-width:40px;font-size:17px}
 .phone[data-theme=mf] .mfn-prog-row{gap:10px}

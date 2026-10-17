@@ -11,6 +11,24 @@
   if (!cap || typeof cap.getPlatform !== 'function' || cap.getPlatform() !== 'android') return;
   const doc = document;
 
+  /* The interface needs Chrome 104+ in the system web view (separate rotate/translate, aspect-ratio, flex gap…).
+     A phone without Google Play updates may still have a web view from 2018–2019 that draws every screen broken,
+     so it says what to update instead. Kept to the plainest styles, which that old web view draws right. */
+  const webview = +((navigator.userAgent.match(/Chrome\/(\d+)/) || [])[1] || 0);
+  if (webview && webview < 104) {
+    const box = doc.createElement('div');
+    box.setAttribute('style', 'position:fixed;left:0;top:0;right:0;bottom:0;z-index:2147483647;background:#0b0b0b;color:#ffffff;' +
+      'display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;text-align:center;font:16px/1.45 sans-serif');
+    box.innerHTML = '<p style="margin:0 0 14px;font-size:22px;font-weight:bold">Нужно обновить WebView</p>' +
+      '<p style="margin:0 0 14px">Personafy рисует свои экраны через системный компонент «Android System WebView». ' +
+      'На этом телефоне он слишком старый (версия ' + webview + '), и плеер будет выглядеть с ошибками.</p>' +
+      '<p style="margin:0 0 26px">Обновите «Android System WebView» в Play Маркете и откройте Personafy снова.</p>' +
+      '<a href="https://play.google.com/store/apps/details?id=com.google.android.webview" style="display:block;background:#ffffff;color:#0b0b0b;padding:12px 22px;font-weight:bold;text-decoration:none">Открыть в Play Маркете</a>' +
+      '<button type="button" style="margin-top:22px;background:none;border:0;color:#9a9a9a;font-size:14px;text-decoration:underline">Всё равно открыть плеер</button>';
+    box.querySelector('button').addEventListener('click', () => box.parentNode.removeChild(box));
+    doc.body.appendChild(box);
+  }
+
   window.addEventListener('contextmenu', (e) => {
     if (e.pointerType === 'mouse') return;
     e.preventDefault();

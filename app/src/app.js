@@ -456,7 +456,11 @@
     const again = P.loadedId === t.id && (!!audio.error || !!P.stalled || !!P.stallRetried);
     if (P.loadedId !== t.id) P.stallRetried = false;
     P.stalled = false;
-    P.counted = false;
+    if (!again) {
+      P.heard = 0;
+      P.counted = false;
+    }
+    P.lastT = startAt > 0 ? startAt : 0;
     P.recentAdded = false;
     P.pendingSeek = startAt > 0 ? startAt : null;
     P.loadedId = t.id;
@@ -609,7 +613,12 @@
       lastSave = now;
       saveNow();
     }
-    if (!P.counted && audio.currentTime >= Math.min(30, (audio.duration || 60) * 0.5)) {
+    /* a play counts once the track has really been heard for a while: seeking to the end skips time, not plays it */
+    const t = audio.currentTime;
+    const step = t - (P.lastT || 0);
+    if (step > 0 && step < 1.5 && !audio.seeking) P.heard = (P.heard || 0) + step;
+    P.lastT = t;
+    if (!P.counted && (P.heard || 0) >= Math.min(30, (audio.duration || 60) * 0.5)) {
       P.counted = true;
       const id = curId();
       if (id) {
@@ -2339,6 +2348,7 @@
     }
     if (L.kind === 'instr') return msg(T_INSTR, 'В этом треке нет слов');
     if (L.kind === 'none') return msg(T_NOLY, 'Текст для этого трека не нашёлся. Скорее всего, в нём нет слов.');
+    if (L.kind === 'error' && L.online) return msg(T_NOLY, 'Сервис текстов lrclib.net сейчас не отвечает — попробуйте позже.');
     if (L.kind === 'error') return msg(T_NONET, 'Не получилось загрузить текст — проверьте интернет.');
     if (L.kind === 'plain') {
       return '<div class="ly-plain">' + L.lines.map((s) => '<p>' + (esc(s) || '&nbsp;') + '</p>').join('') + '</div><div class="ly-fade-b" style="height:50px"></div>';
@@ -2477,7 +2487,11 @@
     const lk = $('#np-like-slot');
     if (lk && t && (!lk.firstElementChild || lk.firstElementChild.dataset.id !== t.id)) lk.innerHTML = likeBtn(t.id, 'now');
     const off = $('#np-off');
-    if (off) off.innerHTML = t && S.downloads.has(t.id) ? '<span class="dl-done" style="font-size:12px">' + DL_ICON('#0b0b0b', 14) + 'БЕЗ ИНТЕРНЕТА</span>' : '';
+    /* downloaded: plays without the network; not downloaded while offline: say so for as long as it lasts */
+    if (off) {
+      off.innerHTML = t && S.downloads.has(t.id) ? '<span class="dl-done" style="font-size:12px">' + DL_ICON('#0b0b0b', 14) + 'БЕЗ ИНТЕРНЕТА</span>'
+        : t && !navigator.onLine ? '<span class="dl-done" style="font-size:12px;background:#ffffff;color:#d4141a">НЕ СКАЧАН · НУЖЕН ИНТЕРНЕТ</span>' : '';
+    }
     fitN3Tags();
     fitNow();
     if (isP3() && !PHONE) fitN3Tags();
@@ -2556,8 +2570,9 @@
     return out.filter((l, i) => !(l.text === '♪' && i > 0 && out[i - 1].text === '♪'));
   }
   function toLyrics(r) {
-    if (!r) return { kind: 'error' };
-    if (!r.found) return { kind: r.error ? 'error' : 'none' };
+    /* a failure with the network up means LRCLIB itself did not answer (it does return 503 now and then) */
+    if (!r || (!r.found && r.error)) return { kind: 'error', online: navigator.onLine };
+    if (!r.found) return { kind: 'none' };
     if (r.instrumental) return { kind: 'instr' };
     if (r.synced) {
       const lines = parseLrc(r.synced);
@@ -3869,8 +3884,8 @@
     return ok;
   }
 
-  window.addEventListener('online', () => toast('Интернет снова есть', { key: 'net', teal: true, ms: 1800 }));
-  window.addEventListener('offline', () => toast('Пропал интернет — играют только скачанные треки', { key: 'net' }));
+  window.addEventListener('online', () => { toast('Интернет снова есть', { key: 'net', teal: true, ms: 1800 }); updateNowBits(); });
+  window.addEventListener('offline', () => { toast('Пропал интернет — играют только скачанные треки', { key: 'net' }); updateNowBits(); });
   if (doc.fonts && doc.fonts.ready) doc.fonts.ready.then(() => { updateLyricsActive(currentPos(), true); fitN3Tags(); fitNow(); });
 
   /* durations / artists of newly added tracks arrive in small batches while the player reads them from Drive */
