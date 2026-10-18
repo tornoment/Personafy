@@ -12,6 +12,9 @@
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   /* the phone builds (mobile/: iPhone and Android) mark the page as "phone": narrow layout, touch, files on the phone */
   const PHONE = doc.documentElement.classList.contains('phone');
+  /* the iPhone's web view stops Web Audio when the app goes to the background, and with it the music routed through
+     it — so there the sound never goes through the levelling graph (and the switch for it is not shown) */
+  const LEVEL_OK = !(PHONE && doc.documentElement.classList.contains('ios'));
   const ON_DEVICE = PHONE ? 'с телефона' : 'с компьютера';
   const EST_BYTES_PER_SEC = 40000;
   const STREAM = (id) => 'phantom://drive/' + encodeURIComponent(id);
@@ -737,7 +740,7 @@
   function ensureGraph() {
     if (LV.ctx || LV.failed) return;
     /* on the phone the sound goes through Web Audio only while levelling is on (it is all the graph is for there) */
-    if (PHONE && !S.level) return;
+    if (PHONE && (!S.level || !LEVEL_OK)) return;
     try {
       const AC = window.AudioContext || window.webkitAudioContext;
       const ctx = new AC({ latencyHint: 'playback' });
@@ -1607,9 +1610,9 @@
         themePreview(th.id) + '<span class="s3-row-t"><span class="s3-name">' + th.name + '</span><span class="s3-sub">' + th.sub + '</span></span>' +
         '<span class="s3-mark" aria-hidden="true"></span></button>').join('') +
       '</div>' +
-      '<p class="s3-cap s-row" style="margin-top:26px;transition-delay:.2s">Звук</p>' +
+      (LEVEL_OK ? '<p class="s3-cap s-row" style="margin-top:26px;transition-delay:.2s">Звук</p>' +
       '<button type="button" role="switch" class="s3-row s3-sw s-row' + (S.level ? ' is-on' : '') + '" data-act="level-toggle" aria-checked="' + S.level + '" style="transition-delay:.22s">' +
-      '<span class="s3-row-t"><span class="s3-name">Выравнивать громкость</span><span class="s3-sub">Тихие и громкие альбомы звучат одинаково</span></span><span class="sw" aria-hidden="true"><i></i></span></button>' +
+      '<span class="s3-row-t"><span class="s3-name">Выравнивать громкость</span><span class="s3-sub">Тихие и громкие альбомы звучат одинаково</span></span><span class="sw" aria-hidden="true"><i></i></span></button>' : '') +
       '<div style="flex:1"></div>' +
       '<div class="s3-help s-row" style="transition-delay:.24s"><p>Как будет выглядеть плеер?</p><span class="n3-help-l"><i>Guide</i></span>' +
       '<p class="n3-keys"><span class="k">Esc</span>Закрыть</p></div>' +
@@ -1845,9 +1848,9 @@
         '<span class="sm-br" aria-hidden="true"></span>' + themePreview(th.id) + '<span class="sm-t"><span class="sm-name">' + th.name + '</span><span class="sm-sub">' + th.sub + '</span></span>' +
         '<i class="mf-dia sm-mark" aria-hidden="true"></i></button>').join('') +
       '</div>' +
-      '<p class="sm-cap s-row" style="margin-top:30px;transition-delay:.24s"><i class="mf-dia" aria-hidden="true"></i>Звук</p>' +
+      (LEVEL_OK ? '<p class="sm-cap s-row" style="margin-top:30px;transition-delay:.24s"><i class="mf-dia" aria-hidden="true"></i>Звук</p>' +
       '<button type="button" role="switch" class="sm-row sm-sw s-row' + (S.level ? ' is-on' : '') + '" data-act="level-toggle" aria-checked="' + S.level + '" style="transition-delay:.27s">' +
-      '<span class="sm-t"><span class="sm-name">Выравнивать громкость</span><span class="sm-sub">Тихие и громкие альбомы звучат одинаково</span></span><span class="sw" aria-hidden="true"><i></i></span></button>' +
+      '<span class="sm-t"><span class="sm-name">Выравнивать громкость</span><span class="sm-sub">Тихие и громкие альбомы звучат одинаково</span></span><span class="sw" aria-hidden="true"><i></i></span></button>' : '') +
       '<div style="flex:1"></div>' +
       '<p class="sm-ver s-row" style="transition-delay:.3s">Personafy' + (appVersion ? ' · версия ' + esc(appVersion) : '') + '</p></div></div>';
   }
@@ -2809,10 +2812,10 @@
         '<span class="s5-txt"><span class="s5-name">' + th.name.toUpperCase() + '</span><span class="s5-sub">' + th.sub + '</span></span></span>' +
         (S.theme === th.id ? '<span class="s5-on" aria-hidden="true">ВЫБРАНО</span>' : '') + '</button>').join('') +
       '</div>' +
-      '<p class="s-row s5-cap" style="margin-top:40px;transition-delay:.22s">ЗВУК</p>' +
+      (LEVEL_OK ? '<p class="s-row s5-cap" style="margin-top:40px;transition-delay:.22s">ЗВУК</p>' +
       '<button type="button" role="switch" class="s5-opt s5-sw s-row' + (S.level ? ' is-on' : '') + '" data-act="level-toggle" aria-checked="' + S.level + '" style="transition-delay:.25s">' +
       '<span class="s5-sh" aria-hidden="true"></span><span class="s5-ol" aria-hidden="true"></span><span class="s5-in">' +
-      '<span class="s5-txt"><span class="s5-name">ВЫРАВНИВАТЬ ГРОМКОСТЬ</span><span class="s5-sub">Тихие и громкие альбомы звучат одинаково</span></span><span class="sw" aria-hidden="true"><i></i></span></span></button>' +
+      '<span class="s5-txt"><span class="s5-name">ВЫРАВНИВАТЬ ГРОМКОСТЬ</span><span class="s5-sub">Тихие и громкие альбомы звучат одинаково</span></span><span class="sw" aria-hidden="true"><i></i></span></span></button>' : '') +
       '<div style="flex:1"></div>' +
       '<p class="s-row" style="margin:48px 0 0;align-self:flex-end;display:inline-flex;align-items:center;gap:10px;background:#ffffff;color:#0b0b0b;padding:6px 16px;font-weight:900;font-style:italic;font-size:13px;letter-spacing:.1em;transform:skewX(-12deg) rotate(2deg);transition-delay:.26s">PERSONAFY' + (appVersion ? ' · ВЕРСИЯ ' + esc(appVersion) : '') + '</p>' +
       '</div></div>';

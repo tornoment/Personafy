@@ -598,3 +598,10 @@ html.ios.phone[data-theme=p5] .ly-msg>p[aria-hidden]{zoom:1;scale:.7;margin:-10p
 @media (max-height:760px){
   html.ios.phone[data-theme=p5] .ly-msg>p[aria-hidden]{zoom:1;scale:.5;margin:-17px 0}
 }
+/* the calendar's stickers: the SVG "dilate" filters took seconds per frame in the iPhone's Safari (Home froze while
+   its animations ran), so there the black backing and the white rim are drawn as rings of plain text shadows */
+html.ios.phone[data-theme=p5] .p5c-md,html.ios.phone[data-theme=p5] .p5c-d,html.ios.phone[data-theme=p5] .p5c-w,html.ios.phone[data-theme=p5] .p5c-t{filter:none}
+html.ios.phone[data-theme=p5] .p5c-md b,html.ios.phone[data-theme=p5] .p5c-d b{text-shadow:6px 0px 0 #000,4px 4px 0 #000,0px 5px 0 #000,-4px 4px 0 #000,-6px 0px 0 #000,-4px -4px 0 #000,0px -5px 0 #000,4px -4px 0 #000,12px 0px 0 #000,10px 5px 0 #000,6px 9px 0 #000,0px 10px 0 #000,-6px 9px 0 #000,-10px 5px 0 #000,-12px 0px 0 #000,-10px -5px 0 #000,-6px -9px 0 #000,0px -10px 0 #000,6px -9px 0 #000,10px -5px 0 #000,17px 0px 0 #fff,15px 7px 0 #fff,9px 13px 0 #fff,0px 15px 0 #fff,-8px 13px 0 #fff,-15px 7px 0 #fff,-17px 0px 0 #fff,-15px -7px 0 #fff,-9px -13px 0 #fff,0px -15px 0 #fff,9px -13px 0 #fff,15px -8px 0 #fff}
+html.ios.phone[data-theme=p5] .p5c-w i{background:none;color:#000;-webkit-text-fill-color:#000}
+html.ios.phone[data-theme=p5] .p5c-w b{background:#fff;padding:6px 10px 2px;box-shadow:0 0 0 9px #000,0 0 0 15px #fff}
+html.ios.phone[data-theme=p5] .p5c-t b{text-shadow:8px 0px 0 #fff,6px 4px 0 #fff,0px 6px 0 #fff,-6px 4px 0 #fff,-8px 0px 0 #fff,-6px -4px 0 #fff,0px -6px 0 #fff,6px -4px 0 #fff,15px 0px 0 #fff,13px 5px 0 #fff,8px 10px 0 #fff,0px 11px 0 #fff,-7px 10px 0 #fff,-13px 5px 0 #fff,-15px 0px 0 #fff,-13px -5px 0 #fff,-8px -10px 0 #fff,0px -11px 0 #fff,8px -10px 0 #fff,13px -6px 0 #fff}
