@@ -402,6 +402,9 @@ html.phone #titlebar{display:none}
 .phone[data-theme=p3r] .n3-it{font-size:21px;--x:6px}
 .phone[data-theme=p3r] .n3-menu .n3-it:first-child{margin-left:14px}
 .phone[data-theme=p3r] .n3-title{font-size:34px;margin:2px 0 6px 4px}
+/* WebKit (iPhone) sizes the title's line by the unclamped text — three lines of empty space under a long name;
+   as a flex item the title box is exactly as tall as its clamped lines */
+.phone[data-theme=p3r] .n3-title{display:flex}
 .phone[data-theme=p3r] .n3-title .p3c{left:-6%;right:-8%}
 .phone[data-theme=p3r] .n3-act{font-size:21px;margin-left:22px}
 .phone[data-theme=p3r] .n3-pill,.phone[data-theme=p3r] .np-fav{font-size:11px!important;padding:4px 12px!important}
@@ -430,6 +433,12 @@ html.phone #titlebar{display:none}
   .phone[data-theme=p3r] .n3-side-num{font-size:22px}
   .phone[data-theme=p3r] .n3-main{padding-top:calc(var(--st) + 78px)}
   .phone[data-theme=p3r] .n3-tags{display:none}
+  .phone[data-theme=p3r] .n3-right{padding-top:16px}
+  .phone[data-theme=p3r] .n3-tt,.phone[data-theme=p3r] .n3-rt{-webkit-line-clamp:1}
+}
+/* a long artist line is tilted less, so its far end doesn't climb onto the cover and the like */
+.phone[data-theme=p3r] .n3-menu .n3-it:first-child{--r:-3deg!important}
+@media (max-height:680px){
   .phone[data-theme=p3r] .n3-band-in{padding-bottom:18px}
 }
 
@@ -472,6 +481,12 @@ html.phone #titlebar{display:none}
 @media (max-height:760px){
   .phone[data-theme] .ly-src{left:8px;bottom:6px;font-size:0;white-space:nowrap}
   .phone[data-theme] .ly-src::after{content:'lrclib.net';font-size:10px}
+  /* a message instead of lyrics (none found, no network) takes the whole small card: no source line under it */
+  .phone[data-theme] .ly-card:has(.ly-msg) .ly-src{display:none}
+  .phone[data-theme] .ly-msg{gap:4px;padding:34px 10px 10px}
+  .phone[data-theme] .ly-msg p.t{font-size:12px;line-height:1.3}
+  .phone[data-theme=p5] .ly-msg>p[aria-hidden]{zoom:.5}
+  .phone[data-theme=p3r] .ly-msg .ly3-big,.phone[data-theme=mf] .ly-msg .ly3-big{zoom:.45}
 }
 .phone[data-theme=mf] .mfn-band-in{padding:6px 18px 34px}
 .phone[data-theme=mf] .mfn-time{min-width:40px;font-size:17px}

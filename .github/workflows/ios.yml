@@ -113,3 +113,53 @@ jobs:
           name: build-log
           path: mobile/logpub
           retention-days: 30
+
+  # the same project built for the iOS simulator and run on a small, a usual and a big iPhone,
+  # plus every screen of the three themes in the simulator's Safari (scripts/ios-check.mjs)
+  check:
+    needs: ipa
+    runs-on: macos-15-intel
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Simulator build
+        working-directory: mobile
+        run: |
+          set -o pipefail
+          npm ci
+          npm run build:web
+          npx cap sync ios
+          xcodebuild \
+            -project ios/App/App.xcodeproj \
+            -scheme App \
+            -configuration Debug \
+            -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath simbuild \
+            CODE_SIGNING_ALLOWED=NO \
+            build 2>&1 | tee simbuild.log | grep -E "error:|BUILD (SUCCEEDED|FAILED)" || true
+          test -d simbuild/Build/Products/Debug-iphonesimulator/App.app
+
+      - name: Run on the simulators
+        working-directory: mobile
+        run: |
+          sudo safaridriver --enable
+          xcrun simctl list devices available | grep -E "iPhone" | head -20
+          node scripts/ios-check.mjs ../check-ios simbuild/Build/Products/Debug-iphonesimulator/App.app
+
+      - name: Show the check on the run's page
+        if: always()
+        run: |
+          if [ -f check-ios/result.md ]; then cat check-ios/result.md; else echo "# iPhone: the check did not run"; fi >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: check-ios
+          path: check-ios
+          retention-days: 30
