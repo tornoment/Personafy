@@ -127,14 +127,24 @@ const FIT = `(() => { const v = document.getElementById('view');
   return { w: innerWidth, h: innerHeight, navTop, play: r ? [Math.round(r.top), Math.round(r.bottom)] : null, scroll: v.scrollHeight + '/' + v.clientHeight }; })()`;
 
 async function safariScreens(dev, url) {
+  /* GitHub's Intel Macs run the simulator slowly: Safari is started first, so safaridriver finds it already up,
+     and the session is tried a few times before giving up */
+  sim('launch', dev.udid, 'com.apple.mobilesafari');
+  await sleep(60000);
   let sid;
-  try {
-    const s = await wd('POST', '/session', { capabilities: { alwaysMatch: { browserName: 'safari', platformName: 'iOS', 'safari:useSimulator': true, 'safari:deviceUDID': dev.udid } } });
-    sid = s.sessionId;
-  } catch (e) {
-    check(`${dev.name}: Safari WebDriver session`, false, String(e.message || e));
-    return;
+  let lastErr = '';
+  for (let i = 0; i < 3 && !sid; i++) {
+    try {
+      const s = await wd('POST', '/session', { capabilities: { alwaysMatch: { browserName: 'safari', platformName: 'iOS', 'safari:useSimulator': true, 'safari:deviceUDID': dev.udid } } });
+      sid = s.sessionId;
+    } catch (e) {
+      lastErr = String(e.message || e);
+      note(`${dev.name}: no Safari session yet (${i + 1}/3): ${lastErr.slice(0, 160)}`);
+      await sleep(30000);
+    }
   }
+  check(`${dev.name}: Safari WebDriver session`, !!sid, sid ? undefined : lastErr);
+  if (!sid) return;
   const tag = dev.name.replace(/[^A-Za-z0-9]+/g, '-').replace(/-$/, '');
   const ph = 'window.__phantom';
   try {
@@ -176,10 +186,13 @@ async function appRun(dev) {
   sim('privacy', dev.udid, 'grant', 'all', BUNDLE);
   const launch = sim('launch', dev.udid, BUNDLE);
   check(`${dev.name}: the app starts`, /:\s*\d+/.test(launch), launch.trim().slice(0, 200));
+  /* two photos: while it may still be drawing its opening animation, and once it has surely settled */
   await sleep(30000);
-  sim('io', dev.udid, 'screenshot', `${OUT}/${tag}-app-start.png`);
+  sim('io', dev.udid, 'screenshot', `${OUT}/${tag}-app-30s.png`);
+  await sleep(60000);
+  sim('io', dev.udid, 'screenshot', `${OUT}/${tag}-app-90s.png`);
   const alive = sim('spawn', dev.udid, 'launchctl', 'list');
-  check(`${dev.name}: the app is still running after 30 s`, alive.includes('UIKitApplication:' + BUNDLE), null);
+  check(`${dev.name}: the app is still running after 90 s`, alive.includes('UIKitApplication:' + BUNDLE), null);
   const crashes = sim('spawn', dev.udid, 'log', 'show', '--last', '2m', '--style', 'compact', '--predicate', 'eventMessage CONTAINS[c] "crash" AND process == "App"');
   writeFileSync(`${OUT}/${tag}-log.txt`, crashes);
   sim('terminate', dev.udid, BUNDLE);

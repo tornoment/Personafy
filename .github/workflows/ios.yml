@@ -119,7 +119,8 @@ jobs:
   check:
     needs: ipa
     runs-on: macos-15-intel
-    timeout-minutes: 60
+    # the Intel simulators are slow (installing the app alone takes minutes); the .ipa is already published by then
+    timeout-minutes: 120
     steps:
       - uses: actions/checkout@v4
 
