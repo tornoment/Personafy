@@ -6,7 +6,7 @@ const fsp = fs.promises;
 const { Readable } = require('stream');
 
 const APP_NAME = 'Personafy';
-const UA = 'Personafy/1.6 (personal music player)';
+const UA = 'Personafy/1.7 (personal music player)';
 const DRIVE_BASE = process.env.PHANTOM_DRIVE_BASE || 'https://drive.usercontent.google.com';
 const STREAM = (id) => DRIVE_BASE + '/download?id=' + encodeURIComponent(id) + '&export=download';
 const BROWSER_UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36';

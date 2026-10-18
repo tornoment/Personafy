@@ -1,6 +1,6 @@
 {
   "name": "personafy-mobile",
-  "version": "1.6.1",
+  "version": "1.7.0",
   "description": "Personafy для iPhone и Android — тот же интерфейс, обёрнутый в приложение (Capacitor)",
   "private": true,
   "license": "UNLICENSED",
