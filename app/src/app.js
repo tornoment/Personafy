@@ -455,6 +455,7 @@
       P.pendingSeek = sec;
     } else {
       try {
+        ownSeek();
         audio.currentTime = sec;
       } catch (e) { /* not seekable yet */ }
     }
@@ -620,6 +621,7 @@
     S.lyActive = -2;
     applyLevel(false, true);
     try {
+      ownSeek();
       el.currentTime = 0;
     } catch (e) { /* at the start already */ }
     el.play().catch(playFail);
@@ -659,12 +661,29 @@
   onAudio('seeking', () => {
     clearTimeout(XF.t);
     XF.t = null;
+    lockScreenSkip();
   });
+  /* The iPhone's lock screen and Control Center show their side buttons as "10 s back / forward" and, inside the
+     app's web view, move the player by 10 s themselves without telling the page. A jump of 10 s that the app did
+     not make is therefore one of those buttons: it switches to the next / previous track instead. */
+  let ownSeekAt = 0;
+  function ownSeek() {
+    ownSeekAt = performance.now();
+  }
+  function lockScreenSkip() {
+    if (!IOS || performance.now() - ownSeekAt < 800 || P.loadedId !== curId()) return;
+    const from = P.lastT || 0;
+    const to = audio.currentTime || 0;
+    const d = to - from;
+    if (Math.abs(d - 10) < 1.5) next();
+    else if (Math.abs(d + 10) < 1.5 || (to < 0.6 && from > 0.6 && from < 11.5)) prev(true);
+  }
 
   onAudio('loadedmetadata', () => {
     const t = curTrack();
     if (P.pendingSeek != null && isFinite(audio.duration)) {
       try {
+        ownSeek();
         audio.currentTime = Math.min(P.pendingSeek, Math.max(0, audio.duration - 1));
       } catch (e) { /* ignore */ }
     }
