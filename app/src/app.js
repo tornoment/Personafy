@@ -1050,9 +1050,12 @@
     h('previoustrack', prev);
     h('nexttrack', next);
     h('seekto', (d) => { if (d && typeof d.seekTime === 'number') seek(d.seekTime); });
-    /* the iPhone's lock screen and Control Center show "10 s back / forward" instead of the track buttons
-       whenever these two are offered — there only the track buttons are */
-    if (!IOS) {
+    /* the iPhone's lock screen and Control Center show their two side buttons as "10 s back / forward" whatever
+       the page offers: there those buttons switch to the previous / next track */
+    if (IOS) {
+      h('seekbackward', () => prev(true));
+      h('seekforward', () => next());
+    } else {
       h('seekbackward', () => seek((audio.currentTime || 0) - 10));
       h('seekforward', () => seek((audio.currentTime || 0) + 10));
     }
@@ -3779,7 +3782,8 @@
         }
         if (dy < 12) return;
         PD.on = true;
-        PD.el = viewEl.firstElementChild;
+        /* the whole interface goes down with the finger — screen, tabs and the theme's background alike */
+        PD.el = $('#app');
         if (!PD.el) {
           PD = null;
           return;
@@ -3808,7 +3812,14 @@
       s.el.style.transition = 'transform .18s ease-in, opacity .18s ease-in';
       s.el.style.transform = 'translateY(' + window.innerHeight + 'px)';
       s.el.style.opacity = '0';
-      setTimeout(() => { if (S.view === 'now') backStep(); }, 170);
+      setTimeout(() => {
+        if (S.view === 'now') backStep();
+        /* the screen it returns to comes up in place */
+        s.el.style.transition = 'none';
+        s.el.style.transform = '';
+        s.el.style.opacity = '';
+        if (s.el.animate && !reduced) s.el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 220, easing: 'ease-out' });
+      }, 190);
     };
     window.addEventListener('pointerup', endPull);
     window.addEventListener('pointercancel', endPull);
