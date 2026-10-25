@@ -297,6 +297,9 @@ async function refreshCatalog() {
     album.auto = !bundledAlbums.has(key);
     album.folder = f.id;
     album.coverFile = coverEntry ? coverEntry.id : (known ? known.coverFile : null);
+    /* the cover built into the app is that album's cover.jpg as it was; once a different file lies on Drive,
+       the picture was changed there and Drive's one is shown */
+    if (coverEntry && known && known.cover && known.coverFile && coverEntry.id !== known.coverFile) album.cover = null;
     album.tracks = [];
     const audio = files.filter((x) => !x.folder && parseName(x.name));
     audio.sort((a, b) => parseName(a.name).n - parseName(b.name).n);

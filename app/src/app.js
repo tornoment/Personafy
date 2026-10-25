@@ -4220,7 +4220,10 @@
     if (!r || !r.ok || !r.catalog || !Array.isArray(r.catalog.tracks) || !r.catalog.tracks.length) return;
     const before = new Set(CAT.tracks.map((t) => t.id + '|' + t.file));
     const sig = r.catalog.tracks.map((t) => t.id + '|' + t.file);
-    const changed = sig.length !== before.size || sig.some((s) => !before.has(s)) || r.catalog.albums.length !== CAT.albums.length;
+    /* a cover changed on Drive counts too, so the new picture shows without a restart */
+    const covers = (c) => c.albums.map((a) => a.id + '|' + (a.cover || '') + '|' + (a.coverFile || '')).join(',');
+    const changed = sig.length !== before.size || sig.some((s) => !before.has(s)) || r.catalog.albums.length !== CAT.albums.length ||
+      covers(r.catalog) !== covers(CAT);
     if (!changed) return;
     const oldIds = new Set(CAT.tracks.map((t) => t.id));
     const cid = curId();
