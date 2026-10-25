@@ -278,7 +278,6 @@
     drag: null,
     repeat: !!stored.repeat,
     level: stored.level !== false,
-    xfade: stored.xfade !== false,
     theme: ['p5', 'p3r', 'mf'].includes(stored.theme) ? stored.theme : 'p5'
   };
   const isP3 = () => S.theme === 'p3r';
@@ -287,22 +286,9 @@
   let navLastTop = 0;
   doc.documentElement.dataset.theme = S.theme;
   const P = { queue: [], base: [], cur: -1, shuffle: !!stored.shuffle, errors: 0, counted: false, recentAdded: false, pendingSeek: null, offline: false, loadedId: null };
-  /* two players take turns: while one ends, the next track is already loaded in the other and starts under it
-     (smooth transitions, below). "audio" is always the one that plays the current track; the id "audio" moves with it */
-  const audioA = $('#audio');
-  const audioB = audioA.cloneNode(false);
-  audioB.id = 'audio2';
-  audioA.after(audioB);
-  [audioA, audioB].forEach((el) => {
-    el.crossOrigin = 'anonymous';
-    el._fade = 1;
-  });
-  let audio = audioA;
-  const otherAudio = () => (audio === audioA ? audioB : audioA);
-  /* the player's events count only from the one playing the current track */
-  const onAudio = (name, fn) => [audioA, audioB].forEach((el) => el.addEventListener(name, (e) => {
-    if (e.target === audio) fn(e);
-  }));
+  const audio = $('#audio');
+  audio.crossOrigin = 'anonymous';
+  const onAudio = (name, fn) => audio.addEventListener(name, fn);
   const curId = () => P.queue[P.cur] || null;
   const curTrack = () => TR.get(curId()) || null;
 
@@ -314,7 +300,7 @@
         liked: S.liked, recent: S.recent.slice(0, 40), plays: S.plays,
         queue: P.queue, base: P.base, cur: P.cur, shuffle: P.shuffle,
         t: P.pendingSeek != null ? P.pendingSeek : (audio.currentTime || 0),
-        volume: S.volume, prevVol: S.prevVol, libSort: S.libSort, lyricsOn: S.lyricsOn, theme: S.theme, repeat: S.repeat, level: S.level, xfade: S.xfade
+        volume: S.volume, prevVol: S.prevVol, libSort: S.libSort, lyricsOn: S.lyricsOn, theme: S.theme, repeat: S.repeat, level: S.level
       }));
     } catch (e) { /* storage full or unavailable */ }
   }
@@ -485,7 +471,6 @@
     P.pendingSeek = startAt > 0 ? startAt : null;
     P.loadedId = t.id;
     S.lyActive = -2;
-    xfCancel();
     audio.pause();
     onTrackChange();
     /* on the phone a track is fetched into the app before it plays: show "loading" meanwhile */
@@ -516,172 +501,7 @@
     }
   }
 
-  /* ---------- smooth transitions ----------
-     With "smooth transitions" on, the next track is loaded into the other player half a minute before this one ends
-     and starts at full volume under its last moments, so the music never stops between tracks; where a player's
-     volume can be set (Windows, Android) this one's tail fades out over the overlap. Most tracks already fade out
-     on the record and end in silence: where the sound is measured (the levelling graph) the next one starts as soon
-     as this one has gone quiet near its end, instead of after the silence. The iPhone keeps every player at full
-     volume, so there the next one starts the instant this one ends. Repeat-one, a queue's end and short tracks go
-     the usual way ("ended" → next). In the background (screen off, app hidden) timers run late: there it is the
-     gapless start too. */
-  const XF_SEC = 2;
-  const XF_QUIET = 0.005;
-  const xfFades = () => !IOS && !doc.hidden;
-  const xfLead = () => (xfFades() ? XF_SEC : 0.12);
-  const XF = { id: null, t: null, fading: null, quiet: 0 };
-  const xfBuf = new Float32Array(2048);
-  /* how loud the music is right now (only where the levelling graph measures it; null elsewhere) */
-  function xfLevel() {
-    if (!LV.an) return null;
-    LV.an.getFloatTimeDomainData(xfBuf);
-    let sum = 0;
-    for (let k = 0; k < xfBuf.length; k++) sum += xfBuf[k] * xfBuf[k];
-    return Math.sqrt(sum / xfBuf.length);
-  }
-  function xfNextIndex() {
-    if (!S.xfade || S.repeat || P.queue.length < 2 || P.cur >= P.queue.length - 1) return -1;
-    return P.cur + 1;
-  }
-  function xfRelease(el) {
-    el.pause();
-    el.removeAttribute('src');
-    try {
-      el.load();
-    } catch (e) { /* nothing loaded */ }
-    delete el.dataset.tid;
-    el._fade = 1;
-    setElVol(el);
-  }
-  /* a track loaded by hand, a pause, the setting switched off: whatever was lined up or fading out stops */
-  function xfCancel() {
-    clearTimeout(XF.t);
-    XF.t = null;
-    XF.id = null;
-    if (XF.fading) {
-      clearInterval(XF.fading);
-      XF.fading = null;
-    }
-    const o = otherAudio();
-    if (o.getAttribute('src') || o.dataset.tid) xfRelease(o);
-    audio._fade = 1;
-    setElVol(audio);
-  }
-  async function xfPrepare(id) {
-    XF.id = id;
-    const t = TR.get(id);
-    if (!t) return;
-    let url = STREAM(t.file);
-    try {
-      const r = await api.mediaUrl(t);
-      if (r && r.url) url = r.url;
-    } catch (e) { /* stream it */ }
-    if (XF.id !== id || XF.fading) return;
-    const el = otherAudio();
-    el.loop = false;
-    el._fade = 1;
-    setElVol(el);
-    el.dataset.tid = id;
-    el.preload = 'auto';
-    el.src = url;
-    try {
-      el.load();
-    } catch (e) { /* loads on play */ }
-  }
-  function xfTick() {
-    if (XF.fading || audio.paused || audio.seeking) return;
-    const d = audio.duration;
-    if (!isFinite(d) || d < 20) return;
-    const ni = xfNextIndex();
-    if (ni < 0) {
-      if (XF.id) xfCancel();
-      return;
-    }
-    const id = P.queue[ni];
-    const left = d - audio.currentTime;
-    if (left < 35 && XF.id !== id) xfPrepare(id);
-    /* the record has faded out already: half a second of silence near the end, and the next one starts now */
-    const lvl = left < 9 && XF.id === id ? xfLevel() : null;
-    XF.quiet = lvl != null && lvl < XF_QUIET ? XF.quiet + 1 : 0;
-    if (XF.quiet >= 2) {
-      XF.quiet = 0;
-      clearTimeout(XF.t);
-      XF.t = null;
-      xfGo(ni, id, true);
-      return;
-    }
-    if (XF.id === id && !XF.t && left <= XF_SEC + 1.2) {
-      XF.t = setTimeout(() => {
-        XF.t = null;
-        xfGo(ni, id);
-      }, Math.max(0, (left - xfLead()) * 1000));
-    }
-  }
-  function xfGo(ni, id, quiet) {
-    const el = otherAudio();
-    const old = audio;
-    const left = old.duration - old.currentTime;
-    /* anything not in place (not loaded in time, the queue changed, a seek back): the usual "ended" takes over */
-    if (xfNextIndex() !== ni || P.queue[ni] !== id || el.dataset.tid !== id || el.readyState < 3 || old.paused || (!quiet && !(left <= xfLead() + 0.6))) return;
-    const fades = xfFades();
-    el._fade = 1;
-    setElVol(el);
-    old.id = 'audio2';
-    el.id = 'audio';
-    audio = el;
-    audio.loop = S.repeat;
-    XF.id = null;
-    P.cur = ni;
-    P.stallRetried = false;
-    P.stalled = false;
-    P.heard = 0;
-    P.counted = false;
-    P.lastT = 0;
-    P.recentAdded = false;
-    P.pendingSeek = null;
-    P.loadedId = id;
-    S.lyActive = -2;
-    applyLevel(false, true);
-    try {
-      ownSeek();
-      el.currentTime = 0;
-    } catch (e) { /* at the start already */ }
-    el.play().catch(playFail);
-    onTrackChange();
-    save();
-    /* the new one plays at full volume from its first moment; only the old one's tail fades out */
-    const t0 = performance.now();
-    const ms = Math.max(60, Math.min(left, XF_SEC) * 1000);
-    const step = () => {
-      const k = Math.min(1, (performance.now() - t0) / ms);
-      if (fades) {
-        old._fade = Math.cos((k * Math.PI) / 2);
-        setElVol(old);
-      }
-      if (k >= 1) {
-        clearInterval(XF.fading);
-        XF.fading = null;
-        xfRelease(old);
-        el._fade = 1;
-        setElVol(el);
-      }
-    };
-    XF.fading = setInterval(step, 50);
-    step();
-  }
-  function setXfade(on) {
-    S.xfade = !!on;
-    save();
-    if (!S.xfade) xfCancel();
-    $$('[data-act=xfade-toggle]').forEach((b) => {
-      b.setAttribute('aria-checked', String(S.xfade));
-      b.classList.toggle('is-on', S.xfade);
-    });
-    toast(S.xfade ? 'Треки сменяют друг друга плавно, без паузы' : 'Плавный переход выключен', { key: 'xf', ms: 1600 });
-  }
   onAudio('seeking', () => {
-    clearTimeout(XF.t);
-    XF.t = null;
     lockScreenSkip();
   });
   /* The iPhone's lock screen and Control Center show their side buttons as "10 s back / forward" and, inside the
@@ -727,13 +547,14 @@
     updatePositionState();
   });
   onAudio('play', () => {
-    lockApply();
+    iosMediaHandlers();
     ensureGraph();
     if (LV.ctx && LV.ctx.state !== 'running') LV.ctx.resume().catch(() => {});
     doc.body.classList.remove('paused');
     if ('mediaSession' in navigator) navigator.mediaSession.playbackState = 'playing';
   });
   onAudio('playing', () => {
+    iosMediaHandlers();
     doc.body.classList.remove('buffering');
     P.errors = 0;
     if (!P.recentAdded) {
@@ -756,7 +577,6 @@
     if (list.length) api.prefetch(list);
   }
   onAudio('pause', () => {
-    if (XF.fading) xfCancel();
     if (LV.saveT) writeLoud();
     doc.body.classList.add('paused');
     if ('mediaSession' in navigator) navigator.mediaSession.playbackState = 'paused';
@@ -824,7 +644,6 @@
   let lastSave = 0;
   onAudio('timeupdate', () => {
     updateTimes();
-    xfTick();
     const now = Date.now();
     if (now - lastSave > 5000) {
       lastSave = now;
@@ -853,17 +672,12 @@
   }
 
   /* the slider is linear for the eye; the ear hears loudness roughly on a squared scale */
-  /* each player's own volume also carries its share of a crossfade (_fade, 0…1) */
-  const setElVol = (el) => {
-    try {
-      el.volume = clamp((LV.vol ? 1 : S.volume * S.volume) * (el._fade == null ? 1 : el._fade), 0, 1);
-    } catch (e) { /* the iPhone's volume is read-only */ }
-  };
   const applyVolume = () => {
     const v = S.volume * S.volume;
-    if (LV.vol) LV.vol.gain.setTargetAtTime(v, LV.ctx.currentTime, 0.015);
-    setElVol(audioA);
-    setElVol(audioB);
+    if (LV.vol) {
+      audio.volume = 1;
+      LV.vol.gain.setTargetAtTime(v, LV.ctx.currentTime, 0.015);
+    } else audio.volume = v;
   };
 
   /* ---------- loudness levelling ----------
@@ -963,9 +777,7 @@
     try {
       const AC = window.AudioContext || window.webkitAudioContext;
       const ctx = new AC({ latencyHint: 'playback' });
-      /* both players feed the same chain (a crossfade overlaps them for a moment) */
-      const src = ctx.createMediaElementSource(audioA);
-      const src2 = ctx.createMediaElementSource(audioB);
+      const src = ctx.createMediaElementSource(audio);
       const norm = ctx.createGain();
       const vol = ctx.createGain();
       const lim = ctx.createDynamicsCompressor();
@@ -975,7 +787,6 @@
       lim.attack.value = 0.002;
       lim.release.value = 0.12;
       src.connect(norm);
-      src2.connect(norm);
       norm.connect(vol);
       vol.connect(lim);
       lim.connect(ctx.destination);
@@ -990,13 +801,11 @@
       const an = ctx.createAnalyser();
       an.fftSize = 2048;
       src.connect(hp);
-      src2.connect(hp);
       hp.connect(hs);
       hs.connect(an);
       Object.assign(LV, { ctx, src, norm, vol, an, buf: new Float32Array(an.fftSize) });
       vol.gain.value = S.volume * S.volume;
-      setElVol(audioA);
-      setElVol(audioB);
+      audio.volume = 1;
       applyLevel(true);
       setInterval(loudTick, 100);
     } catch (e) {
@@ -1097,13 +906,11 @@
     h('previoustrack', prev);
     h('nexttrack', next);
     h('seekto', (d) => { if (d && typeof d.seekTime === 'number') seek(d.seekTime); });
-    /* the iPhone's lock screen and Control Center show their two side buttons as "10 s back / forward" whatever
-       the page offers: there those buttons switch to the previous / next track */
+    /* the iPhone: with no handler for the two seek actions WebKit puts its own "10 s back / forward" on the lock
+       screen and Control Center in place of the track buttons — they are cleared explicitly (null), and the track
+       buttons registered again whenever WebKit may have dropped them (iosMediaHandlers below) */
     if (IOS) {
-      h('previoustrack', () => remoteSkip(-1));
-      h('nexttrack', () => remoteSkip(1));
-      h('seekbackward', () => remoteSkip(-1));
-      h('seekforward', () => remoteSkip(1));
+      iosMediaHandlers();
       const lock = lockPlugin();
       if (lock && lock.addListener) {
         try {
@@ -1113,11 +920,32 @@
           });
         } catch (e) { /* no native lock-screen module in this build */ }
       }
-      lockApply();
+      ['visibilitychange', 'pageshow'].forEach((n) => window.addEventListener(n, () => {
+        if (!doc.hidden) iosMediaHandlers();
+      }));
     } else {
       h('seekbackward', () => seek((audio.currentTime || 0) - 10));
       h('seekforward', () => seek((audio.currentTime || 0) + 10));
     }
+  }
+  /* WebKit drops the page's handlers registered before it became "Now Playing", and again when that session
+     restarts (playback starts, a new track loads): they are set anew at those moments */
+  function iosMediaHandlers() {
+    if (!IOS || !('mediaSession' in navigator)) return;
+    const ms = navigator.mediaSession;
+    const h = (name, fn) => {
+      try {
+        ms.setActionHandler(name, fn);
+      } catch (e) { /* unsupported action */ }
+    };
+    h('play', () => togglePlayIf(true));
+    h('pause', () => togglePlayIf(false));
+    h('previoustrack', () => remoteSkip(-1));
+    h('nexttrack', () => remoteSkip(1));
+    h('seekbackward', null);
+    h('seekforward', null);
+    h('seekto', (d) => { if (d && typeof d.seekTime === 'number') seek(d.seekTime); });
+    lockApply();
   }
   /* the iPhone: one press on the lock screen may reach the app by several ways at once (the native module, the
      web view's own handlers, the 10 s jump) — it switches one track */
@@ -1192,7 +1020,6 @@
     const art = await artworkFor(a);
     if (curTrack() !== t) return;
     try {
-      lockApply();
       navigator.mediaSession.metadata = new MediaMetadata({
         title: t.title,
         artist: t.artist,
@@ -1200,6 +1027,7 @@
         artwork: art ? [{ src: art, sizes: '600x600', type: 'image/jpeg' }] : []
       });
     } catch (e) { /* ignore */ }
+    iosMediaHandlers();
   }
   function updatePositionState() {
     if (!('mediaSession' in navigator) || !navigator.mediaSession.setPositionState) return;
@@ -1897,11 +1725,9 @@
         themePreview(th.id) + '<span class="s3-row-t"><span class="s3-name">' + th.name + '</span><span class="s3-sub">' + th.sub + '</span></span>' +
         '<span class="s3-mark" aria-hidden="true"></span></button>').join('') +
       '</div>' +
-      '<p class="s3-cap s-row" style="margin-top:26px;transition-delay:.2s">Звук</p>' +
-      (LEVEL_OK ? '<button type="button" role="switch" class="s3-row s3-sw s-row' + (S.level ? ' is-on' : '') + '" data-act="level-toggle" aria-checked="' + S.level + '" style="transition-delay:.22s">' +
+      (LEVEL_OK ? '<p class="s3-cap s-row" style="margin-top:26px;transition-delay:.2s">Звук</p>' +
+      '<button type="button" role="switch" class="s3-row s3-sw s-row' + (S.level ? ' is-on' : '') + '" data-act="level-toggle" aria-checked="' + S.level + '" style="transition-delay:.22s">' +
       '<span class="s3-row-t"><span class="s3-name">Выравнивать громкость</span><span class="s3-sub">Тихие и громкие альбомы звучат одинаково</span></span><span class="sw" aria-hidden="true"><i></i></span></button>' : '') +
-      '<button type="button" role="switch" class="s3-row s3-sw s-row' + (S.xfade ? ' is-on' : '') + '" data-act="xfade-toggle" aria-checked="' + S.xfade + '" style="transition-delay:.24s">' +
-      '<span class="s3-row-t"><span class="s3-name">Плавный переход</span><span class="s3-sub">Следующий трек начинается без паузы, под конец текущего</span></span><span class="sw" aria-hidden="true"><i></i></span></button>' +
       '<div style="flex:1"></div>' +
       '<div class="s3-help s-row" style="transition-delay:.24s"><p>Как будет выглядеть плеер?</p><span class="n3-help-l"><i>Guide</i></span>' +
       '<p class="n3-keys"><span class="k">Esc</span>Закрыть</p></div>' +
@@ -2137,11 +1963,9 @@
         '<span class="sm-br" aria-hidden="true"></span>' + themePreview(th.id) + '<span class="sm-t"><span class="sm-name">' + th.name + '</span><span class="sm-sub">' + th.sub + '</span></span>' +
         '<i class="mf-dia sm-mark" aria-hidden="true"></i></button>').join('') +
       '</div>' +
-      '<p class="sm-cap s-row" style="margin-top:30px;transition-delay:.24s"><i class="mf-dia" aria-hidden="true"></i>Звук</p>' +
-      (LEVEL_OK ? '<button type="button" role="switch" class="sm-row sm-sw s-row' + (S.level ? ' is-on' : '') + '" data-act="level-toggle" aria-checked="' + S.level + '" style="transition-delay:.27s">' +
+      (LEVEL_OK ? '<p class="sm-cap s-row" style="margin-top:30px;transition-delay:.24s"><i class="mf-dia" aria-hidden="true"></i>Звук</p>' +
+      '<button type="button" role="switch" class="sm-row sm-sw s-row' + (S.level ? ' is-on' : '') + '" data-act="level-toggle" aria-checked="' + S.level + '" style="transition-delay:.27s">' +
       '<span class="sm-t"><span class="sm-name">Выравнивать громкость</span><span class="sm-sub">Тихие и громкие альбомы звучат одинаково</span></span><span class="sw" aria-hidden="true"><i></i></span></button>' : '') +
-      '<button type="button" role="switch" class="sm-row sm-sw s-row' + (S.xfade ? ' is-on' : '') + '" data-act="xfade-toggle" aria-checked="' + S.xfade + '" style="transition-delay:.29s">' +
-      '<span class="sm-t"><span class="sm-name">Плавный переход</span><span class="sm-sub">Следующий трек начинается без паузы, под конец текущего</span></span><span class="sw" aria-hidden="true"><i></i></span></button>' +
       '<div style="flex:1"></div>' +
       '<p class="sm-ver s-row" style="transition-delay:.3s">Personafy' + (appVersion ? ' · версия ' + esc(appVersion) : '') + '</p></div></div>';
   }
@@ -3103,13 +2927,10 @@
         '<span class="s5-txt"><span class="s5-name">' + th.name.toUpperCase() + '</span><span class="s5-sub">' + th.sub + '</span></span></span>' +
         (S.theme === th.id ? '<span class="s5-on" aria-hidden="true">ВЫБРАНО</span>' : '') + '</button>').join('') +
       '</div>' +
-      '<p class="s-row s5-cap" style="margin-top:40px;transition-delay:.22s">ЗВУК</p>' +
-      (LEVEL_OK ? '<button type="button" role="switch" class="s5-opt s5-sw s-row' + (S.level ? ' is-on' : '') + '" data-act="level-toggle" aria-checked="' + S.level + '" style="transition-delay:.25s">' +
+      (LEVEL_OK ? '<p class="s-row s5-cap" style="margin-top:40px;transition-delay:.22s">ЗВУК</p>' +
+      '<button type="button" role="switch" class="s5-opt s5-sw s-row' + (S.level ? ' is-on' : '') + '" data-act="level-toggle" aria-checked="' + S.level + '" style="transition-delay:.25s">' +
       '<span class="s5-sh" aria-hidden="true"></span><span class="s5-ol" aria-hidden="true"></span><span class="s5-in">' +
       '<span class="s5-txt"><span class="s5-name">ВЫРАВНИВАТЬ ГРОМКОСТЬ</span><span class="s5-sub">Тихие и громкие альбомы звучат одинаково</span></span><span class="sw" aria-hidden="true"><i></i></span></span></button>' : '') +
-      '<button type="button" role="switch" class="s5-opt s5-sw s-row' + (S.xfade ? ' is-on' : '') + '" data-act="xfade-toggle" aria-checked="' + S.xfade + '" style="transition-delay:.27s">' +
-      '<span class="s5-sh" aria-hidden="true"></span><span class="s5-ol" aria-hidden="true"></span><span class="s5-in">' +
-      '<span class="s5-txt"><span class="s5-name">ПЛАВНЫЙ ПЕРЕХОД</span><span class="s5-sub">Следующий трек начинается без паузы, под конец текущего</span></span><span class="sw" aria-hidden="true"><i></i></span></span></button>' +
       '<div style="flex:1"></div>' +
       '<p class="s-row" style="margin:48px 0 0;align-self:flex-end;display:inline-flex;align-items:center;gap:10px;background:#ffffff;color:#0b0b0b;padding:6px 16px;font-weight:900;font-style:italic;font-size:13px;letter-spacing:.1em;transform:skewX(-12deg) rotate(2deg);transition-delay:.26s">PERSONAFY' + (appVersion ? ' · ВЕРСИЯ ' + esc(appVersion) : '') + '</p>' +
       '</div></div>';
@@ -3513,7 +3334,6 @@
       case 'shuffle': toggleShuffle(); break;
       case 'repeat': toggleRepeat(); break;
       case 'level-toggle': setLevel(!S.level); break;
-      case 'xfade-toggle': setXfade(!S.xfade); break;
       case 'track-menu':
         if (ctx && ctx.opener === el) closeTrackMenu();
         else openTrackMenu(id, el.dataset.list, +el.dataset.i, null, el, e.detail === 0);
