@@ -209,6 +209,11 @@ async function serveFile(p, req) {
 }
 
 async function handlePhantom(req) {
+  /* the window reads a track's last bytes (the silent-end check) with a "Range: bytes=-N" request, which the browser
+     asks permission for first */
+  if (req.method === 'OPTIONS') {
+    return new Response(null, { status: 204, headers: { 'access-control-allow-origin': '*', 'access-control-allow-methods': 'GET', 'access-control-allow-headers': 'range', 'access-control-max-age': '86400' } });
+  }
   let u;
   try {
     u = new URL(req.url);

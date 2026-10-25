@@ -468,6 +468,7 @@
     }
     P.lastT = startAt > 0 ? startAt : 0;
     P.recentAdded = false;
+    P.tailCut = false;
     P.pendingSeek = startAt > 0 ? startAt : null;
     P.loadedId = t.id;
     S.lyActive = -2;
@@ -499,6 +500,93 @@
     } else {
       doc.body.classList.remove('buffering');
     }
+    /* a few seconds in, when the track has the connection to itself */
+    setTimeout(() => { if (seq === loadSeq) measureTail(t, url); }, 5000);
+  }
+
+  /* ---------- the silent end of a track ----------
+     Many files go on for a few seconds of silence after the music has ended. The end of each file is decoded once
+     (its last 45 seconds or so), the point where the sound stops is found and kept per file; while the track plays,
+     it then ends there instead of playing the silence out. Measured from the file itself, so it works where the app
+     can't hear its own sound (the iPhone). Silences shorter than TAIL_MIN are a natural pause and stay. */
+  const TAIL_KEY = 'personafy.tails.v1';
+  const TAIL_MIN = 1.2;
+  const TAIL_BYTES = 786432;
+  const TAIL_PEAK = 0.002;
+  let tails = {};
+  try {
+    tails = JSON.parse(localStorage.getItem(TAIL_KEY)) || {};
+  } catch (e) { /* nothing kept yet */ }
+  const tailJobs = new Set();
+  function decodeAudio(buf) {
+    const AC = window.OfflineAudioContext || window.webkitOfflineAudioContext;
+    if (!AC) return Promise.reject(new Error('no decoder'));
+    const ctx = new AC(1, 44100, 44100);
+    return new Promise((resolve, reject) => {
+      const p = ctx.decodeAudioData(buf, resolve, reject);
+      if (p && p.then) p.then(resolve, reject);
+    });
+  }
+  async function measureTail(t, url) {
+    if (!t || !t.file || tails[t.file] != null || tailJobs.has(t.file) || !url) return;
+    tailJobs.add(t.file);
+    try {
+      let res = await fetch(url, { headers: { Range: 'bytes=-' + TAIL_BYTES } });
+      /* Drive takes no "the last N bytes" request: the file's size first, then its end from there */
+      if (res.status === 416) {
+        const probe = await fetch(url, { headers: { Range: 'bytes=0-1' } });
+        const total = +(((probe.headers.get('content-range') || '').match(/\/(\d+)$/) || [])[1] || 0);
+        if (probe.body && probe.body.cancel) probe.body.cancel().catch(() => {});
+        if (!total) return;
+        res = await fetch(url, { headers: { Range: 'bytes=' + Math.max(0, total - TAIL_BYTES) + '-' } });
+      }
+      if (!res.ok) return;
+      let buf = await res.arrayBuffer();
+      if (buf.byteLength > TAIL_BYTES * 1.5) buf = buf.slice(buf.byteLength - TAIL_BYTES);
+      const ab = await decodeAudio(buf);
+      const ch = [];
+      for (let c = 0; c < ab.numberOfChannels; c++) ch.push(ab.getChannelData(c));
+      /* from the end back, 20 ms at a time, to the last moment anything is heard */
+      const block = Math.max(1, Math.round(ab.sampleRate * 0.02));
+      let end = 0;
+      for (let i = ab.length - block; i >= 0 && !end; i -= block) {
+        for (const d of ch) {
+          for (let k = i; k < i + block; k++) {
+            if (d[k] > TAIL_PEAK || d[k] < -TAIL_PEAK) {
+              end = i + block;
+              break;
+            }
+          }
+          if (end) break;
+        }
+      }
+      /* all of it silent: nothing to go by */
+      if (!end) return;
+      tails[t.file] = Math.round(((ab.length - end) / ab.sampleRate) * 100) / 100;
+      const keys = Object.keys(tails);
+      if (keys.length > 1500) keys.slice(0, keys.length - 1500).forEach((k) => delete tails[k]);
+      try {
+        localStorage.setItem(TAIL_KEY, JSON.stringify(tails));
+      } catch (e) { /* storage full: measured again next time */ }
+    } catch (e) {
+      /* not measured: the track plays to its very end */
+    } finally {
+      tailJobs.delete(t.file);
+    }
+  }
+  /* the silence has begun: on to the next track (or, repeating, back to the start) */
+  function tailCheck() {
+    const t = curTrack();
+    const tail = t && t.file ? tails[t.file] : null;
+    if (!(tail >= TAIL_MIN) || P.tailCut || audio.seeking || audio.paused || P.loadedId !== curId()) return;
+    const d = audio.duration;
+    if (!isFinite(d) || d < tail + 5 || d - audio.currentTime > tail - 0.15) return;
+    if (S.repeat) {
+      seek(0);
+      return;
+    }
+    P.tailCut = true;
+    next();
   }
 
   onAudio('seeking', () => {
@@ -554,6 +642,7 @@
     if ('mediaSession' in navigator) navigator.mediaSession.playbackState = 'playing';
   });
   onAudio('playing', () => {
+    progStart();
     iosMediaHandlers();
     doc.body.classList.remove('buffering');
     P.errors = 0;
@@ -615,6 +704,7 @@
   ['playing', 'error', 'ended'].forEach((n) => onAudio(n, stopStallWatch));
   onAudio('canplay', () => doc.body.classList.remove('buffering'));
   onAudio('seeked', () => {
+    progStart();
     updateTimes();
     updatePositionState();
   });
@@ -644,6 +734,7 @@
   let lastSave = 0;
   onAudio('timeupdate', () => {
     updateTimes();
+    tailCheck();
     const now = Date.now();
     if (now - lastSave > 5000) {
       lastSave = now;
@@ -1070,6 +1161,25 @@
     });
     updateLyricsActive(pos);
   }
+  /* the progress bar follows the music on every frame while it plays (timeupdate alone moves it in steps,
+     about four a second); stops by itself when paused, scrubbed or hidden */
+  let progRaf = 0;
+  function progFrame() {
+    progRaf = 0;
+    if (audio.paused || doc.hidden || S.scrub != null) return;
+    tailCheck();
+    const dur = currentDur();
+    if (dur) {
+      const pct = clamp((currentPos() / dur) * 100, 0, 100).toFixed(3) + '%';
+      $$('[data-b=fill]').forEach((el) => { el.style.width = pct; });
+      $$('[data-b=thumb]').forEach((el) => { el.style.left = pct; });
+    }
+    progRaf = requestAnimationFrame(progFrame);
+  }
+  function progStart() {
+    if (!progRaf && !audio.paused && !doc.hidden) progRaf = requestAnimationFrame(progFrame);
+  }
+  doc.addEventListener('visibilitychange', progStart);
 
   function onTrackChange() {
     const t = curTrack();
