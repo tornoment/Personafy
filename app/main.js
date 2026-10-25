@@ -179,7 +179,10 @@ const FILE_ID_RE = /^[A-Za-z0-9_-]{10,200}$/;
 async function serveLocal(u, req) {
   const m = u.pathname.match(/^\/([A-Za-z0-9_-]{1,100})\/(\d{1,5})$/);
   if (!m) return new Response('not found', { status: 404 });
-  const p = path.join(offlineDir(), m[1], m[2] + '.mp3');
+  return serveFile(path.join(offlineDir(), m[1], m[2] + '.mp3'), req);
+}
+/* a file on disk, with byte ranges (the player seeks in it) */
+async function serveFile(p, req) {
   let size;
   try {
     size = (await fsp.stat(p)).size;
@@ -214,6 +217,7 @@ async function handlePhantom(req) {
   }
   if (u.hostname === 'local') return serveLocal(u, req);
   const id = decodeURIComponent(u.pathname.replace(/^\/+/, ''));
+  if (u.hostname === 'ahead') return FILE_ID_RE.test(id) ? serveFile(aheadPath(id), req) : new Response('not found', { status: 404 });
   if (!FILE_ID_RE.test(id) || (u.hostname !== 'drive' && u.hostname !== 'cover')) return new Response('not found', { status: 404 });
   if (u.hostname === 'cover') {
     try {
@@ -509,6 +513,103 @@ async function prefetchCovers(cat) {
       try { await loadCover(a.coverFile); } catch (e) { /* later */ }
     }
   }
+}
+
+/* ---------- the next tracks, fetched ahead ----------
+   While a track plays, the next few in the queue (app.js prefetchNext) are downloaded one after another into a
+   small cache, so they start at once and a smooth transition never waits for Drive. Downloaded tracks are left
+   alone (they play from "offline"). The cache keeps the newest files only: 12 of them, 800 MB at most. */
+const aheadDir = () => path.join(userDir(), 'ahead');
+const aheadPath = (fileId) => path.join(aheadDir(), fileId + '.mp3');
+const AHEAD_KEEP = 12;
+const AHEAD_BYTES = 800 * 1048576;
+let aheadWant = [];
+let aheadRun = null;
+let aheadNow = null;
+let aheadT = null;
+async function haveFile(p) {
+  try {
+    return (await fsp.stat(p)).size > 50 * 1024;
+  } catch (e) {
+    return false;
+  }
+}
+async function fetchAhead(t, signal) {
+  await fsp.mkdir(aheadDir(), { recursive: true });
+  const dest = aheadPath(t.file);
+  const tmp = dest + '.part';
+  const res = await driveFetch(t.file, {}, signal);
+  const type = res.headers.get('content-type') || '';
+  if (!res.ok || type.includes('text/html')) throw new Error('Google Диск не отдал файл (' + res.status + ')');
+  const out = fs.createWriteStream(tmp);
+  const reader = res.body.getReader();
+  let got = 0;
+  try {
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      got += value.length;
+      if (!out.write(Buffer.from(value))) await new Promise((r) => out.once('drain', r));
+    }
+  } finally {
+    await new Promise((r) => out.end(r));
+  }
+  if (got < 50 * 1024) throw new Error('файл слишком маленький');
+  await fsp.rename(tmp, dest);
+}
+async function trimAhead() {
+  let names = [];
+  try {
+    names = (await fsp.readdir(aheadDir())).filter((n) => /\.mp3$/.test(n));
+  } catch (e) {
+    return;
+  }
+  const keep = new Set(aheadWant.map((t) => t.file + '.mp3'));
+  const files = [];
+  for (const n of names) {
+    try {
+      const st = await fsp.stat(path.join(aheadDir(), n));
+      files.push({ n, size: st.size, mtime: st.mtimeMs });
+    } catch (e) { /* gone */ }
+  }
+  files.sort((a, b) => b.mtime - a.mtime);
+  let bytes = 0;
+  for (let i = 0; i < files.length; i++) {
+    bytes += files[i].size;
+    if ((i >= AHEAD_KEEP || bytes > AHEAD_BYTES) && !keep.has(files[i].n)) await fsp.rm(path.join(aheadDir(), files[i].n), { force: true });
+  }
+}
+async function aheadLoop() {
+  for (;;) {
+    let t = null;
+    for (const x of aheadWant) {
+      if ((await haveFile(offlinePath(x))) || (await haveFile(aheadPath(x.file)))) continue;
+      t = x;
+      break;
+    }
+    if (!t) break;
+    const ac = new AbortController();
+    aheadNow = { file: t.file, ac };
+    try {
+      await fetchAhead(t, ac.signal);
+    } catch (e) {
+      await fsp.rm(aheadPath(t.file) + '.part', { force: true }).catch(() => {});
+      /* a track Drive would not give is not asked for again in this round */
+      if (!ac.signal.aborted) aheadWant = aheadWant.filter((x) => x !== t);
+    }
+    aheadNow = null;
+  }
+  await trimAhead();
+}
+function prefetchTracks(list) {
+  aheadWant = (Array.isArray(list) ? list : []).filter((t) => trackOk(t) && t.file).slice(0, 5);
+  /* a fetch for a track no longer coming up is stopped */
+  if (aheadNow && !aheadWant.some((t) => t.file === aheadNow.file)) aheadNow.ac.abort();
+  clearTimeout(aheadT);
+  /* the playing track gets the connection to itself for its first seconds */
+  aheadT = setTimeout(() => {
+    if (!aheadRun) aheadRun = aheadLoop().catch(() => {}).finally(() => { aheadRun = null; });
+  }, 3000);
 }
 
 /* ---------- offline downloads ---------- */
@@ -901,9 +1002,18 @@ app.whenReady().then(() => {
     try {
       await fsp.access(p);
       return { url: 'phantom://local/' + encodeURIComponent(t.album) + '/' + encodeURIComponent(String(t.n)), offline: true };
-    } catch (e) {
-      return { url: 'phantom://drive/' + encodeURIComponent(t.file), offline: false };
+    } catch (e) { /* not downloaded */ }
+    /* fetched ahead: plays from the cache (and is kept a while longer) */
+    if (FILE_ID_RE.test(String(t.file)) && (await haveFile(aheadPath(t.file)))) {
+      const now = new Date();
+      fsp.utimes(aheadPath(t.file), now, now).catch(() => {});
+      return { url: 'phantom://ahead/' + encodeURIComponent(t.file), offline: false, cached: true };
     }
+    return { url: 'phantom://drive/' + encodeURIComponent(t.file), offline: false };
+  });
+  ipcMain.handle('media:prefetch', (_e, list) => {
+    prefetchTracks(list);
+    return true;
   });
   protocol.handle('phantom', handlePhantom);
   ipcMain.handle('cover:url', (_e, fileId) => (fileId ? 'phantom://drive/' + encodeURIComponent(fileId) : null));

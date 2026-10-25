@@ -7,6 +7,7 @@ contextBridge.exposeInMainWorld('api', {
   catalog: () => ipcRenderer.invoke('catalog:get'),
   refreshCatalog: () => ipcRenderer.invoke('catalog:refresh'),
   mediaUrl: (t) => ipcRenderer.invoke('media:url', clean(t)),
+  prefetch: (list) => ipcRenderer.invoke('media:prefetch', (Array.isArray(list) ? list : [list]).filter(Boolean).map(clean)),
   coverUrl: (fileId) => ipcRenderer.invoke('cover:url', fileId),
   artwork: (rel) => ipcRenderer.invoke('cover:data', rel),
   downloads: () => ipcRenderer.invoke('dl:list'),

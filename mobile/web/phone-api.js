@@ -502,18 +502,25 @@
     const path = await streamTrack(t);
     return { url: ready.get(CACHE + ':' + path) || await markReady(path, CACHE), offline: false };
   }
-  /* the next track is fetched while this one plays */
+  /* the next few tracks are fetched one after another while this one plays (downloaded ones are only looked up);
+     a newer list (another track, the queue changed) replaces the old one, a fetch already running finishes */
   let prefetchT = null;
-  function prefetch(t) {
+  let prefetchGen = 0;
+  function prefetch(list) {
     clearTimeout(prefetchT);
-    if (!t || !t.file || !FILE_ID_RE.test(t.file)) return;
-    keepIds.add(t.file);
+    list = (Array.isArray(list) ? list : [list]).filter((t) => t && t.file && FILE_ID_RE.test(t.file));
+    if (!list.length) return;
+    const gen = ++prefetchGen;
+    keepIds = new Set(Array.from(keepIds).slice(0, 1).concat(list.map((t) => t.file)));
     prefetchT = setTimeout(async () => {
-      if (offlineKnown.has(t.id)) {
-        if (!ready.has(DATA + ':' + offlinePath(t))) markReady(offlinePath(t), DATA).catch(() => {});
-        return;
+      for (const t of list) {
+        if (gen !== prefetchGen) return;
+        if (offlineKnown.has(t.id)) {
+          if (!ready.has(DATA + ':' + offlinePath(t))) await markReady(offlinePath(t), DATA).catch(() => {});
+          continue;
+        }
+        await streamTrack(t).catch(() => {});
       }
-      streamTrack(t).catch(() => {});
     }, 1500);
   }
 
@@ -789,7 +796,7 @@
       }
     },
     mediaUrl: (t) => mediaUrl(clean(t)),
-    prefetch: (t) => prefetch(t ? clean(t) : null),
+    prefetch: (list) => prefetch((Array.isArray(list) ? list : [list]).filter(Boolean).map(clean)),
     coverSrc: (fileId) => {
       const s = coverSrcs.get(fileId);
       if (!s && fileId) fetchCover(fileId).then(() => { clearTimeout(coversT); coversT = setTimeout(() => emit('covers', null), 200); }).catch(() => {});

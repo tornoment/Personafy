@@ -492,17 +492,19 @@
     if (autoplay) doc.body.classList.add('buffering');
     let url = STREAM(t.file);
     let offline = false;
+    let cached = false;
     try {
       const r = await api.mediaUrl(t);
       if (r && r.url) {
         url = r.url;
         offline = !!r.offline;
+        cached = !!r.cached;
       }
     } catch (e) { /* fall back to streaming */ }
     if (seq !== loadSeq) return;
     if (again && /^phantom:/.test(url)) url += (url.includes('?') ? '&' : '?') + 'retry=' + Date.now();
     P.offline = offline;
-    if (!offline && !navigator.onLine) toast('Нет интернета, а этот трек не скачан. Скачать треки можно в «Библиотеке».');
+    if (!offline && !cached && !navigator.onLine) toast('Нет интернета, а этот трек не скачан. Скачать треки можно в «Библиотеке».');
     doc.body.classList.add('buffering');
     applyLevel(true);
     audio.src = url;
@@ -516,15 +518,27 @@
 
   /* ---------- smooth transitions ----------
      With "smooth transitions" on, the next track is loaded into the other player half a minute before this one ends
-     and started under its last moments, so the music never stops between tracks. Where a player's volume can be set
-     (Windows, Android) the two overlap for a few seconds and cross-fade; the iPhone keeps every player at full volume,
-     so there the next one simply starts the instant this one ends. Repeat-one, a queue's end and short tracks go
-     the usual way ("ended" → next). In the background (screen off, app hidden) timers run late, so a fade could
-     leave the new track silent: there it is the gapless start too. */
-  const XF_SEC = 3;
+     and starts at full volume under its last moments, so the music never stops between tracks; where a player's
+     volume can be set (Windows, Android) this one's tail fades out over the overlap. Most tracks already fade out
+     on the record and end in silence: where the sound is measured (the levelling graph) the next one starts as soon
+     as this one has gone quiet near its end, instead of after the silence. The iPhone keeps every player at full
+     volume, so there the next one starts the instant this one ends. Repeat-one, a queue's end and short tracks go
+     the usual way ("ended" → next). In the background (screen off, app hidden) timers run late: there it is the
+     gapless start too. */
+  const XF_SEC = 2;
+  const XF_QUIET = 0.005;
   const xfFades = () => !IOS && !doc.hidden;
   const xfLead = () => (xfFades() ? XF_SEC : 0.12);
-  const XF = { id: null, t: null, fading: null };
+  const XF = { id: null, t: null, fading: null, quiet: 0 };
+  const xfBuf = new Float32Array(2048);
+  /* how loud the music is right now (only where the levelling graph measures it; null elsewhere) */
+  function xfLevel() {
+    if (!LV.an) return null;
+    LV.an.getFloatTimeDomainData(xfBuf);
+    let sum = 0;
+    for (let k = 0; k < xfBuf.length; k++) sum += xfBuf[k] * xfBuf[k];
+    return Math.sqrt(sum / xfBuf.length);
+  }
   function xfNextIndex() {
     if (!S.xfade || S.repeat || P.queue.length < 2 || P.cur >= P.queue.length - 1) return -1;
     return P.cur + 1;
@@ -565,7 +579,7 @@
     if (XF.id !== id || XF.fading) return;
     const el = otherAudio();
     el.loop = false;
-    el._fade = IOS ? 1 : 0;
+    el._fade = 1;
     setElVol(el);
     el.dataset.tid = id;
     el.preload = 'auto';
@@ -586,6 +600,16 @@
     const id = P.queue[ni];
     const left = d - audio.currentTime;
     if (left < 35 && XF.id !== id) xfPrepare(id);
+    /* the record has faded out already: half a second of silence near the end, and the next one starts now */
+    const lvl = left < 9 && XF.id === id ? xfLevel() : null;
+    XF.quiet = lvl != null && lvl < XF_QUIET ? XF.quiet + 1 : 0;
+    if (XF.quiet >= 2) {
+      XF.quiet = 0;
+      clearTimeout(XF.t);
+      XF.t = null;
+      xfGo(ni, id, true);
+      return;
+    }
     if (XF.id === id && !XF.t && left <= XF_SEC + 1.2) {
       XF.t = setTimeout(() => {
         XF.t = null;
@@ -593,17 +617,15 @@
       }, Math.max(0, (left - xfLead()) * 1000));
     }
   }
-  function xfGo(ni, id) {
+  function xfGo(ni, id, quiet) {
     const el = otherAudio();
     const old = audio;
     const left = old.duration - old.currentTime;
     /* anything not in place (not loaded in time, the queue changed, a seek back): the usual "ended" takes over */
-    if (xfNextIndex() !== ni || P.queue[ni] !== id || el.dataset.tid !== id || el.readyState < 3 || old.paused || !(left <= xfLead() + 0.6)) return;
+    if (xfNextIndex() !== ni || P.queue[ni] !== id || el.dataset.tid !== id || el.readyState < 3 || old.paused || (!quiet && !(left <= xfLead() + 0.6))) return;
     const fades = xfFades();
-    if (!fades) {
-      el._fade = 1;
-      setElVol(el);
-    }
+    el._fade = 1;
+    setElVol(el);
     old.id = 'audio2';
     el.id = 'audio';
     audio = el;
@@ -627,15 +649,14 @@
     el.play().catch(playFail);
     onTrackChange();
     save();
+    /* the new one plays at full volume from its first moment; only the old one's tail fades out */
     const t0 = performance.now();
-    const ms = Math.max(60, left * 1000);
+    const ms = Math.max(60, Math.min(left, XF_SEC) * 1000);
     const step = () => {
       const k = Math.min(1, (performance.now() - t0) / ms);
       if (fades) {
         old._fade = Math.cos((k * Math.PI) / 2);
-        el._fade = Math.sin((k * Math.PI) / 2);
         setElVol(old);
-        setElVol(el);
       }
       if (k >= 1) {
         clearInterval(XF.fading);
@@ -652,7 +673,7 @@
     S.xfade = !!on;
     save();
     if (!S.xfade) xfCancel();
-    $('[data-act=xfade-toggle]').forEach((b) => {
+    $$('[data-act=xfade-toggle]').forEach((b) => {
       b.setAttribute('aria-checked', String(S.xfade));
       b.classList.toggle('is-on', S.xfade);
     });
@@ -675,8 +696,8 @@
     const from = P.lastT || 0;
     const to = audio.currentTime || 0;
     const d = to - from;
-    if (Math.abs(d - 10) < 1.5) next();
-    else if (Math.abs(d + 10) < 1.5 || (to < 0.6 && from > 0.6 && from < 11.5)) prev(true);
+    if (Math.abs(d - 10) < 1.5) remoteSkip(1);
+    else if (Math.abs(d + 10) < 1.5 || (to < 0.6 && from > 0.6 && from < 11.5)) remoteSkip(-1);
   }
 
   onAudio('loadedmetadata', () => {
@@ -706,6 +727,7 @@
     updatePositionState();
   });
   onAudio('play', () => {
+    lockApply();
     ensureGraph();
     if (LV.ctx && LV.ctx.state !== 'running') LV.ctx.resume().catch(() => {});
     doc.body.classList.remove('paused');
@@ -720,12 +742,18 @@
     }
     prefetchNext();
   });
-  /* the phone fetches the next track while this one plays, so the queue keeps going with the screen locked */
+  /* the next few tracks of the queue are fetched in advance while this one plays (those not downloaded already),
+     so they start at once — and on the phone the queue keeps going with the screen locked or the network gone */
+  const PREFETCH_N = 3;
   function prefetchNext() {
-    if (!api.prefetch || S.repeat || P.queue.length < 2) return;
-    const id = P.cur < P.queue.length - 1 ? P.queue[P.cur + 1] : P.queue[0];
-    const t = TR.get(id);
-    if (t) api.prefetch(t);
+    if (!api.prefetch || P.queue.length < 2) return;
+    const cur = curId();
+    const list = [];
+    for (let k = 1; k < P.queue.length && list.length < PREFETCH_N; k++) {
+      const id = P.queue[(P.cur + k) % P.queue.length];
+      if (id !== cur && !list.some((t) => t.id === id) && TR.has(id)) list.push(TR.get(id));
+    }
+    if (list.length) api.prefetch(list);
   }
   onAudio('pause', () => {
     if (XF.fading) xfCancel();
@@ -1072,12 +1100,45 @@
     /* the iPhone's lock screen and Control Center show their two side buttons as "10 s back / forward" whatever
        the page offers: there those buttons switch to the previous / next track */
     if (IOS) {
-      h('seekbackward', () => prev(true));
-      h('seekforward', () => next());
+      h('previoustrack', () => remoteSkip(-1));
+      h('nexttrack', () => remoteSkip(1));
+      h('seekbackward', () => remoteSkip(-1));
+      h('seekforward', () => remoteSkip(1));
+      const lock = lockPlugin();
+      if (lock && lock.addListener) {
+        try {
+          lock.addListener('command', (d) => {
+            if (d && d.action === 'nexttrack') remoteSkip(1);
+            else if (d && d.action === 'previoustrack') remoteSkip(-1);
+          });
+        } catch (e) { /* no native lock-screen module in this build */ }
+      }
+      lockApply();
     } else {
       h('seekbackward', () => seek((audio.currentTime || 0) - 10));
       h('seekforward', () => seek((audio.currentTime || 0) + 10));
     }
+  }
+  /* the iPhone: one press on the lock screen may reach the app by several ways at once (the native module, the
+     web view's own handlers, the 10 s jump) — it switches one track */
+  let remoteSkipAt = 0;
+  function remoteSkip(dir) {
+    const now = performance.now();
+    if (now - remoteSkipAt < 700) return;
+    remoteSkipAt = now;
+    if (dir > 0) next();
+    else prev(true);
+  }
+  /* the native lock-screen module (mobile/ios/App/App/LockScreen.swift): track buttons instead of "10 s" */
+  const lockPlugin = () => (IOS && window.Capacitor && window.Capacitor.Plugins ? window.Capacitor.Plugins.PersonafyLockScreen || null : null);
+  function lockApply() {
+    const lock = lockPlugin();
+    if (!lock || !lock.apply) return;
+    [150, 1200].forEach((ms) => setTimeout(() => {
+      try {
+        lock.apply().catch(() => {});
+      } catch (e) { /* not in this build */ }
+    }, ms));
   }
   /* the iPhone's Now Playing does not always load a picture from the app's own address: it gets the picture itself */
   function jpegData(src) {
@@ -1131,6 +1192,7 @@
     const art = await artworkFor(a);
     if (curTrack() !== t) return;
     try {
+      lockApply();
       navigator.mediaSession.metadata = new MediaMetadata({
         title: t.title,
         artist: t.artist,
@@ -1195,6 +1257,7 @@
   function onQueueChange() {
     if (S.view === 'now') updateNowBits();
     if (S.qOpen) renderQueue();
+    if (P.loadedId === curId() && !audio.paused) prefetchNext();
   }
 
   /* ---------- adding to the queue ---------- */
