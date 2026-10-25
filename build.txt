@@ -1,0 +1,3 @@
+Personafy 1.8.0 для Android
+сборка 21 от 2026-10-25 13:35 UTC
+коммит cec6902b4678c77adfcba3ab0b802ef5bbef3d94
