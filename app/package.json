@@ -1,7 +1,7 @@
 {
   "name": "phantom-player",
   "productName": "Personafy",
-  "version": "1.7.0",
+  "version": "1.7.1",
   "description": "Personafy — музыкальный плеер",
   "main": "main.js",
   "author": "Torn",

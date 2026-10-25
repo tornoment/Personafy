@@ -14,7 +14,8 @@
   const PHONE = doc.documentElement.classList.contains('phone');
   /* the iPhone's web view stops Web Audio when the app goes to the background, and with it the music routed through
      it — so there the sound never goes through the levelling graph (and the switch for it is not shown) */
-  const LEVEL_OK = !(PHONE && doc.documentElement.classList.contains('ios'));
+  const IOS = PHONE && doc.documentElement.classList.contains('ios');
+  const LEVEL_OK = !IOS;
   const ON_DEVICE = PHONE ? 'с телефона' : 'с компьютера';
   const EST_BYTES_PER_SEC = 40000;
   const STREAM = (id) => 'phantom://drive/' + encodeURIComponent(id);
@@ -277,6 +278,7 @@
     drag: null,
     repeat: !!stored.repeat,
     level: stored.level !== false,
+    xfade: stored.xfade !== false,
     theme: ['p5', 'p3r', 'mf'].includes(stored.theme) ? stored.theme : 'p5'
   };
   const isP3 = () => S.theme === 'p3r';
@@ -285,8 +287,22 @@
   let navLastTop = 0;
   doc.documentElement.dataset.theme = S.theme;
   const P = { queue: [], base: [], cur: -1, shuffle: !!stored.shuffle, errors: 0, counted: false, recentAdded: false, pendingSeek: null, offline: false, loadedId: null };
-  const audio = $('#audio');
-  audio.crossOrigin = 'anonymous';
+  /* two players take turns: while one ends, the next track is already loaded in the other and starts under it
+     (smooth transitions, below). "audio" is always the one that plays the current track; the id "audio" moves with it */
+  const audioA = $('#audio');
+  const audioB = audioA.cloneNode(false);
+  audioB.id = 'audio2';
+  audioA.after(audioB);
+  [audioA, audioB].forEach((el) => {
+    el.crossOrigin = 'anonymous';
+    el._fade = 1;
+  });
+  let audio = audioA;
+  const otherAudio = () => (audio === audioA ? audioB : audioA);
+  /* the player's events count only from the one playing the current track */
+  const onAudio = (name, fn) => [audioA, audioB].forEach((el) => el.addEventListener(name, (e) => {
+    if (e.target === audio) fn(e);
+  }));
   const curId = () => P.queue[P.cur] || null;
   const curTrack = () => TR.get(curId()) || null;
 
@@ -298,7 +314,7 @@
         liked: S.liked, recent: S.recent.slice(0, 40), plays: S.plays,
         queue: P.queue, base: P.base, cur: P.cur, shuffle: P.shuffle,
         t: P.pendingSeek != null ? P.pendingSeek : (audio.currentTime || 0),
-        volume: S.volume, prevVol: S.prevVol, libSort: S.libSort, lyricsOn: S.lyricsOn, theme: S.theme, repeat: S.repeat, level: S.level
+        volume: S.volume, prevVol: S.prevVol, libSort: S.libSort, lyricsOn: S.lyricsOn, theme: S.theme, repeat: S.repeat, level: S.level, xfade: S.xfade
       }));
     } catch (e) { /* storage full or unavailable */ }
   }
@@ -468,6 +484,7 @@
     P.pendingSeek = startAt > 0 ? startAt : null;
     P.loadedId = t.id;
     S.lyActive = -2;
+    xfCancel();
     audio.pause();
     onTrackChange();
     /* on the phone a track is fetched into the app before it plays: show "loading" meanwhile */
@@ -496,7 +513,155 @@
     }
   }
 
-  audio.addEventListener('loadedmetadata', () => {
+  /* ---------- smooth transitions ----------
+     With "smooth transitions" on, the next track is loaded into the other player half a minute before this one ends
+     and started under its last moments, so the music never stops between tracks. Where a player's volume can be set
+     (Windows, Android) the two overlap for a few seconds and cross-fade; the iPhone keeps every player at full volume,
+     so there the next one simply starts the instant this one ends. Repeat-one, a queue's end and short tracks go
+     the usual way ("ended" → next). In the background (screen off, app hidden) timers run late, so a fade could
+     leave the new track silent: there it is the gapless start too. */
+  const XF_SEC = 3;
+  const xfFades = () => !IOS && !doc.hidden;
+  const xfLead = () => (xfFades() ? XF_SEC : 0.12);
+  const XF = { id: null, t: null, fading: null };
+  function xfNextIndex() {
+    if (!S.xfade || S.repeat || P.queue.length < 2 || P.cur >= P.queue.length - 1) return -1;
+    return P.cur + 1;
+  }
+  function xfRelease(el) {
+    el.pause();
+    el.removeAttribute('src');
+    try {
+      el.load();
+    } catch (e) { /* nothing loaded */ }
+    delete el.dataset.tid;
+    el._fade = 1;
+    setElVol(el);
+  }
+  /* a track loaded by hand, a pause, the setting switched off: whatever was lined up or fading out stops */
+  function xfCancel() {
+    clearTimeout(XF.t);
+    XF.t = null;
+    XF.id = null;
+    if (XF.fading) {
+      clearInterval(XF.fading);
+      XF.fading = null;
+    }
+    const o = otherAudio();
+    if (o.getAttribute('src') || o.dataset.tid) xfRelease(o);
+    audio._fade = 1;
+    setElVol(audio);
+  }
+  async function xfPrepare(id) {
+    XF.id = id;
+    const t = TR.get(id);
+    if (!t) return;
+    let url = STREAM(t.file);
+    try {
+      const r = await api.mediaUrl(t);
+      if (r && r.url) url = r.url;
+    } catch (e) { /* stream it */ }
+    if (XF.id !== id || XF.fading) return;
+    const el = otherAudio();
+    el.loop = false;
+    el._fade = IOS ? 1 : 0;
+    setElVol(el);
+    el.dataset.tid = id;
+    el.preload = 'auto';
+    el.src = url;
+    try {
+      el.load();
+    } catch (e) { /* loads on play */ }
+  }
+  function xfTick() {
+    if (XF.fading || audio.paused || audio.seeking) return;
+    const d = audio.duration;
+    if (!isFinite(d) || d < 20) return;
+    const ni = xfNextIndex();
+    if (ni < 0) {
+      if (XF.id) xfCancel();
+      return;
+    }
+    const id = P.queue[ni];
+    const left = d - audio.currentTime;
+    if (left < 35 && XF.id !== id) xfPrepare(id);
+    if (XF.id === id && !XF.t && left <= XF_SEC + 1.2) {
+      XF.t = setTimeout(() => {
+        XF.t = null;
+        xfGo(ni, id);
+      }, Math.max(0, (left - xfLead()) * 1000));
+    }
+  }
+  function xfGo(ni, id) {
+    const el = otherAudio();
+    const old = audio;
+    const left = old.duration - old.currentTime;
+    /* anything not in place (not loaded in time, the queue changed, a seek back): the usual "ended" takes over */
+    if (xfNextIndex() !== ni || P.queue[ni] !== id || el.dataset.tid !== id || el.readyState < 3 || old.paused || !(left <= xfLead() + 0.6)) return;
+    const fades = xfFades();
+    if (!fades) {
+      el._fade = 1;
+      setElVol(el);
+    }
+    old.id = 'audio2';
+    el.id = 'audio';
+    audio = el;
+    audio.loop = S.repeat;
+    XF.id = null;
+    P.cur = ni;
+    P.stallRetried = false;
+    P.stalled = false;
+    P.heard = 0;
+    P.counted = false;
+    P.lastT = 0;
+    P.recentAdded = false;
+    P.pendingSeek = null;
+    P.loadedId = id;
+    S.lyActive = -2;
+    applyLevel(false, true);
+    try {
+      el.currentTime = 0;
+    } catch (e) { /* at the start already */ }
+    el.play().catch(playFail);
+    onTrackChange();
+    save();
+    const t0 = performance.now();
+    const ms = Math.max(60, left * 1000);
+    const step = () => {
+      const k = Math.min(1, (performance.now() - t0) / ms);
+      if (fades) {
+        old._fade = Math.cos((k * Math.PI) / 2);
+        el._fade = Math.sin((k * Math.PI) / 2);
+        setElVol(old);
+        setElVol(el);
+      }
+      if (k >= 1) {
+        clearInterval(XF.fading);
+        XF.fading = null;
+        xfRelease(old);
+        el._fade = 1;
+        setElVol(el);
+      }
+    };
+    XF.fading = setInterval(step, 50);
+    step();
+  }
+  function setXfade(on) {
+    S.xfade = !!on;
+    save();
+    if (!S.xfade) xfCancel();
+    $('[data-act=xfade-toggle]').forEach((b) => {
+      b.setAttribute('aria-checked', String(S.xfade));
+      b.classList.toggle('is-on', S.xfade);
+    });
+    toast(S.xfade ? 'Треки сменяют друг друга плавно, без паузы' : 'Плавный переход выключен', { key: 'xf', ms: 1600 });
+  }
+  onAudio('seeking', () => {
+    clearTimeout(XF.t);
+    XF.t = null;
+  });
+
+  onAudio('loadedmetadata', () => {
     const t = curTrack();
     if (P.pendingSeek != null && isFinite(audio.duration)) {
       try {
@@ -521,13 +686,13 @@
     updateTimes();
     updatePositionState();
   });
-  audio.addEventListener('play', () => {
+  onAudio('play', () => {
     ensureGraph();
     if (LV.ctx && LV.ctx.state !== 'running') LV.ctx.resume().catch(() => {});
     doc.body.classList.remove('paused');
     if ('mediaSession' in navigator) navigator.mediaSession.playbackState = 'playing';
   });
-  audio.addEventListener('playing', () => {
+  onAudio('playing', () => {
     doc.body.classList.remove('buffering');
     P.errors = 0;
     if (!P.recentAdded) {
@@ -543,13 +708,14 @@
     const t = TR.get(id);
     if (t) api.prefetch(t);
   }
-  audio.addEventListener('pause', () => {
+  onAudio('pause', () => {
+    if (XF.fading) xfCancel();
     if (LV.saveT) writeLoud();
     doc.body.classList.add('paused');
     if ('mediaSession' in navigator) navigator.mediaSession.playbackState = 'paused';
     saveNow();
   });
-  audio.addEventListener('waiting', () => {
+  onAudio('waiting', () => {
     doc.body.classList.add('buffering');
     watchStall();
   });
@@ -579,14 +745,14 @@
       : 'Нет интернета — трек не догружается. Скачанные треки играют и без сети.', { key: 'stall' });
   }
   /* a pause needs no clearing: a paused player is left alone when the watch runs out */
-  ['playing', 'error', 'ended'].forEach((n) => audio.addEventListener(n, stopStallWatch));
-  audio.addEventListener('canplay', () => doc.body.classList.remove('buffering'));
-  audio.addEventListener('seeked', () => {
+  ['playing', 'error', 'ended'].forEach((n) => onAudio(n, stopStallWatch));
+  onAudio('canplay', () => doc.body.classList.remove('buffering'));
+  onAudio('seeked', () => {
     updateTimes();
     updatePositionState();
   });
-  audio.addEventListener('ended', () => next());
-  audio.addEventListener('error', () => {
+  onAudio('ended', () => next());
+  onAudio('error', () => {
     if (!audio.getAttribute('src')) return;
     const t = curTrack();
     doc.body.classList.remove('buffering');
@@ -609,8 +775,9 @@
   });
 
   let lastSave = 0;
-  audio.addEventListener('timeupdate', () => {
+  onAudio('timeupdate', () => {
     updateTimes();
+    xfTick();
     const now = Date.now();
     if (now - lastSave > 5000) {
       lastSave = now;
@@ -639,12 +806,17 @@
   }
 
   /* the slider is linear for the eye; the ear hears loudness roughly on a squared scale */
+  /* each player's own volume also carries its share of a crossfade (_fade, 0…1) */
+  const setElVol = (el) => {
+    try {
+      el.volume = clamp((LV.vol ? 1 : S.volume * S.volume) * (el._fade == null ? 1 : el._fade), 0, 1);
+    } catch (e) { /* the iPhone's volume is read-only */ }
+  };
   const applyVolume = () => {
     const v = S.volume * S.volume;
-    if (LV.vol) {
-      audio.volume = 1;
-      LV.vol.gain.setTargetAtTime(v, LV.ctx.currentTime, 0.015);
-    } else audio.volume = v;
+    if (LV.vol) LV.vol.gain.setTargetAtTime(v, LV.ctx.currentTime, 0.015);
+    setElVol(audioA);
+    setElVol(audioB);
   };
 
   /* ---------- loudness levelling ----------
@@ -744,7 +916,9 @@
     try {
       const AC = window.AudioContext || window.webkitAudioContext;
       const ctx = new AC({ latencyHint: 'playback' });
-      const src = ctx.createMediaElementSource(audio);
+      /* both players feed the same chain (a crossfade overlaps them for a moment) */
+      const src = ctx.createMediaElementSource(audioA);
+      const src2 = ctx.createMediaElementSource(audioB);
       const norm = ctx.createGain();
       const vol = ctx.createGain();
       const lim = ctx.createDynamicsCompressor();
@@ -754,6 +928,7 @@
       lim.attack.value = 0.002;
       lim.release.value = 0.12;
       src.connect(norm);
+      src2.connect(norm);
       norm.connect(vol);
       vol.connect(lim);
       lim.connect(ctx.destination);
@@ -768,11 +943,13 @@
       const an = ctx.createAnalyser();
       an.fftSize = 2048;
       src.connect(hp);
+      src2.connect(hp);
       hp.connect(hs);
       hs.connect(an);
       Object.assign(LV, { ctx, src, norm, vol, an, buf: new Float32Array(an.fftSize) });
       vol.gain.value = S.volume * S.volume;
-      audio.volume = 1;
+      setElVol(audioA);
+      setElVol(audioB);
       applyLevel(true);
       setInterval(loudTick, 100);
     } catch (e) {
@@ -873,8 +1050,32 @@
     h('previoustrack', prev);
     h('nexttrack', next);
     h('seekto', (d) => { if (d && typeof d.seekTime === 'number') seek(d.seekTime); });
-    h('seekbackward', () => seek((audio.currentTime || 0) - 10));
-    h('seekforward', () => seek((audio.currentTime || 0) + 10));
+    /* the iPhone's lock screen and Control Center show "10 s back / forward" instead of the track buttons
+       whenever these two are offered — there only the track buttons are */
+    if (!IOS) {
+      h('seekbackward', () => seek((audio.currentTime || 0) - 10));
+      h('seekforward', () => seek((audio.currentTime || 0) + 10));
+    }
+  }
+  /* the iPhone's Now Playing does not always load a picture from the app's own address: it gets the picture itself */
+  function jpegData(src) {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => {
+        try {
+          const k = Math.min(1, 600 / Math.max(img.naturalWidth || 1, img.naturalHeight || 1));
+          const c = doc.createElement('canvas');
+          c.width = Math.max(1, Math.round(img.naturalWidth * k));
+          c.height = Math.max(1, Math.round(img.naturalHeight * k));
+          c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+          resolve(c.toDataURL('image/jpeg', 0.88));
+        } catch (e) {
+          resolve(src);
+        }
+      };
+      img.onerror = () => resolve(src);
+      img.src = src;
+    });
   }
   function togglePlayIf(wantPlay) {
     const playingNow = !audio.paused && P.loadedId === curId();
@@ -890,6 +1091,7 @@
         let d = null;
         try {
           d = await api.artwork(key);
+          if (d && IOS && !/^data:/.test(d)) d = await jpegData(d);
         } catch (e) {
           d = null;
         }
@@ -1610,9 +1812,11 @@
         themePreview(th.id) + '<span class="s3-row-t"><span class="s3-name">' + th.name + '</span><span class="s3-sub">' + th.sub + '</span></span>' +
         '<span class="s3-mark" aria-hidden="true"></span></button>').join('') +
       '</div>' +
-      (LEVEL_OK ? '<p class="s3-cap s-row" style="margin-top:26px;transition-delay:.2s">Звук</p>' +
-      '<button type="button" role="switch" class="s3-row s3-sw s-row' + (S.level ? ' is-on' : '') + '" data-act="level-toggle" aria-checked="' + S.level + '" style="transition-delay:.22s">' +
+      '<p class="s3-cap s-row" style="margin-top:26px;transition-delay:.2s">Звук</p>' +
+      (LEVEL_OK ? '<button type="button" role="switch" class="s3-row s3-sw s-row' + (S.level ? ' is-on' : '') + '" data-act="level-toggle" aria-checked="' + S.level + '" style="transition-delay:.22s">' +
       '<span class="s3-row-t"><span class="s3-name">Выравнивать громкость</span><span class="s3-sub">Тихие и громкие альбомы звучат одинаково</span></span><span class="sw" aria-hidden="true"><i></i></span></button>' : '') +
+      '<button type="button" role="switch" class="s3-row s3-sw s-row' + (S.xfade ? ' is-on' : '') + '" data-act="xfade-toggle" aria-checked="' + S.xfade + '" style="transition-delay:.24s">' +
+      '<span class="s3-row-t"><span class="s3-name">Плавный переход</span><span class="s3-sub">Следующий трек начинается без паузы, под конец текущего</span></span><span class="sw" aria-hidden="true"><i></i></span></button>' +
       '<div style="flex:1"></div>' +
       '<div class="s3-help s-row" style="transition-delay:.24s"><p>Как будет выглядеть плеер?</p><span class="n3-help-l"><i>Guide</i></span>' +
       '<p class="n3-keys"><span class="k">Esc</span>Закрыть</p></div>' +
@@ -1848,9 +2052,11 @@
         '<span class="sm-br" aria-hidden="true"></span>' + themePreview(th.id) + '<span class="sm-t"><span class="sm-name">' + th.name + '</span><span class="sm-sub">' + th.sub + '</span></span>' +
         '<i class="mf-dia sm-mark" aria-hidden="true"></i></button>').join('') +
       '</div>' +
-      (LEVEL_OK ? '<p class="sm-cap s-row" style="margin-top:30px;transition-delay:.24s"><i class="mf-dia" aria-hidden="true"></i>Звук</p>' +
-      '<button type="button" role="switch" class="sm-row sm-sw s-row' + (S.level ? ' is-on' : '') + '" data-act="level-toggle" aria-checked="' + S.level + '" style="transition-delay:.27s">' +
+      '<p class="sm-cap s-row" style="margin-top:30px;transition-delay:.24s"><i class="mf-dia" aria-hidden="true"></i>Звук</p>' +
+      (LEVEL_OK ? '<button type="button" role="switch" class="sm-row sm-sw s-row' + (S.level ? ' is-on' : '') + '" data-act="level-toggle" aria-checked="' + S.level + '" style="transition-delay:.27s">' +
       '<span class="sm-t"><span class="sm-name">Выравнивать громкость</span><span class="sm-sub">Тихие и громкие альбомы звучат одинаково</span></span><span class="sw" aria-hidden="true"><i></i></span></button>' : '') +
+      '<button type="button" role="switch" class="sm-row sm-sw s-row' + (S.xfade ? ' is-on' : '') + '" data-act="xfade-toggle" aria-checked="' + S.xfade + '" style="transition-delay:.29s">' +
+      '<span class="sm-t"><span class="sm-name">Плавный переход</span><span class="sm-sub">Следующий трек начинается без паузы, под конец текущего</span></span><span class="sw" aria-hidden="true"><i></i></span></button>' +
       '<div style="flex:1"></div>' +
       '<p class="sm-ver s-row" style="transition-delay:.3s">Personafy' + (appVersion ? ' · версия ' + esc(appVersion) : '') + '</p></div></div>';
   }
@@ -2812,10 +3018,13 @@
         '<span class="s5-txt"><span class="s5-name">' + th.name.toUpperCase() + '</span><span class="s5-sub">' + th.sub + '</span></span></span>' +
         (S.theme === th.id ? '<span class="s5-on" aria-hidden="true">ВЫБРАНО</span>' : '') + '</button>').join('') +
       '</div>' +
-      (LEVEL_OK ? '<p class="s-row s5-cap" style="margin-top:40px;transition-delay:.22s">ЗВУК</p>' +
-      '<button type="button" role="switch" class="s5-opt s5-sw s-row' + (S.level ? ' is-on' : '') + '" data-act="level-toggle" aria-checked="' + S.level + '" style="transition-delay:.25s">' +
+      '<p class="s-row s5-cap" style="margin-top:40px;transition-delay:.22s">ЗВУК</p>' +
+      (LEVEL_OK ? '<button type="button" role="switch" class="s5-opt s5-sw s-row' + (S.level ? ' is-on' : '') + '" data-act="level-toggle" aria-checked="' + S.level + '" style="transition-delay:.25s">' +
       '<span class="s5-sh" aria-hidden="true"></span><span class="s5-ol" aria-hidden="true"></span><span class="s5-in">' +
       '<span class="s5-txt"><span class="s5-name">ВЫРАВНИВАТЬ ГРОМКОСТЬ</span><span class="s5-sub">Тихие и громкие альбомы звучат одинаково</span></span><span class="sw" aria-hidden="true"><i></i></span></span></button>' : '') +
+      '<button type="button" role="switch" class="s5-opt s5-sw s-row' + (S.xfade ? ' is-on' : '') + '" data-act="xfade-toggle" aria-checked="' + S.xfade + '" style="transition-delay:.27s">' +
+      '<span class="s5-sh" aria-hidden="true"></span><span class="s5-ol" aria-hidden="true"></span><span class="s5-in">' +
+      '<span class="s5-txt"><span class="s5-name">ПЛАВНЫЙ ПЕРЕХОД</span><span class="s5-sub">Следующий трек начинается без паузы, под конец текущего</span></span><span class="sw" aria-hidden="true"><i></i></span></span></button>' +
       '<div style="flex:1"></div>' +
       '<p class="s-row" style="margin:48px 0 0;align-self:flex-end;display:inline-flex;align-items:center;gap:10px;background:#ffffff;color:#0b0b0b;padding:6px 16px;font-weight:900;font-style:italic;font-size:13px;letter-spacing:.1em;transform:skewX(-12deg) rotate(2deg);transition-delay:.26s">PERSONAFY' + (appVersion ? ' · ВЕРСИЯ ' + esc(appVersion) : '') + '</p>' +
       '</div></div>';
@@ -3219,6 +3428,7 @@
       case 'shuffle': toggleShuffle(); break;
       case 'repeat': toggleRepeat(); break;
       case 'level-toggle': setLevel(!S.level); break;
+      case 'xfade-toggle': setXfade(!S.xfade); break;
       case 'track-menu':
         if (ctx && ctx.opener === el) closeTrackMenu();
         else openTrackMenu(id, el.dataset.list, +el.dataset.i, null, el, e.detail === 0);
@@ -3545,6 +3755,65 @@
     /* a swipe that ends over the track's name must not also open "Now playing" */
     mini.addEventListener('click', (e) => {
       if (!swiped) return;
+      e.preventDefault();
+      e.stopPropagation();
+    }, true);
+    /* "Now playing" stands still on the phone (no scrolling): pull it down to close it, like a sheet,
+       back to the screen it was opened from. The lyrics and the position slider keep their own drags. */
+    const viewEl = $('#view');
+    let PD = null;
+    let pulled = false;
+    viewEl.addEventListener('pointerdown', (e) => {
+      if (S.view !== 'now' || (e.pointerType === 'mouse' && e.button !== 0)) return;
+      if (e.target.closest('input, .ly-scroll, .ly-plain')) return;
+      PD = { id: e.pointerId, x0: e.clientX, y0: e.clientY, dy: 0, on: false, t0: performance.now() };
+    });
+    window.addEventListener('pointermove', (e) => {
+      if (!PD || e.pointerId !== PD.id) return;
+      const dx = e.clientX - PD.x0;
+      const dy = e.clientY - PD.y0;
+      if (!PD.on) {
+        if ((Math.abs(dx) > 14 && Math.abs(dx) > Math.abs(dy)) || dy < -14) {
+          PD = null;
+          return;
+        }
+        if (dy < 12) return;
+        PD.on = true;
+        PD.el = viewEl.firstElementChild;
+        if (!PD.el) {
+          PD = null;
+          return;
+        }
+        PD.el.style.transition = 'none';
+      }
+      PD.dy = Math.max(0, dy);
+      PD.el.style.transform = 'translateY(' + PD.dy + 'px)';
+      PD.el.style.opacity = String(1 - Math.min(0.45, PD.dy / 800));
+    });
+    const endPull = (e) => {
+      if (!PD || e.pointerId !== PD.id) return;
+      const s = PD;
+      PD = null;
+      if (!s.on) return;
+      pulled = true;
+      setTimeout(() => { pulled = false; }, 350);
+      const speed = s.dy / Math.max(1, performance.now() - s.t0);
+      const goes = e.type !== 'pointercancel' && S.view === 'now' && (s.dy > 120 || speed > 0.7);
+      if (!goes) {
+        s.el.style.transition = 'transform .3s cubic-bezier(.2,.9,.3,1.2), opacity .2s';
+        s.el.style.transform = '';
+        s.el.style.opacity = '';
+        return;
+      }
+      s.el.style.transition = 'transform .18s ease-in, opacity .18s ease-in';
+      s.el.style.transform = 'translateY(' + window.innerHeight + 'px)';
+      s.el.style.opacity = '0';
+      setTimeout(() => { if (S.view === 'now') backStep(); }, 170);
+    };
+    window.addEventListener('pointerup', endPull);
+    window.addEventListener('pointercancel', endPull);
+    viewEl.addEventListener('click', (e) => {
+      if (!pulled) return;
       e.preventDefault();
       e.stopPropagation();
     }, true);

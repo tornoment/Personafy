@@ -16,7 +16,11 @@ html.phone{
 html.phone body{-webkit-touch-callout:none;overscroll-behavior:none}
 html.phone #titlebar{display:none}
 .phone[data-theme] #app{padding-bottom:calc(var(--navh) + var(--sb))}
-.phone[data-theme] #view{-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain}
+/* lists stop at their ends instead of bouncing past them (the bounce showed where the page's background ends) */
+.phone[data-theme] #view{-webkit-overflow-scrolling:touch;overscroll-behavior:none}
+/* "Now playing" fits one screen and stands still: it is pulled down to close (app.js), only the lyrics scroll */
+.phone[data-theme] body[data-view=now] #view{overflow:hidden;touch-action:none}
+.phone[data-theme] body[data-view=now] .ly-scroll,.phone[data-theme] body[data-view=now] .ly-plain{touch-action:pan-y}
 .phone[data-theme] #view::-webkit-scrollbar{display:none}
 .phone[data-theme] .wrap{padding-left:16px;padding-right:16px}
 .phone[data-theme] .page>.wrap,.phone[data-theme] .page>main.wrap{padding-top:calc(var(--st) + 18px)!important}
